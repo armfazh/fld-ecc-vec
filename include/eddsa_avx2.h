@@ -1,20 +1,14 @@
-/**
- *
- */
-
 #ifndef _EDDSA_AVX2_H_
 #define _EDDSA_AVX2_H_
 
 #include <stdint.h>
-#include "avx2.h"
 
-//#define ALIGN_BYTES 32
-//#ifdef __INTEL_COMPILER
-//#define ALIGN __declspec(align(ALIGN_BYTES))
-//#else
-//#define ALIGN __attribute__ ((aligned (ALIGN_BYTES)))
-//#endif
-
+#define ALIGN_BYTES 32
+#ifdef __INTEL_COMPILER
+#define ALIGN __declspec(align(ALIGN_BYTES))
+#else
+#define ALIGN __attribute__ ((aligned (ALIGN_BYTES)))
+#endif
 
 typedef uint8_t * argECDHX_PrivateKey;
 typedef uint8_t * argECDHX_SessionKey;
@@ -113,35 +107,6 @@ extern const struct _struct_EdDSA EdDSA;
 extern const struct _struct_ECDHX ECDHX;
 
 
-/**
- * Structures for Field Arithmetic
- */
-typedef void (*ThreeOperand)(uint64_t *C, uint64_t *A, uint64_t *B);
-typedef void (*TwoOperand)(uint64_t *C, uint64_t *A);
-typedef void (*OneOperand)(uint64_t *C);
-
-typedef void (*ThreeOperandVector)(__m256i *C, __m256i *A, __m256i *B);
-typedef void (*TwoOperandVector)(__m256i *C, __m256i *A);
-typedef void (*OneOperandVector)(__m256i *C);
-
-struct _struct_Fp_1way {
-	ThreeOperand add,sub,mul;
-	TwoOperand inv,sqrt;
-	OneOperand sqr,cred;
-};
-
-struct _struct_Fp_Nway {
-	ThreeOperandVector add,sub,mul;
-	OneOperandVector sqr,cred;
-};
-
-struct _struct_Fp_Arith {
-	struct _struct_Fp_1way _1way;
-	struct _struct_Fp_Nway _2way,_4way;
-};
-
-extern const struct _struct_Fp_Arith Fp_Arith;
-
 
 /**
  * Flag for sign/verify indicating
@@ -198,7 +163,6 @@ enum EDDSA_FLAGS {
 	EDDSA_ERROR_CONTEXT,
 	EDDSA_ERROR_PHFLAG,
 };
-
 
 
 #endif  /* _EDDSA_AVX2_H_ */

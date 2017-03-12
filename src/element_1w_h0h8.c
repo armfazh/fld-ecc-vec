@@ -1,8 +1,45 @@
-#include "element_1w_h0h8.h"
-#include "random.h"
-#include <stdio.h>
-#include <stdlib.h>
 
+static void print_bytes(uint8_t * A, int num_bytes)
+{
+	int i;
+	printf("0x");
+	for(i=num_bytes-1;i>=0;i--)
+	{
+		printf("%02x", A[i]);
+	}
+	printf("\n");
+}
+
+static int compare_bytes(uint8_t* A, uint8_t* B,unsigned int num_bytes)
+{
+	unsigned int i=0;
+	uint8_t ret=0;
+	for(i=0;i<num_bytes;i++)
+	{
+		ret += A[i]^B[i];
+	}
+	return ret;
+}
+
+static void * allocate_bytes(size_t num_bytes)
+{
+	return _mm_malloc(num_bytes,ALIGN_BYTES);
+}
+
+static void deallocate_bytes(void * A)
+{
+	if(A != NULL)
+	{
+		_mm_free(A);
+	}
+}
+
+
+#define copy_Element_1w_h0h8(C,A)\
+	STORE(C+0,LOAD(A+0));\
+	STORE(C+1,LOAD(A+1));\
+	STORE(C+2,LOAD(A+2));\
+	STORE(C+3,LOAD(A+3));
 
 /**
  * Converts between STR_BYTES to SingleH0H5
@@ -13,33 +50,33 @@
 static void str_bytes_To_Element_1w_h0h8(uint64_t *__restrict pC, uint8_t *__restrict p8A)
 {
 	int i;
-	const uint64_t mask = (((uint64_t)1)<<VECT_BASE)-1;
+	const uint64_t mask = (((uint64_t)1)<<BASE_FP448)-1;
 	const uint64_t *p64A = (uint64_t*)p8A;
 
 	pC[0 ] =  p64A[0]>>0;
-	pC[2 ] = (p64A[0]>>VECT_BASE);
-	pC[4 ] = (p64A[0]>>(2*VECT_BASE)) | (p64A[1]<<8);
+	pC[2 ] = (p64A[0]>>BASE_FP448);
+	pC[4 ] = (p64A[0]>>(2*BASE_FP448)) | (p64A[1]<<8);
 
 	pC[6 ] = (p64A[1]>>20);
-	pC[8 ] = (p64A[1]>>(20+VECT_BASE)) | (p64A[2]<<16);
+	pC[8 ] = (p64A[1]>>(20+BASE_FP448)) | (p64A[2]<<16);
 
 	pC[10] = (p64A[2]>>12);
-	pC[12] = (p64A[2]>>(12+VECT_BASE)) | (p64A[3]<<24);
+	pC[12] = (p64A[2]>>(12+BASE_FP448)) | (p64A[3]<<24);
 
 	pC[14] = (p64A[3]>>4);
-	pC[1 ] = (p64A[3]>>(4+VECT_BASE));
-	pC[3 ] = (p64A[3]>>(4+2*VECT_BASE)) | (p64A[4]<<4);
+	pC[1 ] = (p64A[3]>>(4+BASE_FP448));
+	pC[3 ] = (p64A[3]>>(4+2*BASE_FP448)) | (p64A[4]<<4);
 
 	pC[5 ] = (p64A[4]>>24);
-	pC[7 ] = (p64A[4]>>(24+VECT_BASE)) | (p64A[5]<<12);
+	pC[7 ] = (p64A[4]>>(24+BASE_FP448)) | (p64A[5]<<12);
 
 	pC[9 ] = (p64A[5]>>16);
-	pC[11] = (p64A[5]>>(16+VECT_BASE)) | (p64A[6]<<20);
+	pC[11] = (p64A[5]>>(16+BASE_FP448)) | (p64A[6]<<20);
 
 	pC[13] = (p64A[6]>>8);
-	pC[15] = (p64A[6]>>(8+VECT_BASE));
+	pC[15] = (p64A[6]>>(8+BASE_FP448));
 
-	for(i=0;i<NUM_WORDS_64B_CURVE448;i++)
+	for(i=0;i<NUM_DIGITS_FP448;i++)
 	{
 		pC[i] &= mask;
 	}
@@ -59,31 +96,31 @@ static void singleH0H8_To_str_bytes(uint8_t *p8C, uint64_t *puA)
 	*/
 	int i;
 	int64_t *pA = (int64_t*)puA;
-	__int128_t a[NUM_WORDS_64B_CURVE448];
+	__int128_t a[NUM_DIGITS_FP448];
 	__int128_t c[7];
 	int64_t * p64C = (int64_t*)p8C;
-	for(i=0;i< NUM_WORDS_64B_CURVE448;i++)
+	for(i=0;i< NUM_DIGITS_FP448;i++)
 	{
 		a[i] = (__int128_t)pA[i];
 	}
 
-	__int128_t tmp = a[15]>>VECT_BASE;
-	a[15] &= (((__int128_t)1<<VECT_BASE)-1);
+	__int128_t tmp = a[15]>>BASE_FP448;
+	a[15] &= (((__int128_t)1<<BASE_FP448)-1);
 
 	a[0] += tmp;
 	a[1] += tmp;
 
-	c[0] =              (a[4 ]<<(2*VECT_BASE))   + (a[2 ]<<VECT_BASE)     + (a[0]) ;
-	c[1] = (c[0]>>64) + (a[8 ]<<(20+VECT_BASE))  + (a[6 ]<<20);
-	c[2] = (c[1]>>64) + (a[12]<<(12+VECT_BASE))  + (a[10]<<12);
-	c[3] = (c[2]>>64) + (a[3 ]<<(4+2*VECT_BASE)) + (a[1 ]<<(4+VECT_BASE)) + (a[14]<<4);
-	c[4] = (c[3]>>64) + (a[7 ]<<(24+VECT_BASE))  + (a[5 ]<<24);
-	c[5] = (c[4]>>64) + (a[11]<<(16+VECT_BASE))  + (a[9 ]<<16);
-	c[6] = (c[5]>>64) + (a[15]<<(8+VECT_BASE))   + (a[13]<<8);
+	c[0] =              (a[4 ]<<(2*BASE_FP448))   + (a[2 ]<<BASE_FP448)     + (a[0]) ;
+	c[1] = (c[0]>>64) + (a[8 ]<<(20+BASE_FP448))  + (a[6 ]<<20);
+	c[2] = (c[1]>>64) + (a[12]<<(12+BASE_FP448))  + (a[10]<<12);
+	c[3] = (c[2]>>64) + (a[3 ]<<(4+2*BASE_FP448)) + (a[1 ]<<(4+BASE_FP448)) + (a[14]<<4);
+	c[4] = (c[3]>>64) + (a[7 ]<<(24+BASE_FP448))  + (a[5 ]<<24);
+	c[5] = (c[4]>>64) + (a[11]<<(16+BASE_FP448))  + (a[9 ]<<16);
+	c[6] = (c[5]>>64) + (a[15]<<(8+BASE_FP448))   + (a[13]<<8);
 
 	tmp = (c[6]>>64);
 	c[0] += tmp;
-	c[3] += tmp<<(4+VECT_BASE);
+	c[3] += tmp<<(4+BASE_FP448);
 
 	for(i=0;i<7;i++)
 	{
@@ -93,52 +130,6 @@ static void singleH0H8_To_str_bytes(uint8_t *p8C, uint64_t *puA)
 
 
 
-void print_bytes(uint8_t * A, int num_bytes)
-{
-	int i;
-	printf("0x");
-	for(i=num_bytes-1;i>=0;i--)
-	{
-		printf("%02x", A[i]);
-	}
-	printf("\n");
-}
-
-int compare_bytes(uint8_t* A, uint8_t* B,unsigned int num_bytes)
-{
-	unsigned int i=0;
-	uint8_t ret=0;
-	for(i=0;i<num_bytes;i++)
-	{
-		ret += A[i]^B[i];
-	}
-	return ret;
-}
-
-void random_Element_1w_h0h8(uint64_t *A)
-{
-	STR_BYTES a;
-	random_bytes(a,SIZE_ELEMENT_BYTES);
-	a[SIZE_ELEMENT_BYTES-1] = 0x0;
-	str_bytes_To_Element_1w_h0h8(A, a);
-}
-
-int compare_Element_1w_h0h8(uint64_t *A, uint64_t *B)
-{
-	STR_BYTES a,b;
-	compress_Element_1w_h0h8(A);
-	compress_Element_1w_h0h8(B);
-	singleH0H8_To_str_bytes(a, A);
-	singleH0H8_To_str_bytes(b, B);
-	return compare_bytes(a,b,SIZE_ELEMENT_BYTES);
-}
-
-void print_Element_1w_h0h8(uint64_t *A)
-{
-	STR_BYTES a;
-	singleH0H8_To_str_bytes(a, A);
-	print_bytes(a,SIZE_ELEMENT_BYTES);
-}
 
 
 
@@ -148,10 +139,10 @@ void print_Element_1w_h0h8(uint64_t *A)
  * @param pA
  * @param pB
  */
-void add_Element_1w_h0h8(uint64_t *pC, uint64_t *pA, uint64_t *pB)
+static void add_Element_1w_h0h8(uint64_t *pC, uint64_t *pA, uint64_t *pB)
 {
 	int i=0;
-	for(i=0;i<NUM_WORDS_256B_SINGLE_H0H8;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/4);i++)
 	{
 		__m256i A = LOAD(pA+i);
 		__m256i B = LOAD(pB+i);
@@ -159,7 +150,7 @@ void add_Element_1w_h0h8(uint64_t *pC, uint64_t *pA, uint64_t *pB)
 	}
 }
 
-static const Element_1w_H0H8 CONST_2P_ELEMENT = {
+static const Element_1w_Fp448 CONST_2P_ELEMENT = {
 		0x1ffffffe,0x3ffffffc,
 		0x1ffffffe,0x1ffffffc,
 		0x1ffffffe,0x1ffffffe,
@@ -176,7 +167,7 @@ static const Element_1w_H0H8 CONST_2P_ELEMENT = {
 static inline void neg_Element_1w_h0h8(uint64_t *pA)
 {
 	int i=0;
-	for(i=0;i<NUM_WORDS_256B_SINGLE_H0H8;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/4);i++)
 	{
 		__m256i A = LOAD(pA+i);
 		__m256i _2P = LOAD(CONST_2P_ELEMENT+i);
@@ -190,10 +181,10 @@ static inline void neg_Element_1w_h0h8(uint64_t *pA)
  * @param pA
  * @param pB
  */
-void sub_Element_1w_h0h8(uint64_t *pC, uint64_t *pA, uint64_t *pB)
+static void sub_Element_1w_h0h8(uint64_t *pC, uint64_t *pA, uint64_t *pB)
 {
 	int i=0;
-	for(i=0;i<NUM_WORDS_256B_SINGLE_H0H8;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/4);i++)
 	{
 		__m256i A = LOAD(pA+i);
 		__m256i B = LOAD(pB+i);
@@ -312,7 +303,7 @@ static void mul_schoolbook_Element_1w_h0h8(uint64_t *C, uint64_t *A, uint64_t *B
  * @param pA
  * @param pB
  */
-void mul_Element_1w_h0h8(uint64_t *pC, uint64_t *pA, uint64_t *pB)
+static void mul_Element_1w_h0h8(uint64_t *pC, uint64_t *pA, uint64_t *pB)
 {
 	mul_schoolbook_Element_1w_h0h8(pC, pA, pB);
 }
@@ -325,7 +316,7 @@ void mul_Element_1w_h0h8(uint64_t *pC, uint64_t *pA, uint64_t *pB)
 static void sqrn_Element_1w_h0h8(uint64_t * A, const int times)
 {
 	int i;
-	const uint64_t ones = ((uint64_t) 1 << VECT_BASE) - 1;
+	const uint64_t ones = ((uint64_t) 1 << BASE_FP448) - 1;
 	const __m256i mask  = _mm256_set1_epi64x(ones);
 
 	__m256i ai,aj,a2i,a2j;
@@ -451,20 +442,20 @@ static void sqrn_Element_1w_h0h8(uint64_t * A, const int times)
 		l2 = AND(A2,mask);
 		l3 = AND(A3,mask);
 
-		m0 = SHR(A0,VECT_BASE);
-		m1 = SHR(A1,VECT_BASE);
-		m2 = SHR(A2,VECT_BASE);
-		m3 = SHR(A3,VECT_BASE);
+		m0 = SHR(A0,BASE_FP448);
+		m1 = SHR(A1,BASE_FP448);
+		m2 = SHR(A2,BASE_FP448);
+		m3 = SHR(A3,BASE_FP448);
 
 		m0 = AND(m0,mask);
 		m1 = AND(m1,mask);
 		m2 = AND(m2,mask);
 		m3 = AND(m3,mask);
 
-		h0 = SHR(A0,2*VECT_BASE);
-		h1 = SHR(A1,2*VECT_BASE);
-		h2 = SHR(A2,2*VECT_BASE);
-		h3 = SHR(A3,2*VECT_BASE);
+		h0 = SHR(A0,2*BASE_FP448);
+		h1 = SHR(A1,2*BASE_FP448);
+		h2 = SHR(A2,2*BASE_FP448);
+		h3 = SHR(A3,2*BASE_FP448);
 
 		_m3 = SHUF(ADD(m3,SHR_128(m3)),0x4E);
 		h3 = SHUF(ADD(h3,SHR_128(h3)),0x4E);
@@ -494,7 +485,7 @@ static void sqrn_Element_1w_h0h8(uint64_t * A, const int times)
  *
  * @param A
  */
-void sqr_Element_1w_h0h8(uint64_t *A)
+static void sqr_Element_1w_h0h8(uint64_t *A)
 {
 	sqrn_Element_1w_h0h8(A, 1);
 }
@@ -503,9 +494,9 @@ void sqr_Element_1w_h0h8(uint64_t *A)
  *
  * @param A
  */
-void compress_Element_1w_h0h8(uint64_t *A)
+static void compress_Element_1w_h0h8(uint64_t *A)
 {
-	const uint64_t ones = ((uint64_t) 1 << VECT_BASE) - 1;
+	const uint64_t ones = ((uint64_t) 1 << BASE_FP448) - 1;
 	const __m128i mask = _mm_set_epi32(0, ones, 0, ones);
 
 	__m128i c0 = _mm_load_si128((__m128i*)A+0);
@@ -520,35 +511,35 @@ void compress_Element_1w_h0h8(uint64_t *A)
 	__m128i h0_h8,  h1_h9,  h2_h10, h3_h11,
 			h4_h12, h5_h13, h6_h14, h7_h15;
 
-	h0_h8 = _mm_srli_epi64(c0, VECT_BASE);
+	h0_h8 = _mm_srli_epi64(c0, BASE_FP448);
 	c0 = _mm_and_si128(c0, mask);
 	c1 = _mm_add_epi64(c1, h0_h8);
 
-	h1_h9 = _mm_srli_epi64(c1, VECT_BASE);
+	h1_h9 = _mm_srli_epi64(c1, BASE_FP448);
 	c1 = _mm_and_si128(c1, mask);
 	c2 = _mm_add_epi64(c2, h1_h9);
 
-	h2_h10 = _mm_srli_epi64(c2, VECT_BASE);
+	h2_h10 = _mm_srli_epi64(c2, BASE_FP448);
 	c2 = _mm_and_si128(c2, mask);
 	c3 = _mm_add_epi64(c3, h2_h10);
 
-	h3_h11 = _mm_srli_epi64(c3, VECT_BASE);
+	h3_h11 = _mm_srli_epi64(c3, BASE_FP448);
 	c3 = _mm_and_si128(c3, mask);
 	c4 = _mm_add_epi64(c4, h3_h11);
 
-	h4_h12 = _mm_srli_epi64(c4, VECT_BASE);
+	h4_h12 = _mm_srli_epi64(c4, BASE_FP448);
 	c4 = _mm_and_si128(c4, mask);
 	c5 = _mm_add_epi64(c5, h4_h12);
 
-	h5_h13 = _mm_srli_epi64(c5, VECT_BASE);
+	h5_h13 = _mm_srli_epi64(c5, BASE_FP448);
 	c5 = _mm_and_si128(c5, mask);
 	c6 = _mm_add_epi64(c6, h5_h13);
 
-	h6_h14 = _mm_srli_epi64(c6, VECT_BASE);
+	h6_h14 = _mm_srli_epi64(c6, BASE_FP448);
 	c6 = _mm_and_si128(c6, mask);
 	c7 = _mm_add_epi64(c7, h6_h14);
 
-	h7_h15 = _mm_srli_epi64(c7, VECT_BASE);
+	h7_h15 = _mm_srli_epi64(c7, BASE_FP448);
 	c7 = _mm_and_si128(c7, mask);
 
 	/**
@@ -562,7 +553,7 @@ void compress_Element_1w_h0h8(uint64_t *A)
 	 **/
 	c0 = _mm_add_epi64(c0,_mm_shuffle_epi32(h7_h15,0x4E));
 
-	h0_h8 = _mm_srli_epi64(c0, VECT_BASE);
+	h0_h8 = _mm_srli_epi64(c0, BASE_FP448);
 	c0 = _mm_and_si128(c0, mask);
 	c1 = _mm_add_epi64(c1, h0_h8);
 
@@ -582,7 +573,7 @@ void compress_Element_1w_h0h8(uint64_t *A)
  */
 static void compressfast_Element_1w_h0h8(uint64_t *pA)
 {
-	const uint64_t ones = ((uint64_t) 1 << VECT_BASE) - 1;
+	const uint64_t ones = ((uint64_t) 1 << BASE_FP448) - 1;
 	const __m256i mask  = _mm256_set1_epi64x(ones);
 
 	__m256i A0,A1,A2,A3;
@@ -602,20 +593,20 @@ static void compressfast_Element_1w_h0h8(uint64_t *pA)
 	l2 = AND(A2,mask);
 	l3 = AND(A3,mask);
 
-	m0 = SHR(A0,VECT_BASE);
-	m1 = SHR(A1,VECT_BASE);
-	m2 = SHR(A2,VECT_BASE);
-	m3 = SHR(A3,VECT_BASE);
+	m0 = SHR(A0,BASE_FP448);
+	m1 = SHR(A1,BASE_FP448);
+	m2 = SHR(A2,BASE_FP448);
+	m3 = SHR(A3,BASE_FP448);
 
 	m0 = AND(m0,mask);
 	m1 = AND(m1,mask);
 	m2 = AND(m2,mask);
 	m3 = AND(m3,mask);
 
-	h0 = SHR(A0,2*VECT_BASE);
-	h1 = SHR(A1,2*VECT_BASE);
-	h2 = SHR(A2,2*VECT_BASE);
-	h3 = SHR(A3,2*VECT_BASE);
+	h0 = SHR(A0,2*BASE_FP448);
+	h1 = SHR(A1,2*BASE_FP448);
+	h2 = SHR(A2,2*BASE_FP448);
+	h3 = SHR(A3,2*BASE_FP448);
 
 	_m3 = SHUF(ADD(m3,SHR_128(m3)),0x4E);
 	h3 = SHUF(ADD(h3,SHR_128(h3)),0x4E);
@@ -647,7 +638,7 @@ static void compressfast_Element_1w_h0h8(uint64_t *pA)
  */
 static void new_compressfast_Element_1w_h0h8(uint64_t * pA)
 {
-	const uint64_t ones = ((uint64_t) 1 << VECT_BASE) - 1;
+	const uint64_t ones = ((uint64_t) 1 << BASE_FP448) - 1;
 	const __m256i mask  = _mm256_set1_epi64x(ones);
 
 	__m256i A0,A1,A2,A3;
@@ -666,10 +657,10 @@ static void new_compressfast_Element_1w_h0h8(uint64_t * pA)
 	l2 = AND(A2,mask);
 	l3 = AND(A3,mask);
 
-	m0 = SHR(A0,VECT_BASE);
-	m1 = SHR(A1,VECT_BASE);
-	m2 = SHR(A2,VECT_BASE);
-	m3 = SHR(A3,VECT_BASE);
+	m0 = SHR(A0,BASE_FP448);
+	m1 = SHR(A1,BASE_FP448);
+	m2 = SHR(A2,BASE_FP448);
+	m3 = SHR(A3,BASE_FP448);
 
 	_m3 = SHUF(ADD(m3,SHR_128(m3)),0x4E);
 
@@ -695,9 +686,9 @@ static void new_compressfast_Element_1w_h0h8(uint64_t * pA)
  * @param pA
  * @param only_inverse
  */
-void invsqrt_Element_1w_h0h8(uint64_t * __restrict pC, uint64_t * __restrict pA, const int only_inverse)
+static void invsqrt_Element_1w_h0h8(uint64_t * __restrict pC, uint64_t * __restrict pA, const int only_inverse)
 {
-	Element_1w_H0H8 x0,x1;
+	Element_1w_Fp448 x0,x1;
 	uint64_t * T[4];
 
 	T[0] = x0;
@@ -770,11 +761,51 @@ void invsqrt_Element_1w_h0h8(uint64_t * __restrict pC, uint64_t * __restrict pA,
 	}
 }
 
-void inv_Element_1w_h0h8(uint64_t * pC, uint64_t * pA)
-{
-	invsqrt_Element_1w_h0h8(pC,pA,0);
-}
-void sqrt_Element_1w_h0h8(uint64_t * pC, uint64_t * pA)
+static void inv_Element_1w_h0h8(uint64_t * pC, uint64_t * pA)
 {
 	invsqrt_Element_1w_h0h8(pC,pA,1);
 }
+static void sqrt_Element_1w_h0h8(uint64_t * pC, uint64_t * pA)
+{
+	invsqrt_Element_1w_h0h8(pC,pA,0);
+}
+
+/*** Util functions ***/
+
+static void random_Element_1w_h0h8(uint64_t *A)
+{
+	ALIGN uint8_t a[SIZE_FP448];
+	random_bytes(a,SIZE_FP448);
+	a[SIZE_FP448-1] = 0x0;
+	str_bytes_To_Element_1w_h0h8(A, a);
+}
+
+static int compare_Element_1w_h0h8(uint64_t *A, uint64_t *B)
+{
+	ALIGN uint8_t a[SIZE_FP448];
+	ALIGN uint8_t b[SIZE_FP448];
+
+	compress_Element_1w_h0h8(A);
+	compress_Element_1w_h0h8(B);
+	singleH0H8_To_str_bytes(a, A);
+	singleH0H8_To_str_bytes(b, B);
+	return compare_bytes(a,b,SIZE_FP448);
+}
+
+static void print_Element_1w_h0h8(uint64_t *A)
+{
+	ALIGN uint8_t a[SIZE_FP448];
+	singleH0H8_To_str_bytes(a, A);
+	print_bytes(a,SIZE_FP448);
+}
+
+static uint64_t * new_Element_1w_h0h8()
+{
+	return (uint64_t*) allocate_bytes(NUM_DIGITS_FP448 * sizeof(uint64_t));
+}
+
+static void clean_Element_1w_h0h8(uint64_t * A)
+{
+	deallocate_bytes((void*)A);
+}
+

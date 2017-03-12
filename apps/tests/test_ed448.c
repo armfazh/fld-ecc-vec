@@ -1,4 +1,3 @@
-#include <eddsa_avx2.h>
 #include "vectors.c"
 
 #define LABEL "Test passed? [%s]\n"

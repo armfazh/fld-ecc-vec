@@ -1,5 +1,3 @@
-#include <eddsa_avx2.h>
-
 static void bench_ed448()
 {
 	const int BENCH = 250;

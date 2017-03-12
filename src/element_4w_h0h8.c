@@ -1,42 +1,39 @@
-#include "element_1w_h0h8.h"
-#include "element_2w_h0h8.h"
-#include "element_4w_h0h8.h"
 
 /**
  *
  * @param A
  * @param nA
  */
-static void str_bytes_to_Element_4w_h0h8(argElement_4w_H0H6 A, __m256i nA[7])
+static void str_bytes_to_Element_4w_h0h8(argElement_4w A, __m256i nA[7])
 {
 	int i;
-	const uint64_t ones = (((uint64_t)1)<<VECT_BASE)-1;
+	const uint64_t ones = (((uint64_t)1)<<BASE_FP448)-1;
 	const __m256i mask = _mm256_set1_epi64x(ones);
 
 	A[0]  = nA[0];
-	A[2]  = SHR(nA[0],VECT_BASE);
-	A[4]  = XOR(SHR(nA[0],2*VECT_BASE),SHL(nA[1],8));
+	A[2]  = SHR(nA[0],BASE_FP448);
+	A[4]  = XOR(SHR(nA[0],2*BASE_FP448),SHL(nA[1],8));
 
 	A[6]  = SHR(nA[1],20);
-	A[8]  = XOR(SHR(nA[1],20+VECT_BASE),SHL(nA[2],16));
+	A[8]  = XOR(SHR(nA[1],20+BASE_FP448),SHL(nA[2],16));
 
 	A[10] = SHR(nA[2],12);
-	A[12] = XOR(SHR(nA[2],12+VECT_BASE),SHL(nA[3],24));
+	A[12] = XOR(SHR(nA[2],12+BASE_FP448),SHL(nA[3],24));
 
 	A[14] = SHR(nA[3],4);
-	A[1]  = SHR(nA[3],4+VECT_BASE);
-	A[3]  = XOR(SHR(nA[3],4+2*VECT_BASE),SHL(nA[4],4));
+	A[1]  = SHR(nA[3],4+BASE_FP448);
+	A[3]  = XOR(SHR(nA[3],4+2*BASE_FP448),SHL(nA[4],4));
 
 	A[5]  = SHR(nA[4],24);
-	A[7]  = XOR(SHR(nA[4],24+VECT_BASE),SHL(nA[5],12));
+	A[7]  = XOR(SHR(nA[4],24+BASE_FP448),SHL(nA[5],12));
 
 	A[9]  = SHR(nA[5],16);
-	A[11] = XOR(SHR(nA[5],16+VECT_BASE),SHL(nA[6],20));
+	A[11] = XOR(SHR(nA[5],16+BASE_FP448),SHL(nA[6],20));
 
 	A[13] = SHR(nA[6],8);
-	A[15] = SHR(nA[6],8+VECT_BASE);
+	A[15] = SHR(nA[6],8+BASE_FP448);
 
-	for(i=0;i<NUM_WORDS_CURVE448;i++)
+	for(i=0;i<NUM_DIGITS_FP448;i++)
 	{
 		A[i] = AND(A[i],mask);
 	}
@@ -50,7 +47,7 @@ static void str_bytes_to_Element_4w_h0h8(argElement_4w_H0H6 A, __m256i nA[7])
  * @param pC
  * @param pD
  */
-static void zip_Element_4w_h0h8(argElement_4w_H0H6 A,uint64_t*pA,uint64_t*pB,uint64_t*pC,uint64_t*pD)
+static void zip_Element_4w_h0h8(argElement_4w A,uint64_t*pA,uint64_t*pB,uint64_t*pC,uint64_t*pD)
 {
 	__m256i A0 = LOAD(pA+0);
 	__m256i B0 = LOAD(pB+0);
@@ -118,7 +115,7 @@ static void zip_Element_4w_h0h8(argElement_4w_H0H6 A,uint64_t*pA,uint64_t*pB,uin
  * @param pD
  * @param A
  */
-static void unzip_Element_4w_h0h8(uint64_t*pA,uint64_t*pB,uint64_t*pC,uint64_t*pD,argElement_4w_H0H6 A)
+static void unzip_Element_4w_h0h8(uint64_t*pA,uint64_t*pB,uint64_t*pC,uint64_t*pD,argElement_4w A)
 {
 	__m256i A02 = PERM128(A[0],A[2],0x20);
 	__m256i A13 = PERM128(A[1],A[3],0x20);
@@ -179,60 +176,14 @@ static void unzip_Element_4w_h0h8(uint64_t*pA,uint64_t*pB,uint64_t*pC,uint64_t*p
 
 /**
  *
- * @param X_Y_Z_T
- */
-void random_Element_4w_h0h8(argElement_4w_H0H6 X_Y_Z_T)
-{
-	Element_1w_H0H8 X,Y,Z,T;
-	random_Element_1w_h0h8(X);
-	random_Element_1w_h0h8(Y);
-	random_Element_1w_h0h8(Z);
-	random_Element_1w_h0h8(T);
-	zip_Element_4w_h0h8(X_Y_Z_T,X,Y,Z,T);
-}
-
-/**
- *
- * @param X_Y_Z_T
- */
-void print_Element_4w_h0h8(argElement_4w_H0H6 X_Y_Z_T)
-{
-	Element_1w_H0H8 X,Y,Z,T;
-	unzip_Element_4w_h0h8(X,Y,Z,T,X_Y_Z_T);
-	print_Element_1w_h0h8(X);
-	print_Element_1w_h0h8(Y);
-	print_Element_1w_h0h8(Z);
-	print_Element_1w_h0h8(T);
-}
-
-/**
- *
- * @param X0_X1_X2_X3
- * @param Y0_Y1_Y2_Y3
- * @return
- */
-int compare_Element_4w_h0h8(argElement_4w_H0H6 X0_X1_X2_X3, argElement_4w_H0H6 Y0_Y1_Y2_Y3)
-{
-	Element_1w_H0H8 X0,X1,X2,X3;
-	Element_1w_H0H8 Y0,Y1,Y2,Y3;
-	unzip_Element_4w_h0h8(X0,X1,X2,X3,X0_X1_X2_X3);
-	unzip_Element_4w_h0h8(Y0,Y1,Y2,Y3,Y0_Y1_Y2_Y3);
-	return compare_Element_1w_h0h8(X0, Y0) &&
-		   compare_Element_1w_h0h8(X1, Y1) &&
-		   compare_Element_1w_h0h8(X2, Y2) &&
-		   compare_Element_1w_h0h8(X3, Y3);
-}
-
-/**
- *
  * @param C
  * @param A
  * @param B
  */
-void add_Element_4w_h0h8(__m256i * __restrict C, __m256i * __restrict A, __m256i * __restrict B)
+static void add_Element_4w_h0h8(__m256i * __restrict C, __m256i * __restrict A, __m256i * __restrict B)
 {
 	int i=0;
-	for(i=0;i<NUM_WORDS_CURVE448;i++)
+	for(i=0;i<NUM_DIGITS_FP448;i++)
 	{
 		C[i] = ADD(A[i], B[i]);
 	}
@@ -244,9 +195,9 @@ void add_Element_4w_h0h8(__m256i * __restrict C, __m256i * __restrict A, __m256i
  * @param A
  * @param B
  */
-void sub_Element_4w_h0h8(__m256i * __restrict C, __m256i * __restrict A, __m256i * __restrict B)
+static void sub_Element_4w_h0h8(__m256i * __restrict C, __m256i * __restrict A, __m256i * __restrict B)
 {
-	const __m256i _2P[NUM_WORDS_CURVE448] = {
+	const __m256i _2P[NUM_DIGITS_FP448] = {
 			SET1_64(0x1ffffffe),	SET1_64(0x3ffffffc),
 			SET1_64(0x1ffffffe),	SET1_64(0x1ffffffc),
 			SET1_64(0x1ffffffe),	SET1_64(0x1ffffffe),
@@ -257,7 +208,7 @@ void sub_Element_4w_h0h8(__m256i * __restrict C, __m256i * __restrict A, __m256i
 			SET1_64(0x1ffffffe),	SET1_64(0x1ffffffe)
 	};
 	int i=0;
-	for(i=0;i<NUM_WORDS_CURVE448;i++)
+	for(i=0;i<NUM_DIGITS_FP448;i++)
 	{
 		C[i] = ADD(A[i],SUB(_2P[i],B[i]));
 	}
@@ -270,7 +221,7 @@ void sub_Element_4w_h0h8(__m256i * __restrict C, __m256i * __restrict A, __m256i
  */
 static void addsub_large_Element_4w_h0h8(__m256i * __restrict A, __m256i * __restrict B)
 {
-	const __m256i _2_to_34P[NUM_WORDS_CURVE448] = {
+	const __m256i _2_to_34P[NUM_DIGITS_FP448] = {
 			SET1_64(0x3ffffffc00000000),	SET1_64(0x3ffffff800000000),
 			SET1_64(0x3ffffffc00000000),	SET1_64(0x3ffffffc00000000),
 			SET1_64(0x3ffffffc00000000),	SET1_64(0x3ffffffc00000000),
@@ -282,7 +233,7 @@ static void addsub_large_Element_4w_h0h8(__m256i * __restrict A, __m256i * __res
 	};
 
 	int i=0;
-	for(i=0;i<NUM_WORDS_CURVE448;i++)
+	for(i=0;i<NUM_DIGITS_FP448;i++)
 	{
 		__m256i add = ADD(A[i],B[i]);
 		__m256i sub = ADD(A[i],SUB(_2_to_34P[i], B[i]));
@@ -502,12 +453,12 @@ static void sqr_karatsuba_4w_h0h8(__m256i * C)
 	C[14] = ADD(x7,y7);	                    C[15] = SUB(z7,x7);
 }
 
-void mul_Element_4w_h0h8(__m256i *C, __m256i *A, __m256i *B)
+static void mul_Element_4w_h0h8(__m256i *C, __m256i *A, __m256i *B)
 {
 	mul_karatsuba_4w_h0h8(C,A,B);
 }
 
-void sqr_Element_4w_h0h8(__m256i * C)
+static void sqr_Element_4w_h0h8(__m256i * C)
 {
 	sqr_karatsuba_4w_h0h8(C);
 }
@@ -518,17 +469,17 @@ void sqr_Element_4w_h0h8(__m256i * C)
 #undef sqr_karat_8x8
 
 #define CARRY_WORD(X,H,I,J) \
-	H = SHR(X[I], VECT_BASE);\
+	H = SHR(X[I], BASE_FP448);\
 	X[I] = AND(X[I], mask);\
 	X[J] = ADD(X[J], H);
 /**
  *
  * @param C
  */
-void compress_Element_4w_h0h8(__m256i * C)
+static void compress_Element_4w_h0h8(__m256i * C)
 {
 	__m256i h,residue;
-	const uint64_t ones = ((uint64_t) 1 << VECT_BASE) - 1;
+	const uint64_t ones = ((uint64_t) 1 << BASE_FP448) - 1;
 	const __m256i mask = _mm256_set1_epi64x(ones);
 
 	CARRY_WORD(C,h,0 ,2 )
@@ -546,7 +497,7 @@ void compress_Element_4w_h0h8(__m256i * C)
 	CARRY_WORD(C,h,9 ,11)
 	CARRY_WORD(C,h,11,13)
 	CARRY_WORD(C,h,13,15)
-	residue = SHR(C[15], VECT_BASE);
+	residue = SHR(C[15], BASE_FP448);
 	C[15] = AND(C[15], mask);
 
 	C[0] = ADD(C[0],residue);
@@ -566,7 +517,7 @@ void compress_Element_4w_h0h8(__m256i * C)
 static void compress2_Element_4w_h0h8(__m256i * __restrict C,__m256i * __restrict D)
 {
 	__m256i h0,h1,residue0,residue1;
-	const uint64_t ones = ((uint64_t) 1 << VECT_BASE) - 1;
+	const uint64_t ones = ((uint64_t) 1 << BASE_FP448) - 1;
 	const __m256i mask = _mm256_set1_epi64x(ones);
 
 	CARRY_WORD(C,h0,0 ,2 )                            	CARRY_WORD(D,h1,0 ,2 )
@@ -584,7 +535,7 @@ static void compress2_Element_4w_h0h8(__m256i * __restrict C,__m256i * __restric
 	CARRY_WORD(C,h0,9 ,11)                            	CARRY_WORD(D,h1,9 ,11)
 	CARRY_WORD(C,h0,11,13)                            	CARRY_WORD(D,h1,11,13)
 	CARRY_WORD(C,h0,13,15)                            	CARRY_WORD(D,h1,13,15)
-	residue0 = SHR(C[15], VECT_BASE);               	residue1 = SHR(D[15], VECT_BASE);
+	residue0 = SHR(C[15], BASE_FP448);               	residue1 = SHR(D[15], BASE_FP448);
 	C[15] = AND(C[15], mask);                       	D[15] = AND(D[15], mask);
 
 	C[0] = ADD(C[0],residue0);                      	D[0] = ADD(D[0],residue1);
@@ -594,4 +545,63 @@ static void compress2_Element_4w_h0h8(__m256i * __restrict C,__m256i * __restric
 	C[1] = ADD(C[1],residue0);                      	D[1] = ADD(D[1],residue1);
 	CARRY_WORD(C,h0,1 ,3 )                            	CARRY_WORD(D,h1,1 ,3 )
 	CARRY_WORD(C,h0,3 ,5 )                            	CARRY_WORD(D,h1,3 ,5 )
+}
+#undef CARRY_WORD
+
+/** Util Functions */
+
+/**
+ *
+ * @param X_Y_Z_T
+ */
+static void random_Element_4w_h0h8(argElement_4w X_Y_Z_T)
+{
+	Element_1w_Fp448 X,Y,Z,T;
+	random_Element_1w_h0h8(X);
+	random_Element_1w_h0h8(Y);
+	random_Element_1w_h0h8(Z);
+	random_Element_1w_h0h8(T);
+	zip_Element_4w_h0h8(X_Y_Z_T,X,Y,Z,T);
+}
+
+/**
+ *
+ * @param X_Y_Z_T
+ */
+static void print_Element_4w_h0h8(argElement_4w X_Y_Z_T)
+{
+	Element_1w_Fp448 X,Y,Z,T;
+	unzip_Element_4w_h0h8(X,Y,Z,T,X_Y_Z_T);
+	print_Element_1w_h0h8(X);
+	print_Element_1w_h0h8(Y);
+	print_Element_1w_h0h8(Z);
+	print_Element_1w_h0h8(T);
+}
+
+/**
+ *
+ * @param X0_X1_X2_X3
+ * @param Y0_Y1_Y2_Y3
+ * @return
+ */
+static int compare_Element_4w_h0h8(argElement_4w X0_X1_X2_X3, argElement_4w Y0_Y1_Y2_Y3)
+{
+	Element_1w_Fp448 X0,X1,X2,X3;
+	Element_1w_Fp448 Y0,Y1,Y2,Y3;
+	unzip_Element_4w_h0h8(X0,X1,X2,X3,X0_X1_X2_X3);
+	unzip_Element_4w_h0h8(Y0,Y1,Y2,Y3,Y0_Y1_Y2_Y3);
+	return compare_Element_1w_h0h8(X0, Y0) &&
+		   compare_Element_1w_h0h8(X1, Y1) &&
+		   compare_Element_1w_h0h8(X2, Y2) &&
+		   compare_Element_1w_h0h8(X3, Y3);
+}
+
+static __m256i * new_Element_4w_h0h8()
+{
+	return (__m256i*) allocate_bytes(NUM_DIGITS_FP448 * sizeof(__m256i));
+}
+
+static void clean_Element_4w_h0h8(__m256i * A)
+{
+	deallocate_bytes((void*)A);
 }

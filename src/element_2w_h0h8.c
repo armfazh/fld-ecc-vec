@@ -1,5 +1,15 @@
-#include "element_1w_h0h8.h"
-#include "element_2w_h0h8.h"
+
+#define copy_Element_2w_h0h8(C,A) \
+do{                               \
+	C[0] = A[0];                  \
+	C[1] = A[1];                  \
+	C[2] = A[2];                  \
+	C[3] = A[3];                  \
+	C[4] = A[4];                  \
+	C[5] = A[5];                  \
+	C[6] = A[6];                  \
+	C[7] = A[7];                  \
+}while(0)
 
 /**
  *
@@ -7,7 +17,7 @@
  * @param LOW
  * @param HIGH
  */
-static void interleave_2w_h0h8(argElement_2w_H0H8 C, argElement_1w_H0H8 LOW, argElement_1w_H0H8 HIGH)
+static void interleave_2w_h0h8(argElement_2w C, argElement_1w LOW, argElement_1w HIGH)
 {
 	__m256i A0  = LOAD(LOW+0);
 	__m256i A4  = LOAD(LOW+1);
@@ -35,7 +45,7 @@ static void interleave_2w_h0h8(argElement_2w_H0H8 C, argElement_1w_H0H8 LOW, arg
  * @param HIGH
  * @param A
  */
-static void deinterleave_2w_h0h8(argElement_1w_H0H8 LOW, argElement_1w_H0H8 HIGH, argElement_2w_H0H8 A)
+static void deinterleave_2w_h0h8(argElement_1w LOW, argElement_1w HIGH, argElement_2w A)
 {
 	STORE(LOW  + 0, PERM128(A[0], A[1], 0x20));
 	STORE(HIGH + 0, PERM128(A[0], A[1], 0x31));
@@ -47,44 +57,7 @@ static void deinterleave_2w_h0h8(argElement_1w_H0H8 LOW, argElement_1w_H0H8 HIGH
 	STORE(HIGH + 3, PERM128(A[6], A[7], 0x31));
 }
 
-/**
- *
- * @param X_Y
- */
-void random_Element_2w_h0h8(argElement_2w_H0H8 X_Y)
-{
-	Element_1w_H0H8 X,Y;
-	random_Element_1w_h0h8(X);
-	random_Element_1w_h0h8(Y);
-	interleave_2w_h0h8(X_Y,X,Y);
-}
 
-/**
- *
- * @param X_Y
- */
-void print_Element_2w_h0h8(argElement_2w_H0H8 X_Y)
-{
-	Element_1w_H0H8 X,Y;
-	deinterleave_2w_h0h8(X,Y,X_Y);
-	print_Element_1w_h0h8(X);
-	print_Element_1w_h0h8(Y);
-}
-
-/**
- *
- * @param X0_X1
- * @param Y0_Y1
- * @return
- */
-int compare_Element_2w_h0h8(argElement_2w_H0H8 X0_X1, argElement_2w_H0H8 Y0_Y1)
-{
-	Element_1w_H0H8 X0,X1;
-	Element_1w_H0H8 Y0,Y1;
-	deinterleave_2w_h0h8(X0,X1,X0_X1);
-	deinterleave_2w_h0h8(Y0,Y1,Y0_Y1);
-	return compare_Element_1w_h0h8(X0, Y0) && compare_Element_1w_h0h8(X1, Y1);
-}
 
 /**
  *
@@ -92,14 +65,14 @@ int compare_Element_2w_h0h8(argElement_2w_H0H8 X0_X1, argElement_2w_H0H8 Y0_Y1)
  * @param A
  * @param B
  */
-void add_Element_2w_h0h8(argElement_2w_H0H8 C,argElement_2w_H0H8 A,argElement_2w_H0H8 B)
+static void add_Element_2w_h0h8(argElement_2w C,argElement_2w A,argElement_2w B)
 {
 	int i=0;
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 		C[i] = ADD(A[i],B[i]);
 }
 
-static const uint64_t CONST_2P_2P_H0H8[2*NUM_WORDS_64B_CURVE448] = {
+static const uint64_t CONST_2P_2P_H0H8[2*NUM_DIGITS_FP448] = {
 		0x1ffffffe,0x3ffffffc,0x1ffffffe,0x3ffffffc,
 		0x1ffffffe,0x1ffffffc,0x1ffffffe,0x1ffffffc,
 		0x1ffffffe,0x1ffffffe,0x1ffffffe,0x1ffffffe,
@@ -109,7 +82,7 @@ static const uint64_t CONST_2P_2P_H0H8[2*NUM_WORDS_64B_CURVE448] = {
 		0x1ffffffe,0x1ffffffe,0x1ffffffe,0x1ffffffe,
 		0x1ffffffe,0x1ffffffe,0x1ffffffe,0x1ffffffe};
 
-static const uint64_t CONST_2P_00_H0H8[2*NUM_WORDS_64B_CURVE448] = {
+static const uint64_t CONST_2P_00_H0H8[2*NUM_DIGITS_FP448] = {
 		0x1ffffffe,0x3ffffffc,0x0000000,0x0000000,
 		0x1ffffffe,0x1ffffffc,0x0000000,0x0000000,
 		0x1ffffffe,0x1ffffffe,0x0000000,0x0000000,
@@ -124,11 +97,11 @@ static const uint64_t CONST_2P_00_H0H8[2*NUM_WORDS_64B_CURVE448] = {
  * @param A
  * @param B
  */
-void sub_Element_2w_h0h8(argElement_2w_H0H8 __restrict C, argElement_2w_H0H8 __restrict A, argElement_2w_H0H8 __restrict B)
+static void sub_Element_2w_h0h8(argElement_2w __restrict C, argElement_2w __restrict A, argElement_2w __restrict B)
 {
-	argElement_2w_H0H8 _2P = (argElement_2w_H0H8)CONST_2P_2P_H0H8;
+	argElement_2w _2P = (argElement_2w)CONST_2P_2P_H0H8;
 	int i=0;
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 		C[i] = ADD(A[i],SUB(_2P[i],B[i]));
 }
 
@@ -149,14 +122,14 @@ void sub_Element_2w_h0h8(argElement_2w_H0H8 __restrict C, argElement_2w_H0H8 __r
  * @param permutation
  */
 static inline void subadd_Element_2w_h0h8(
-		argElement_2w_H0H8 __restrict C,
-		argElement_2w_H0H8 __restrict A,
+		argElement_2w __restrict C,
+		argElement_2w __restrict A,
 		const int permutation)
 {
 	const __m256i mask_subadd = _mm256_set_epi64x(0,0,-1, -1);
-	argElement_2w_H0H8 _2P_00 = (argElement_2w_H0H8)CONST_2P_00_H0H8;
+	argElement_2w _2P_00 = (argElement_2w)CONST_2P_00_H0H8;
 	int i=0;
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 	{
 		__m256i M=ZERO,N=ZERO,PA;
 		PA = PERM64(A[i],0x4E);
@@ -179,12 +152,12 @@ static inline void subadd_Element_2w_h0h8(
  * @param A
  * @param B
  */
-static inline void addsub_Element_2w_h0h8(argElement_2w_H0H8 __restrict A, argElement_2w_H0H8 __restrict B)
+static inline void addsub_Element_2w_h0h8(argElement_2w __restrict A, argElement_2w __restrict B)
 {
-	argElement_2w_H0H8 _2P = (argElement_2w_H0H8)CONST_2P_2P_H0H8;
+	argElement_2w _2P = (argElement_2w)CONST_2P_2P_H0H8;
 
 	int i=0;
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 	{
 		__m256i D,C;
 		D = ADD(A[i], B[i]);
@@ -202,12 +175,12 @@ static inline void addsub_Element_2w_h0h8(argElement_2w_H0H8 __restrict A, argEl
  * @param C
  * @param A
  */
-static inline void negZZ_Element_2w_h0h8(argElement_2w_H0H8 C,argElement_2w_H0H8 A)
+static inline void negZZ_Element_2w_h0h8(argElement_2w C,argElement_2w A)
 {
 	const __m256i mask_subadd = _mm256_set_epi64x(0,0,-1, -1);
-	argElement_2w_H0H8 _2P_00 = (argElement_2w_H0H8)CONST_2P_00_H0H8;
+	argElement_2w _2P_00 = (argElement_2w)CONST_2P_00_H0H8;
 	int i=0;
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 	{
 		C[i] = ADD(_2P_00[i],SUB(XOR(A[i],mask_subadd),mask_subadd));
 	}
@@ -493,7 +466,7 @@ static void sqr_karatsuba_2w_h0h8(__m256i *  C)
  * @param A
  * @param B
  */
-void mul_Element_2w_h0h8(__m256i *  C, __m256i * A, __m256i *  B)
+static void mul_Element_2w_h0h8(__m256i *  C, __m256i * A, __m256i *  B)
 {
 	mul_karatsuba_2w_h0h8(C,A,B);
 }
@@ -502,7 +475,7 @@ void mul_Element_2w_h0h8(__m256i *  C, __m256i * A, __m256i *  B)
  *
  * @param C
  */
-void sqr_Element_2w_h0h8(__m256i *  C)
+static void sqr_Element_2w_h0h8(__m256i *  C)
 {
 	sqr_karatsuba_2w_h0h8(C);
 }
@@ -511,9 +484,9 @@ void sqr_Element_2w_h0h8(__m256i *  C)
  *
  * @param C
  */
-void compress_Element_2w_h0h8(__m256i * C)
+static void compress_Element_2w_h0h8(__m256i * C)
 {
-	const uint64_t ones = ((uint64_t) 1 << VECT_BASE) - 1;
+	const uint64_t ones = ((uint64_t) 1 << BASE_FP448) - 1;
 	const __m256i mask = _mm256_set_epi32(0, ones, 0, ones,0, ones, 0, ones);
 
 	__m256i c0 = C[0];
@@ -528,35 +501,35 @@ void compress_Element_2w_h0h8(__m256i * C)
 	__m256i h0_h8,  h1_h9,  h2_h10, h3_h11,
 			h4_h12, h5_h13, h6_h14, h7_h15;
 
-	h0_h8 = SHR(c0, VECT_BASE);
+	h0_h8 = SHR(c0, BASE_FP448);
 	c0 = AND(c0, mask);
 	c1 = ADD(c1, h0_h8);
 
-	h1_h9 = SHR(c1, VECT_BASE);
+	h1_h9 = SHR(c1, BASE_FP448);
 	c1 = AND(c1, mask);
 	c2 = ADD(c2, h1_h9);
 
-	h2_h10 = SHR(c2, VECT_BASE);
+	h2_h10 = SHR(c2, BASE_FP448);
 	c2 = AND(c2, mask);
 	c3 = ADD(c3, h2_h10);
 
-	h3_h11 = SHR(c3, VECT_BASE);
+	h3_h11 = SHR(c3, BASE_FP448);
 	c3 = AND(c3, mask);
 	c4 = ADD(c4, h3_h11);
 
-	h4_h12 = SHR(c4, VECT_BASE);
+	h4_h12 = SHR(c4, BASE_FP448);
 	c4 = AND(c4, mask);
 	c5 = ADD(c5, h4_h12);
 
-	h5_h13 = SHR(c5, VECT_BASE);
+	h5_h13 = SHR(c5, BASE_FP448);
 	c5 = AND(c5, mask);
 	c6 = ADD(c6, h5_h13);
 
-	h6_h14 = SHR(c6, VECT_BASE);
+	h6_h14 = SHR(c6, BASE_FP448);
 	c6 = AND(c6, mask);
 	c7 = ADD(c7, h6_h14);
 
-	h7_h15 = SHR(c7, VECT_BASE);
+	h7_h15 = SHR(c7, BASE_FP448);
 	c7 = AND(c7, mask);
 
 	/* LOW  h7  ->  h0 */
@@ -567,7 +540,7 @@ void compress_Element_2w_h0h8(__m256i * C)
 	/* HIGH h15  /\  h8 */
 	c0 = ADD(c0,SHUF(h7_h15,0x4E));
 
-	h0_h8 = SHR(c0, VECT_BASE);
+	h0_h8 = SHR(c0, BASE_FP448);
 	c0 = AND(c0, mask);
 	c1 = ADD(c1, h0_h8);
 
@@ -588,7 +561,7 @@ void compress_Element_2w_h0h8(__m256i * C)
  */
 static void compress2_Element_2w_h0h8(__m256i * C, __m256i * D)
 {
-	const uint64_t ones = ((uint64_t) 1 << VECT_BASE) - 1;
+	const uint64_t ones = ((uint64_t) 1 << BASE_FP448) - 1;
 	const __m256i mask = _mm256_set_epi32(0, ones, 0, ones,0, ones, 0, ones);
 
 	__m256i _C_c0 = C[0];                                      __m256i _D_c0 = D[0];
@@ -605,35 +578,35 @@ static void compress2_Element_2w_h0h8(__m256i * C, __m256i * D)
 	__m256i _C_h4_h12, _C_h5_h13;                             __m256i _D_h4_h12,_D_h5_h13;
 	__m256i _C_h6_h14, _C_h7_h15;                             __m256i _D_h6_h14,_D_h7_h15;
 
-	_C_h0_h8 = SHR(_C_c0, VECT_BASE);                         _D_h0_h8 = SHR(_D_c0, VECT_BASE);
+	_C_h0_h8 = SHR(_C_c0, BASE_FP448);                         _D_h0_h8 = SHR(_D_c0, BASE_FP448);
 	_C_c0 = AND(_C_c0, mask);                                 _D_c0 = AND(_D_c0, mask);
 	_C_c1 = ADD(_C_c1, _C_h0_h8);                             _D_c1 = ADD(_D_c1,_D_h0_h8);
 
-	_C_h1_h9 = SHR(_C_c1, VECT_BASE);                         _D_h1_h9 = SHR(_D_c1, VECT_BASE);
+	_C_h1_h9 = SHR(_C_c1, BASE_FP448);                         _D_h1_h9 = SHR(_D_c1, BASE_FP448);
 	_C_c1 = AND(_C_c1, mask);                                 _D_c1 = AND(_D_c1, mask);
 	_C_c2 = ADD(_C_c2, _C_h1_h9);                             _D_c2 = ADD(_D_c2,_D_h1_h9);
 
-	_C_h2_h10 = SHR(_C_c2, VECT_BASE);                        _D_h2_h10 = SHR(_D_c2, VECT_BASE);
+	_C_h2_h10 = SHR(_C_c2, BASE_FP448);                        _D_h2_h10 = SHR(_D_c2, BASE_FP448);
 	_C_c2 = AND(_C_c2, mask);                                 _D_c2 = AND(_D_c2, mask);
 	_C_c3 = ADD(_C_c3, _C_h2_h10);                            _D_c3 = ADD(_D_c3,_D_h2_h10);
 
-	_C_h3_h11 = SHR(_C_c3, VECT_BASE);                        _D_h3_h11 = SHR(_D_c3, VECT_BASE);
+	_C_h3_h11 = SHR(_C_c3, BASE_FP448);                        _D_h3_h11 = SHR(_D_c3, BASE_FP448);
 	_C_c3 = AND(_C_c3, mask);                                 _D_c3 = AND(_D_c3, mask);
 	_C_c4 = ADD(_C_c4, _C_h3_h11);                            _D_c4 = ADD(_D_c4,_D_h3_h11);
 
-	_C_h4_h12 = SHR(_C_c4, VECT_BASE);                        _D_h4_h12 = SHR(_D_c4, VECT_BASE);
+	_C_h4_h12 = SHR(_C_c4, BASE_FP448);                        _D_h4_h12 = SHR(_D_c4, BASE_FP448);
 	_C_c4 = AND(_C_c4, mask);                                 _D_c4 = AND(_D_c4, mask);
 	_C_c5 = ADD(_C_c5, _C_h4_h12);                            _D_c5 = ADD(_D_c5,_D_h4_h12);
 
-	_C_h5_h13 = SHR(_C_c5, VECT_BASE);                        _D_h5_h13 = SHR(_D_c5, VECT_BASE);
+	_C_h5_h13 = SHR(_C_c5, BASE_FP448);                        _D_h5_h13 = SHR(_D_c5, BASE_FP448);
 	_C_c5 = AND(_C_c5, mask);                                 _D_c5 = AND(_D_c5, mask);
 	_C_c6 = ADD(_C_c6, _C_h5_h13);                            _D_c6 = ADD(_D_c6,_D_h5_h13);
 
-	_C_h6_h14 = SHR(_C_c6, VECT_BASE);                        _D_h6_h14 = SHR(_D_c6, VECT_BASE);
+	_C_h6_h14 = SHR(_C_c6, BASE_FP448);                        _D_h6_h14 = SHR(_D_c6, BASE_FP448);
 	_C_c6 = AND(_C_c6, mask);                                 _D_c6 = AND(_D_c6, mask);
 	_C_c7 = ADD(_C_c7, _C_h6_h14);                            _D_c7 = ADD(_D_c7,_D_h6_h14);
 
-	_C_h7_h15 = SHR(_C_c7, VECT_BASE);                        _D_h7_h15 = SHR(_D_c7, VECT_BASE);
+	_C_h7_h15 = SHR(_C_c7, BASE_FP448);                        _D_h7_h15 = SHR(_D_c7, BASE_FP448);
 	_C_c7 = AND(_C_c7, mask);                                 _D_c7 = AND(_D_c7, mask);
 
 	/* LOW  h7  ->  h0 */                                      /* LOW  h7  ->  h0 */
@@ -644,7 +617,7 @@ static void compress2_Element_2w_h0h8(__m256i * C, __m256i * D)
 	/* HIGH h15  /\  h8 */                                     /* HIGH h15  /\  h8 */
 	_C_c0 = ADD(_C_c0, SHUF(_C_h7_h15, 0x4E));                _D_c0 = ADD(_D_c0, SHUF(_D_h7_h15, 0x4E));
 
-	_C_h0_h8 = SHR(_C_c0, VECT_BASE);                         _D_h0_h8 = SHR(_D_c0, VECT_BASE);
+	_C_h0_h8 = SHR(_C_c0, BASE_FP448);                         _D_h0_h8 = SHR(_D_c0, BASE_FP448);
 	_C_c0 = AND(_C_c0, mask);                                 _D_c0 = AND(_D_c0, mask);
 	_C_c1 = ADD(_C_c1, _C_h0_h8);                             _D_c1 = ADD(_D_c1,_D_h0_h8);
 
@@ -664,7 +637,7 @@ static void compress2_Element_2w_h0h8(__m256i * C, __m256i * D)
  */
 static void compressfast_Element_2w_h0h8(__m256i * C)
 {
-	const uint64_t ones = ((uint64_t) 1 << VECT_BASE) - 1;
+	const uint64_t ones = ((uint64_t) 1 << BASE_FP448) - 1;
 	const __m256i mask  = _mm256_set_epi32(0, ones, 0, ones, 0, ones, 0, ones);
 
 	__m256i l0,l1,l2,l3,l4,l5,l6,l7;
@@ -679,14 +652,14 @@ static void compressfast_Element_2w_h0h8(__m256i * C)
 	l6 = AND(C[6],mask);
 	l7 = AND(C[7],mask);
 
-	m0 = SHR(C[0],VECT_BASE);
-	m1 = SHR(C[1],VECT_BASE);
-	m2 = SHR(C[2],VECT_BASE);
-	m3 = SHR(C[3],VECT_BASE);
-	m4 = SHR(C[4],VECT_BASE);
-	m5 = SHR(C[5],VECT_BASE);
-	m6 = SHR(C[6],VECT_BASE);
-	m7 = SHR(C[7],VECT_BASE);
+	m0 = SHR(C[0],BASE_FP448);
+	m1 = SHR(C[1],BASE_FP448);
+	m2 = SHR(C[2],BASE_FP448);
+	m3 = SHR(C[3],BASE_FP448);
+	m4 = SHR(C[4],BASE_FP448);
+	m5 = SHR(C[5],BASE_FP448);
+	m6 = SHR(C[6],BASE_FP448);
+	m7 = SHR(C[7],BASE_FP448);
 
 	C[0] = ADD(l0,ADD(
 			SHUF(m7,0x4E),
@@ -700,3 +673,53 @@ static void compressfast_Element_2w_h0h8(__m256i * C)
 	C[7] = ADD(l7,m6);
 }
 
+/** Util functions */
+
+/**
+ *
+ * @param X_Y
+ */
+static void random_Element_2w_h0h8(argElement_2w X_Y)
+{
+	Element_1w_Fp448 X,Y;
+	random_Element_1w_h0h8(X);
+	random_Element_1w_h0h8(Y);
+	interleave_2w_h0h8(X_Y,X,Y);
+}
+
+/**
+ *
+ * @param X_Y
+ */
+static void print_Element_2w_h0h8(argElement_2w X_Y)
+{
+	Element_1w_Fp448 X,Y;
+	deinterleave_2w_h0h8(X,Y,X_Y);
+	print_Element_1w_h0h8(X);
+	print_Element_1w_h0h8(Y);
+}
+
+/**
+ *
+ * @param X0_X1
+ * @param Y0_Y1
+ * @return
+ */
+static int compare_Element_2w_h0h8(argElement_2w X0_X1, argElement_2w Y0_Y1)
+{
+	Element_1w_Fp448 X0,X1;
+	Element_1w_Fp448 Y0,Y1;
+	deinterleave_2w_h0h8(X0,X1,X0_X1);
+	deinterleave_2w_h0h8(Y0,Y1,Y0_Y1);
+	return compare_Element_1w_h0h8(X0, Y0) && compare_Element_1w_h0h8(X1, Y1);
+}
+
+static __m256i * new_Element_2w_h0h8()
+{
+	return (__m256i*) allocate_bytes((NUM_DIGITS_FP448/2) * sizeof(__m256i));
+}
+
+static void clean_Element_2w_h0h8(__m256i * A)
+{
+	deallocate_bytes((void*)A);
+}

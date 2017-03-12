@@ -1,7 +1,5 @@
 #include <eddsa_avx2.h>
-#include <element_1w_h0h8.h>
-#include <element_2w_h0h8.h>
-#include <element_4w_h0h8.h>
+#include <fp.h>
 
 int main()
 {
@@ -26,11 +24,27 @@ int main()
 	ECDHX.X448.shared(aliceShared,bobSession,alicePrivate);
 	ECDHX.X448.shared(bobShared,aliceSession,bobPrivate);
 
-	Element_1w_H0H8 c,a,b;
-	Element_2w_H0H8 C,A,B;
-	Element_4w_H0H8 CC,AA,BB;
-	Fp_Arith._1way.add(c,a,b);
-	Fp_Arith._2way.mul(C,A,B);
-	Fp_Arith._4way.mul(CC,AA,BB);
+	argElement_1w a1 = Fp.fp448._1way.new();
+	argElement_1w b1 = Fp.fp448._1way.new();
+	argElement_1w c1 = Fp.fp448._1way.new();
+
+	argElement_2w a2 = Fp.fp448._2way.new();
+	argElement_2w b2 = Fp.fp448._2way.new();
+	argElement_2w c2 = Fp.fp448._2way.new();
+
+	argElement_4w a4 = Fp.fp448._4way.new();
+	argElement_4w b4 = Fp.fp448._4way.new();
+	argElement_4w c4 = Fp.fp448._4way.new();
+
+	Fp.fp448._1way.mul(c1,a1,b1);
+	Fp.fp448._2way.mul(c2,a2,b2);
+	Fp.fp448._4way.mul(c4,a4,b4);
+
+	Fp.fp448._1way.add(c1,a1,b1);
+
+	Fp.fp448._1way.clean(a1);	Fp.fp448._1way.clean(b1);	Fp.fp448._1way.clean(c1);
+	Fp.fp448._2way.clean(a2);	Fp.fp448._2way.clean(b2);	Fp.fp448._2way.clean(c2);
+	Fp.fp448._4way.clean(a4);	Fp.fp448._4way.clean(b4);	Fp.fp448._4way.clean(c4);
+
 	return 0;
 }

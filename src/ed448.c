@@ -1,7 +1,6 @@
 #include "ecc.c"
 #include "sha3.c"
 
-
 /**
  *
  * @param public_key
@@ -210,7 +209,7 @@ static int ed448_verify(
 	const int size_prefix = 10;
 	Ed448_Digest H_RAM,pre_hash_message;
 	PointXYZT_2w_H0H8 A;
-	STR_BYTES Q;
+	Ed448_Signature Q;
 	hashState hash;
 	unsigned char prefix[10] = "SigEd448";
 

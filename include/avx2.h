@@ -6,13 +6,6 @@
 
 #include <immintrin.h>
 
-#define ALIGN_BYTES 32
-#ifdef __INTEL_COMPILER
-#define ALIGN __declspec(align(ALIGN_BYTES))
-#else
-#define ALIGN __attribute__ ((aligned (ALIGN_BYTES)))
-#endif
-
 #define ZERO            _mm256_setzero_si256()
 #define LOAD(X)         _mm256_load_si256((__m256i*) X)
 #define STORE(X,Y)      _mm256_store_si256((__m256i*) X, Y)

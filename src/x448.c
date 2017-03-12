@@ -86,7 +86,7 @@ static inline void cmov(int bit, uint64_t * const pX,uint64_t * const pY)
 static inline void perm4E(__m256i * C)
 {
 	int i=0;
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 		C[i] = PERM64(C[i],0x4E);
 }
 
@@ -98,21 +98,21 @@ static inline void perm4E(__m256i * C)
  */
 static inline void step_ladder(
 		uint64_t *__restrict key,
-		argElement_2w_H0H8 X2X3,
-		argElement_2w_H0H8 Z2Z3)
+		argElement_2w X2X3,
+		argElement_2w Z2Z3)
 {
 	int i = 0, j = 0, s = 0;
 	uint64_t prev = 0;
 	const uint64_t param_a24 = 39081;
 	const __m256i a24 = _mm256_set1_epi64x(param_a24);
-	ALIGN __m256i buffer[NUM_WORDS_128B_CURVE448*4];
-	argElement_2w_H0H8 X1 = buffer+NUM_WORDS_128B_CURVE448*0;
-	argElement_2w_H0H8 t0 = buffer+NUM_WORDS_128B_CURVE448*1;
-	argElement_2w_H0H8 t1 = buffer+NUM_WORDS_128B_CURVE448*2;
-	argElement_2w_H0H8 t2 = buffer+NUM_WORDS_128B_CURVE448*3;
-	argElement_2w_H0H8 _2P = (argElement_2w_H0H8)CONST_2P_2P_H0H8;
+	ALIGN __m256i buffer[(NUM_DIGITS_FP448/2)*4];
+	argElement_2w X1 = buffer+(NUM_DIGITS_FP448/2)*0;
+	argElement_2w t0 = buffer+(NUM_DIGITS_FP448/2)*1;
+	argElement_2w t1 = buffer+(NUM_DIGITS_FP448/2)*2;
+	argElement_2w t2 = buffer+(NUM_DIGITS_FP448/2)*3;
+	argElement_2w _2P = (argElement_2w)CONST_2P_2P_H0H8;
 
-	for (s = 0; s < NUM_WORDS_128B_CURVE448; s++)
+	for (s = 0; s < (NUM_DIGITS_FP448/2); s++)
 	{
 		X1[s] = X2X3[s];
 	}
@@ -137,7 +137,7 @@ static inline void step_ladder(
 			compress_Element_2w_h0h8(t0);
 
 			/* t1:   [CB|DA] = Perm([DA|CB])    */
-			for (s = 0; s < NUM_WORDS_128B_CURVE448; s++)
+			for (s = 0; s < (NUM_DIGITS_FP448/2); s++)
 			{
 				t1[s] = PERM64(t0[s], 0x4E);
 			}
@@ -149,7 +149,7 @@ static inline void step_ladder(
 			__m256i mask = _mm256_set1_epi32((uint32_t) swap << 2);
 			__m256i maskbit0 = XOR(perm, mask);
 			__m256i maskbit1 = PERM64(maskbit0, 0x4E);
-			for (s = 0; s < NUM_WORDS_128B_CURVE448; s++)
+			for (s = 0; s < (NUM_DIGITS_FP448/2); s++)
 			{
 				X2X3[s] = _mm256_permutevar8x32_epi32(X2X3[s],maskbit0);
 				Z2Z3[s] = _mm256_permutevar8x32_epi32(Z2Z3[s],maskbit1);
@@ -157,7 +157,7 @@ static inline void step_ladder(
 #elif SWAP_METHOD == LOGIC
 			/* Using logic arithmetic instructions    */
             const __m256i mask = _mm256_set1_epi64x(-swap);
-            for (s = 0; s < NUM_WORDS_128B_CURVE448; s++)
+            for (s = 0; s < (NUM_DIGITS_FP448/2); s++)
             {
                 __m256i U = PERM128(X2X3[s],Z2Z3[s],0x21);
                 __m256i V = BLEND32(X2X3[s],Z2Z3[s],0xF0);
@@ -179,7 +179,7 @@ static inline void step_ladder(
 
 			/* t0:  [  A | t0 ] = BLEND( [ A | C ] , [ __ | t0 ] ) */
 			/* t1:  [  B | t1 ] = BLEND( [ B | D ] , [ __ | t1 ] ) */
-			for (s = 0; s < NUM_WORDS_128B_CURVE448; s++)
+			for (s = 0; s < (NUM_DIGITS_FP448/2); s++)
 			{
 				t0[s] = BLEND32(X2X3[s], t0[s], 0xF0);
 				t1[s] = BLEND32(Z2Z3[s], t1[s], 0xF0);
@@ -197,7 +197,7 @@ static inline void step_ladder(
 			compress2_Element_2w_h0h8(t0, t1);
 
 			/* t2:  [ AA |  1 ] = BLEND( [ AA | t0 ] , [ 0 | 0 ] ) */
-			for (s = 0; s < NUM_WORDS_128B_CURVE448; s++)
+			for (s = 0; s < (NUM_DIGITS_FP448/2); s++)
 			{
 				t2[s] = BLEND32(t0[s],ZERO,0xF0);
 			}
@@ -213,7 +213,7 @@ static inline void step_ladder(
 			/* t1: [  F | __ ] = [a24E| __ ] + [ AA | t0 ]  */
 			/* t2: [  E | t0 ] = BLEND( [ E | _ ] , [ AA | t0 ] ) */
 			/* t1: [  F | X1 ] = BLEND( [ F | _ ] , [ __ | X1 ] ) */
-			for (s = 0; s < NUM_WORDS_128B_CURVE448; s++)
+			for (s = 0; s < (NUM_DIGITS_FP448/2); s++)
 			{
 				t2[s] = ADD(t0[s],SUB(_2P[s],t1[s]));
 				t1[s] = ADD(MUL(t2[s], a24),t0[s]);
@@ -247,9 +247,9 @@ static int x448_shared(
 )  
 {
 	uint64_t save;
-	Element_2w_H0H8 QzPz={ZERO};
-	Element_2w_H0H8 QxPx={ZERO};
-	Element_1w_H0H8 Z, X, invZ, X1;
+	Element_2w_Fp448 QzPz={ZERO};
+	Element_2w_Fp448 QxPx={ZERO};
+	Element_1w_Fp448 Z, X, invZ, X1;
 
 	_mm256_zeroupper();
 	/** clamp function */

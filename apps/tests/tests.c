@@ -4,11 +4,12 @@
 #include <string.h>
 #include <random.h>
 
+#include <fp.h>
+#include <eddsa_avx2.h>
+
 #define TEST_TIMES 50000
 
-#include "test_Element_1w_h0h8.c"
-#include "test_Element_2w_h0h8.c"
-#include "test_Element_4w_h0h8.c"
+#include "test_fp.c"
 #include "test_x448.c"
 #include "test_ed448.c"
 
@@ -21,9 +22,7 @@ int main(void)
 	printf("==========================================================\n\n");
 	printf("===== Testing =====\n");
 
-	test_Element_1w_h0h8();
-	test_Element_2w_h0h8();
-	test_Element_4w_h0h8();
+	test_fp(&Fp.fp448);
 	test_eddsa();
 	test_x448();
 

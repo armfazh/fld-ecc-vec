@@ -1,4 +1,3 @@
-#include <eddsa_avx2.h>
 
 #define LABEL "Test passed? [%s]\n"
 #define OK "Ok"

@@ -1,39 +1,9 @@
-#include "element_1w_h0h8.c"
-#include "element_2w_h0h8.c"
-#include "element_4w_h0h8.c"
-
+#include "fp.c"
 #include "ecc.h"
 
 #include "table_sign_w4_3675k.h"
 #include "table_verf_w7.h"
 #include <string.h>
-
-
-const struct _struct_Fp_Arith Fp_Arith = {
-		._1way = {
-				.add = add_Element_1w_h0h8,
-				.sub = sub_Element_1w_h0h8,
-				.mul = mul_Element_1w_h0h8,
-				.sqr = sqr_Element_1w_h0h8,
-				.inv = inv_Element_1w_h0h8,
-				.sqrt = sqrt_Element_1w_h0h8,
-				.cred = compress_Element_1w_h0h8
-		},
-		._2way = {
-				.add = add_Element_2w_h0h8,
-				.sub = sub_Element_2w_h0h8,
-				.mul = mul_Element_2w_h0h8,
-				.sqr = sqr_Element_2w_h0h8,
-				.cred = compress_Element_2w_h0h8
-		},
-		._4way = {
-				.add = add_Element_4w_h0h8,
-				.sub = sub_Element_4w_h0h8,
-				.mul = mul_Element_4w_h0h8,
-				.sqr = sqr_Element_4w_h0h8,
-				.cred = compress_Element_4w_h0h8
-		}
-};
 
 
 /**
@@ -325,7 +295,7 @@ static void query_table_fold4w4_448(Point_precmp_4way *P, const uint8_t * table,
 	 * otherwise
 	 *    _2dYX <--  _2dYX + P
 	 */
-	for(i=0;i<NUM_WORDS_CURVE448;i++)
+	for(i=0;i<NUM_DIGITS_FP448;i++)
 	{
 		P->_2dYX[i] = ADD( XOR(P->_2dYX[i],signs), SUB(_P[i],signs));
 	}
@@ -361,11 +331,11 @@ void _4way_mixadd_448(PointXYZT_4way *Q, Point_precmp_4way *P)
 	__m256i * const addY2X2 = P->addYX;
 	__m256i * const subY2X2 = P->subYX;
 	__m256i * const dT2 = P->_2dYX;
-	Element_4w_H0H8 A,B,C,D;
-	argElement_4w_H0H6 addY1X1 = C, subY1X1 = D;
+	Element_4w_Fp448 A,B,C,D;
+	argElement_4w addY1X1 = C;
+	argElement_4w subY1X1 = D;
 
-	Fp_Arith._4way.sub(subY1X1,Y1,X1);
-//	sub_Element_4w_h0h8(subY1X1,Y1,X1);
+	sub_Element_4w_h0h8(subY1X1,Y1,X1);
 	mul_Element_4w_h0h8(A,subY1X1,subY2X2);
 	add_Element_4w_h0h8(addY1X1,Y1,X1);
 	mul_Element_4w_h0h8(B,addY1X1,addY2X2);
@@ -442,12 +412,12 @@ static const uint64_t CONST_2_to_35P_ED448[32] = {
 static void isogeny_2w_H0H8(PointXYZT_2w_H0H8 *P)
 {
 	int i;
-	argElement_2w_H0H8 _2_to_35P = (argElement_2w_H0H8)CONST_2_to_35P_ED448;
-	argElement_2w_H0H8 XY = P->XY;
-	argElement_2w_H0H8 TZ = P->TZ;
-	Element_2w_H0H8 HF,EC,EG,_FH;
+	argElement_2w _2_to_35P = (argElement_2w)CONST_2_to_35P_ED448;
+	argElement_2w XY = P->XY;
+	argElement_2w TZ = P->TZ;
+	Element_2w_Fp448 HF,EC,EG,_FH;
 
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 	{
 		EC[i] = PERM64(TZ[i],0xEE);
 	}
@@ -455,7 +425,7 @@ static void isogeny_2w_H0H8(PointXYZT_2w_H0H8 *P)
 	mul_Element_2w_h0h8(TZ,TZ,EC);		/* [T|Z] = [ TZ | Z^2 ] = [ XY | Z^2 ] */
 	add_Element_2w_h0h8(EC,TZ,TZ);		/* [E|C] = [2XY | 2Z^2] = [ 2(X+Y)^2-A-B | 2Z^2 ] */
 
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 	{
 		__m256i CB,BA,AA,_H,_FG,_B;
 		BA = PERM64(XY[i], 0x4E);			/* [  B  |  A ] */
@@ -470,7 +440,7 @@ static void isogeny_2w_H0H8(PointXYZT_2w_H0H8 *P)
 	}
 	compress2_Element_2w_h0h8(_FH,EG);
 
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 	{
 		HF[i] = PERM64(_FH[i],0x4E);
 	}
@@ -504,7 +474,7 @@ static void point_multiplication_fold4w4(uint8_t *rB, uint8_t *r)
 	Point_precmp_4way P;
 	ALIGN uint64_t K[112];
 	ALIGN uint64_t S[112];
-	const Element_4w_H0H8 one_half = {
+	const Element_4w_Fp448 one_half = {
 			SET1_64(0x0000000),SET1_64(0xfffffff),
 			SET1_64(0x0000000),SET1_64(0xfffffff),
 			SET1_64(0x0000000),SET1_64(0xfffffff),
@@ -517,7 +487,7 @@ static void point_multiplication_fold4w4(uint8_t *rB, uint8_t *r)
  	recoding_signed_scalar_fold4w4_448(S,K,r);
 
 	Q.Z[0] = SET1_64(2);
-	for(i=1;i<NUM_WORDS_CURVE448;i++)
+	for(i=1;i<NUM_DIGITS_FP448;i++)
 	{
 		Q.Z[i] = ZERO;
 	}
@@ -528,7 +498,7 @@ static void point_multiplication_fold4w4(uint8_t *rB, uint8_t *r)
 	compress_Element_4w_h0h8(Q.X);
 	compress_Element_4w_h0h8(Q.Y);
 	mul_Element_4w_h0h8(Q.T,Q.X,Q.Y);							compress_Element_4w_h0h8(Q.T);
-	mul_Element_4w_h0h8(Q.T,Q.T,(argElement_4w_H0H6)one_half);	compress_Element_4w_h0h8(Q.T);
+	mul_Element_4w_h0h8(Q.T,Q.T,(argElement_4w)one_half);	compress_Element_4w_h0h8(Q.T);
 
 	for(i=1;i<NUM_LUT;i++)
 	{
@@ -542,7 +512,7 @@ static void point_multiplication_fold4w4(uint8_t *rB, uint8_t *r)
 	isogeny_2w_H0H8(&Q0);
 
 	/* convert to affine coordinates */
-	Element_1w_H0H8 Z,X,Y,invZ;
+	Element_1w_Fp448 Z,X,Y,invZ;
 	deinterleave_2w_h0h8(X,Y,Q0.XY);
 	deinterleave_2w_h0h8(invZ,Z,Q0.TZ);
 	invsqrt_Element_1w_h0h8(invZ,Z,1);
@@ -593,7 +563,7 @@ static int point_decoding_448(PointXYZT_2w_H0H8 * P, const uint8_t * A)
 	 * goldilocks curve.
 	 *     d = -39081
 	 */
-	const Element_1w_H0H8 param_curve_d = {
+	const Element_1w_Fp448 param_curve_d = {
 			0xfff6756,0xffffffe,
 			0xfffffff,0xfffffff,
 			0xfffffff,0xfffffff,
@@ -603,10 +573,10 @@ static int point_decoding_448(PointXYZT_2w_H0H8 * P, const uint8_t * A)
 			0xfffffff,0xfffffff,
 			0xfffffff,0xfffffff
 	};
-	Element_1w_H0H8 X,Y,Z,T;
-	Element_1w_H0H8 a,b,c,d;
-	Element_1w_H0H8 u,v,v2;
-	Element_1w_H0H8 uv,u2,u3v,u5v,u5v3,u5v3_exp;
+	Element_1w_Fp448 X,Y,Z,T;
+	Element_1w_Fp448 a,b,c,d;
+	Element_1w_Fp448 u,v,v2;
+	Element_1w_Fp448 uv,u2,u3v,u5v,u5v3,u5v3_exp;
 	Ed448_PublicKey buf;
 
 	memcpy(buf,A,ED448_KEY_SIZE_BYTES_PARAM);
@@ -618,7 +588,7 @@ static int point_decoding_448(PointXYZT_2w_H0H8 * P, const uint8_t * A)
 
 	copy_Element_1w_h0h8(u,Y);
 	sqr_Element_1w_h0h8(u); /* y^2 */
-	mul_Element_1w_h0h8(v,u,(argElement_1w_H0H8)param_curve_d);	compress_Element_1w_h0h8(v);/* dy^2 */
+	mul_Element_1w_h0h8(v,u,(argElement_1w)param_curve_d);	compress_Element_1w_h0h8(v);/* dy^2 */
 	u[0] = u[0]-1;/* u=y^2-1 */
 	v[0] = v[0]-1;/* v=dy^2-1 */
 
@@ -642,11 +612,7 @@ static int point_decoding_448(PointXYZT_2w_H0H8 * P, const uint8_t * A)
 	sqr_Element_1w_h0h8(uv);   	/*   x^2 */
 	mul_Element_1w_h0h8(uv,uv,v);	compress_Element_1w_h0h8(uv); /* v*x^2 */
 
-	STR_BYTES buffer0,buffer1;
-	singleH0H8_To_str_bytes(buffer0,uv);
-	singleH0H8_To_str_bytes(buffer1,u);
-
-	if(compare_bytes(buffer0,buffer1,SIZE_ELEMENT_BYTES) != 0)
+	if(compare_Element_1w_h0h8(uv,u) != 0)
 	{
 		/* no square root exists */
 		return -1;
@@ -802,12 +768,12 @@ static const uint64_t CONST_param_curve_2d_02 [32] = {
 void _1way_doubling_2w_H0H8(PointXYZT_2w_H0H8 * P)
 {
 	int i;
-    argElement_2w_H0H8 _2_to_35P = (argElement_2w_H0H8)CONST_2_to_35P_ED448;
-	argElement_2w_H0H8 XY = P->XY;
-	argElement_2w_H0H8 TZ = P->TZ;
-    Element_2w_H0H8 EG,HF,FH;
+    argElement_2w _2_to_35P = (argElement_2w)CONST_2_to_35P_ED448;
+	argElement_2w XY = P->XY;
+	argElement_2w TZ = P->TZ;
+    Element_2w_Fp448 EG,HF,FH;
 
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 	{
 		EG[i] = PERM64(TZ[i],0xEE);
 	}
@@ -815,7 +781,7 @@ void _1way_doubling_2w_H0H8(PointXYZT_2w_H0H8 * P)
 	mul_Element_2w_h0h8(TZ,TZ,EG);		/* [T|Z] = [ TZ | Z^2 ] = [ XY | Z^2 ] */
 	add_Element_2w_h0h8(TZ,TZ,TZ);		/* [E|C] = [2XY | 2Z^2] = [ 2(X+Y)^2-A-B | 2Z^2 ] */
 
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 	{
 		__m256i _BG,AC,_0B,BA;
 		BA    = PERM64(XY[i], 0x4E);			/* [B|A] */
@@ -829,7 +795,7 @@ void _1way_doubling_2w_H0H8(PointXYZT_2w_H0H8 * P)
 	}
 	compress2_Element_2w_h0h8(HF,EG);
 
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 	{
 		FH[i] = PERM64(HF[i],0x4E);
 	}
@@ -846,13 +812,14 @@ void _1way_doubling_2w_H0H8(PointXYZT_2w_H0H8 * P)
 void _1way_fulladd_2w_H0H8(PointXYZT_2w_H0H8 *Q, PointXYZT_2w_H0H8 *P)
 {
     int i;
-	argElement_2w_H0H8 param_curve_2d_02 = (argElement_2w_H0H8)CONST_param_curve_2d_02;
-    argElement_2w_H0H8 _2_to_35P = (argElement_2w_H0H8)CONST_2_to_35P_ED448;
-    argElement_2w_H0H8 XY1 = Q->XY;		argElement_2w_H0H8 XY2 = P->XY;
-    argElement_2w_H0H8 TZ1 = Q->TZ;		argElement_2w_H0H8 TZ2 = P->TZ;
-	Element_2w_H0H8 _AB,CD,EG,HF;
-	Element_2w_H0H8 FH;
-	argElement_4w_H0H6 _subYXaddYX1 = EG,_subYXaddYX2 = HF;
+	argElement_2w param_curve_2d_02 = (argElement_2w)CONST_param_curve_2d_02;
+    argElement_2w _2_to_35P = (argElement_2w)CONST_2_to_35P_ED448;
+    argElement_2w XY1 = Q->XY;		argElement_2w XY2 = P->XY;
+    argElement_2w TZ1 = Q->TZ;		argElement_2w TZ2 = P->TZ;
+	Element_2w_Fp448 _AB,CD,EG,HF;
+	Element_2w_Fp448 FH;
+	argElement_4w _subYXaddYX1 = EG;
+	argElement_4w _subYXaddYX2 = HF;
 
     subadd_Element_2w_h0h8(_subYXaddYX1,XY1,0); 			/* [-sub1|add1] = [ -(Y1-X1) | Y1+X1 ] */
     subadd_Element_2w_h0h8(_subYXaddYX2,XY2,1); 			/* [ sub2|add2] = [   Y2-X2  | Y2+X2 ] */
@@ -863,7 +830,7 @@ void _1way_fulladd_2w_H0H8(PointXYZT_2w_H0H8 *Q, PointXYZT_2w_H0H8 *P)
 	compress_Element_2w_h0h8(CD);
 	mul_Element_2w_h0h8(CD,CD,param_curve_2d_02);			/* [C|D] = [ 2dT1T2 | 2Z1Z2 ] */
 
-    for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+    for(i=0;i<(NUM_DIGITS_FP448/2);i++)
     {
         __m256i _AC = _mm256_permute2x128_si256(_AB[i],CD[i],0x20);
         __m256i BD  = _mm256_permute2x128_si256(_AB[i],CD[i],0x31);
@@ -872,7 +839,7 @@ void _1way_fulladd_2w_H0H8(PointXYZT_2w_H0H8 *Q, PointXYZT_2w_H0H8 *P)
     }
     compress2_Element_2w_h0h8(EG,HF);
 
-    for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+    for(i=0;i<(NUM_DIGITS_FP448/2);i++)
     {
         FH[i] = PERM64(HF[i],0x4E);
     }
@@ -890,19 +857,19 @@ void _1way_fulladd_2w_H0H8(PointXYZT_2w_H0H8 *Q, PointXYZT_2w_H0H8 *P)
 void _1way_mixadd_2w_H0H8(PointXYZT_2w_H0H8 *Q, PointXYZT_precompute_2w_H0H8 *P)
 {
 	int i;
-    argElement_2w_H0H8 _2_to_35P = (argElement_2w_H0H8)CONST_2_to_35P_ED448;
-	argElement_2w_H0H8 XY = Q->XY;
-	argElement_2w_H0H8 TZ = Q->TZ;
-	argElement_2w_H0H8 subYXaddYX2 = P->subaddYX;
-	argElement_2w_H0H8 _2dT_2Z = P->_2dT_2Z;
-	Element_2w_H0H8 _AB,CD,EG,HF,FH;
-	argElement_4w_H0H6 _subYXaddYX1 = EG;
+    argElement_2w _2_to_35P = (argElement_2w)CONST_2_to_35P_ED448;
+	argElement_2w XY = Q->XY;
+	argElement_2w TZ = Q->TZ;
+	argElement_2w subYXaddYX2 = P->subaddYX;
+	argElement_2w _2dT_2Z = P->_2dT_2Z;
+	Element_2w_Fp448 _AB,CD,EG,HF,FH;
+	argElement_4w _subYXaddYX1 = EG;
 
 	subadd_Element_2w_h0h8(_subYXaddYX1,XY,0); 			/* [-sub1|add1] = [ -Y1+X1 | Y1+X1 ] */
 	mul_Element_2w_h0h8(_AB,_subYXaddYX1,subYXaddYX2);	/* [-A|B] = [ (-Y1+X1)(Y2-X2) | (Y1+X1)(Y2+X2) ] */
 	mul_Element_2w_h0h8(CD,TZ,_2dT_2Z); 				/* [C|D] = [ 2dT1T2 | 2Z1Z2 ] */
 
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 	{
 		__m256i _AC = _mm256_permute2x128_si256(_AB[i],CD[i],0x20);
 		__m256i BD  = _mm256_permute2x128_si256(_AB[i],CD[i],0x31);
@@ -911,7 +878,7 @@ void _1way_mixadd_2w_H0H8(PointXYZT_2w_H0H8 *Q, PointXYZT_precompute_2w_H0H8 *P)
 	}
 	compress2_Element_2w_h0h8(EG,HF);
 	
-	for(i=0;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
 	{
 		FH[i] = PERM64(HF[i],0x4E);
 	}
@@ -930,7 +897,7 @@ static void precompute_points(PointXYZT_precompute_2w_H0H8 * table, PointXYZT_2w
 	const int num = (1<<(OMEGA_DYNAMIC-2));
 	int i=0;
 
-	argElement_2w_H0H8 param_curve_2d_02 = (argElement_2w_H0H8)CONST_param_curve_2d_02;
+	argElement_2w param_curve_2d_02 = (argElement_2w)CONST_param_curve_2d_02;
 	PointXYZT_2w_H0H8 iP;
 	PointXYZT_precompute_2w_H0H8 _2P_precmp;
 
@@ -939,18 +906,18 @@ static void precompute_points(PointXYZT_precompute_2w_H0H8 * table, PointXYZT_2w
 	_1way_doubling_2w_H0H8(P);
 
 	subadd_Element_2w_h0h8(_2P_precmp.subaddYX,P->XY,1);
-	mul_Element_2w_h0h8(_2P_precmp._2dT_2Z,P->TZ,(argElement_2w_H0H8)param_curve_2d_02);
+	mul_Element_2w_h0h8(_2P_precmp._2dT_2Z,P->TZ,(argElement_2w)param_curve_2d_02);
 	compress2_Element_2w_h0h8(_2P_precmp.subaddYX,_2P_precmp._2dT_2Z);
 
 	subadd_Element_2w_h0h8(table[0].subaddYX,iP.XY,1);
-	mul_Element_2w_h0h8(table[0]._2dT_2Z,iP.TZ,(argElement_2w_H0H8)param_curve_2d_02);
+	mul_Element_2w_h0h8(table[0]._2dT_2Z,iP.TZ,(argElement_2w)param_curve_2d_02);
 	compress2_Element_2w_h0h8(table[0].subaddYX,table[0]._2dT_2Z);
 
 	for(i=1;i<num;i++)
 	{
 		_1way_mixadd_2w_H0H8(&iP,&_2P_precmp);
 		subadd_Element_2w_h0h8(table[i].subaddYX,iP.XY,1);
-		mul_Element_2w_h0h8(table[i]._2dT_2Z,iP.TZ,(argElement_2w_H0H8)param_curve_2d_02);
+		mul_Element_2w_h0h8(table[i]._2dT_2Z,iP.TZ,(argElement_2w)param_curve_2d_02);
 		compress2_Element_2w_h0h8(table[i].subaddYX,table[i]._2dT_2Z);
 	}
 }
@@ -962,7 +929,7 @@ static void precompute_points(PointXYZT_precompute_2w_H0H8 * table, PointXYZT_2w
  */
 static void read_point(PointXYZT_precompute_2w_H0H8 * P, int8_t index)
 {
-	const Element_1w_H0H8 two = {
+	const Element_1w_Fp448 two = {
 			0x2,0x0,0x0,0x0,
 			0x0,0x0,0x0,0x0,
 			0x0,0x0,0x0,0x0,
@@ -971,7 +938,7 @@ static void read_point(PointXYZT_precompute_2w_H0H8 * P, int8_t index)
 	abs_index_r >>= 1;
 
 	const uint64_t * ptr_point = &TableVerification_static_w7[3*7*abs_index_r];
-	Element_1w_H0H8 add,sub,_2dT;
+	Element_1w_Fp448 add,sub,_2dT;
 
 	str_bytes_To_Element_1w_h0h8( add,(uint8_t*)(ptr_point+0));
 	str_bytes_To_Element_1w_h0h8( sub,(uint8_t*)(ptr_point+7));
@@ -987,7 +954,7 @@ static void read_point(PointXYZT_precompute_2w_H0H8 * P, int8_t index)
 	{
 		interleave_2w_h0h8(P->subaddYX,sub,add);
 	}
-	interleave_2w_h0h8(P->_2dT_2Z,_2dT,(argElement_1w_H0H8)two);
+	interleave_2w_h0h8(P->_2dT_2Z,_2dT,(argElement_1w)two);
 }
 
 /**
@@ -1022,7 +989,7 @@ static void double_point_multiplication_448(uint8_t *sB_hA, const uint8_t *s, ui
 
 	precompute_points(tableA,A);
 
-	for(i=1;i<NUM_WORDS_128B_CURVE448;i++)
+	for(i=1;i<(NUM_DIGITS_FP448/2);i++)
 	{
 		Q.XY[i] = ZERO;
 		Q.TZ[i] = ZERO;
@@ -1050,7 +1017,7 @@ static void double_point_multiplication_448(uint8_t *sB_hA, const uint8_t *s, ui
 			{
 				int ii=0;
 				PointXYZT_precompute_2w_H0H8 _P;
-				for(ii=0;ii<NUM_WORDS_128B_CURVE448;ii++)
+				for(ii=0;ii<(NUM_DIGITS_FP448/2);ii++)
 				{
 					_P.subaddYX[ii] = _mm256_permute4x64_epi64(P->subaddYX[ii], 0x4E);
 				}
@@ -1069,7 +1036,7 @@ static void double_point_multiplication_448(uint8_t *sB_hA, const uint8_t *s, ui
 	isogeny_2w_H0H8(&Q);
 
 	/* convert to affine coordinates */
-	Element_1w_H0H8 invZ,Z,X,Y;
+	Element_1w_Fp448 invZ,Z,X,Y;
 	deinterleave_2w_h0h8(X,Y,Q.XY);
 	deinterleave_2w_h0h8(invZ,Z,Q.TZ);
 	invsqrt_Element_1w_h0h8(invZ,Z,1);

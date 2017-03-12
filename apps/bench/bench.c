@@ -3,9 +3,10 @@
 #include <time.h>
 #include <stdio.h>
 
-#include "bench_Element_1w_h0h8.c"
-#include "bench_Element_2w_h0h8.c"
-#include "bench_Element_4w_h0h8.c"
+#include <fp.h>
+#include <eddsa_avx2.h>
+
+#include "bench_fp.c"
 #include "bench_ecc.c"
 #include "bench_x448.c"
 #include "bench_ed448.c"
@@ -19,9 +20,7 @@ int main(void)
 	printf("==========================================================\n\n");
 	printf("===== Benchmarking Ed448 =====\n");
 
-	bench_element_1w_h0h8();
-	bench_element_2w_h0h8();
-	bench_element_4w_h0h8();
+	bench_fp(&Fp.fp448);
 	bench_ecc();
 	bench_x448();
 	bench_ed448();
