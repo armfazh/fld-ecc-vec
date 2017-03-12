@@ -237,7 +237,7 @@ static void test_diffiehellman()
 
 static void test_x448()
 {
-	printf("===== X448 =====\n");
+	printf("==== X448 vectors ====\n");
 	test_ietf_cfrg();
 	test_diffiehellman();
 }

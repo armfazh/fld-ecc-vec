@@ -605,3 +605,4 @@ static void clean_Element_4w_h0h8(__m256i * A)
 {
 	deallocate_bytes((void*)A);
 }
+

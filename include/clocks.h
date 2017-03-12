@@ -85,7 +85,7 @@ do{\
 \
 	unsigned i;\
 	uint64_t start, end;\
-	const unsigned iterations = 100000;\
+	const unsigned iterations = 10000;\
 	uint64_t start_c, end_c;\
 \
 	/* Load the caches*/\
@@ -103,7 +103,7 @@ do{\
 \
 	printf("%lu us, %g op/s, %lu cycles/op\n",\
 			(unsigned long) ((end - start) / iterations),\
-			iterations*1000000. / (end - start),\
+			iterations / (end - start),\
 			(unsigned long)((end_c-start_c)/iterations) );\
 }while(0)
 

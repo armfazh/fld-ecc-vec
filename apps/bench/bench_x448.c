@@ -1,6 +1,6 @@
 static void bench_x448()
 {
-	const int BENCH = 250;
+	const int BENCH = 100;
 	ECDH_X448_KEY secret_key;
 	ECDH_X448_KEY public_key;
 	ECDH_X448_KEY shared_secret;

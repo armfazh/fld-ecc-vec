@@ -47,10 +47,10 @@ static void bench_Element_Nw(const struct _struct_Fp_Nway * fp)
 
 static void bench_fp(const struct _struct_Fp_Arith * field)
 {
-	printf("===== 1-way AVX2 =====\n");
+	printf("======  1-way AVX2  ======\n");
 	bench_Element_1w(&field->_1way);
-	printf("===== 2-way AVX2 =====\n");
+	printf("======  2-way AVX2  ======\n");
 	bench_Element_Nw(&field->_2way);
-	printf("===== 4-way AVX2 =====\n");
+	printf("======  4-way AVX2  ======\n");
 	bench_Element_Nw(&field->_4way);
 }

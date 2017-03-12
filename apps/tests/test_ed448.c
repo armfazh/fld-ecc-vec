@@ -78,7 +78,7 @@ static void test_vector(const EdDSA_TestData * test)
 
 static void test_eddsa()
 {
-    printf("===== EdDSA testing =====\n");
+    printf("=== EdDSA vectors ====\n");
     int i=0;
     for(i=0; i<NUM_TEST_VECTORS; i++)
     {
