@@ -601,8 +601,3 @@ static __m256i * new_Element_4w_h0h8()
 	return (__m256i*) allocate_bytes(NUM_DIGITS_FP448 * sizeof(__m256i));
 }
 
-static void clean_Element_4w_h0h8(__m256i * A)
-{
-	deallocate_bytes((void*)A);
-}
-

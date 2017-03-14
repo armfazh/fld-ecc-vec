@@ -1,3 +1,5 @@
+#include <fp.h>
+
 static void test_Element_1w(const struct _struct_Fp_1way * fp)
 {
 	int64_t i;
@@ -125,13 +127,25 @@ static void test_Element_Nw(const struct _struct_Fp_Nway * fp)
 	fp->clean(e);
 }
 
-static void test_fp(const struct _struct_Fp_Arith * field)
+static void test_fp25519()
 {
 	printf("===== 1-way AVX2 =====\n");
-	test_Element_1w(&field->_1way);
+	test_Element_1w(&Fp.fp25519._1way);
+	printf("===== 1-way x64 =====\n");
+	test_Element_1w(&Fp.fp25519._1way_x64);
 	printf("===== 2-way AVX2 =====\n");
-	test_Element_Nw(&field->_2way);
+	test_Element_Nw(&Fp.fp25519._2way);
 	printf("===== 4-way AVX2 =====\n");
-	test_Element_Nw(&field->_4way);
+	test_Element_Nw(&Fp.fp25519._4way);
+}
+
+static void test_fp448()
+{
+	printf("===== 1-way AVX2 =====\n");
+	test_Element_1w(&Fp.fp448._1way);
+	printf("===== 2-way AVX2 =====\n");
+	test_Element_Nw(&Fp.fp448._2way);
+	printf("===== 4-way AVX2 =====\n");
+	test_Element_Nw(&Fp.fp448._4way);
 }
 

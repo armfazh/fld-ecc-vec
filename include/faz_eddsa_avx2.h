@@ -1,39 +1,7 @@
 #ifndef _EDDSA_AVX2_H_
 #define _EDDSA_AVX2_H_
 
-#include <stdint.h>
-
-#define ALIGN_BYTES 32
-#ifdef __INTEL_COMPILER
-#define ALIGN __declspec(align(ALIGN_BYTES))
-#else
-#define ALIGN __attribute__ ((aligned (ALIGN_BYTES)))
-#endif
-
-typedef uint8_t * argECDHX_PrivateKey;
-typedef uint8_t * argECDHX_SessionKey;
-typedef uint8_t * argECDHX_SharedSecret;
-
-typedef int (*XKeyGen)(
-		argECDHX_SessionKey,
-		argECDHX_PrivateKey
-);
-typedef int (*XSharedSecret)(
-		argECDHX_SharedSecret,
-		argECDHX_SessionKey,
-		argECDHX_PrivateKey
-);
-
-typedef struct _struct_DiffieHellmanXFunction {
-	XKeyGen keygen;
-	XSharedSecret shared;
-	uint64_t key_size;
-} DiffieHellmanXFunction;
-
-struct _struct_ECDHX {
-	DiffieHellmanXFunction X25519;
-	DiffieHellmanXFunction X448;
-};
+#include "util.h"
 
 #define argEdDSA_PrivateKey uint8_t *
 #define argEdDSA_PublicKey  uint8_t *
@@ -81,6 +49,8 @@ typedef struct _struct_SignatureScheme {
 	Verify verify;
 	uint64_t key_size;
 	uint64_t signature_size;
+	ZeroOperandReturnKey newKey,newSignature;
+	OneOperandGeneric cleanKey,cleanSignature;
 } SignatureScheme;
 
 typedef struct _struct_SignatureSchemeCtx {
@@ -89,6 +59,8 @@ typedef struct _struct_SignatureSchemeCtx {
 	VerifyCtx verify;
 	uint64_t key_size;
 	uint64_t signature_size;
+	ZeroOperandReturnKey newKey,newSignature;
+	OneOperandGeneric cleanKey,cleanSignature;
 } SignatureSchemeCtx;
 
 struct _struct_EdDSA {
@@ -104,9 +76,6 @@ struct _struct_EdDSA {
  * to the library.
  */
 extern const struct _struct_EdDSA EdDSA;
-extern const struct _struct_ECDHX ECDHX;
-
-
 
 /**
  * Flag for sign/verify indicating
@@ -130,8 +99,6 @@ typedef ALIGN uint8_t Ed25519_PublicKey[ED25519_KEY_SIZE_BYTES_PARAM];
 typedef ALIGN uint8_t Ed25519_Signature[ED25519_SIG_SIZE_BYTES_PARAM];
 typedef ALIGN uint8_t Ed25519_Digest[ED25519_HASH_BYTES_PARAM];
 
-#define ECDH25519_KEY_SIZE_BYTES 56
-typedef ALIGN uint8_t ECDH_X25519_KEY[ECDH25519_KEY_SIZE_BYTES];
 
 /**
  * Types and sizes of Ed448
@@ -148,8 +115,6 @@ typedef ALIGN uint8_t Ed448_PublicKey[ED448_KEY_SIZE_BYTES_PARAM];
 typedef ALIGN uint8_t Ed448_Signature[ED448_SIG_SIZE_BYTES_PARAM];
 typedef ALIGN uint8_t Ed448_Digest[ED448_HASH_BYTES_PARAM];
 
-#define ECDH448_KEY_SIZE_BYTES 56
-typedef ALIGN uint8_t ECDH_X448_KEY[ECDH448_KEY_SIZE_BYTES];
 
 /**
  * Error codes

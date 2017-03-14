@@ -1,5 +1,15 @@
-#include "ecc.c"
+#include "ecc_ed448.c"
 #include "sha3.c"
+
+static uint8_t * newEd448_Key()
+{
+	return (uint8_t*) allocate_bytes(ED448_KEY_SIZE_BYTES_PARAM * sizeof(uint8_t));
+}
+
+static uint8_t * newEd448_Signature()
+{
+	return (uint8_t*) allocate_bytes(ED448_SIG_SIZE_BYTES_PARAM * sizeof(uint8_t));
+}
 
 /**
  *
@@ -30,7 +40,7 @@ static int ed448_keygen(
  *
  * such that size of r, k and a is 56-bytes.
  */
-static void calculate_s(uint8_t *s_mod_l, uint8_t *r, uint8_t *h, uint8_t *a)
+static void calculate_s_ed448(uint8_t *s_mod_l, uint8_t *r, uint8_t *h, uint8_t *a)
 {
 	int i;
 	ALIGN uint64_t product[16];
@@ -50,7 +60,7 @@ static void calculate_s(uint8_t *s_mod_l, uint8_t *r, uint8_t *h, uint8_t *a)
 	}
 
 	word64_multiplier(product,hh,7,aa,7);
-	modular_reduction_448((uint8_t*)product);
+	modular_reduction_ed448((uint8_t*)product);
 
 	for(i=0;i<56;i++)
 	{
@@ -60,7 +70,7 @@ static void calculate_s(uint8_t *s_mod_l, uint8_t *r, uint8_t *h, uint8_t *a)
 }
 
 
-static int ed448_sign(
+static int ed448_sign_all(
 		argEdDSA_Signature signature,
 		const uint8_t *message,
 		uint64_t message_length,
@@ -109,7 +119,7 @@ static int ed448_sign(
 		return EDDSA_ERROR_PHFLAG;
 	}
 	Final2(&hash,r,ED448_HASH_BYTES_PARAM);
-	modular_reduction_448(r);
+	modular_reduction_ed448(r);
 
 	fixed_point_multiplication_448(signature,r);
 
@@ -132,9 +142,9 @@ static int ed448_sign(
 	}
 	Final2(&hash,H_RAM,ED448_HASH_BYTES_PARAM);
 
-	modular_reduction_448(H_RAM);
+	modular_reduction_ed448(H_RAM);
 
-	calculate_s(signature+ED448_KEY_SIZE_BYTES_PARAM,r,H_RAM,ah);
+	calculate_s_ed448(signature+ED448_KEY_SIZE_BYTES_PARAM,r,H_RAM,ah);
 	return EDDSA_SIGNATURE_OK;
 }
 
@@ -158,7 +168,7 @@ static int ed448_signctx(
 	const argEdDSA_PrivateKey private_key
 )
 {
-	return ed448_sign(signature,message,message_length,context,context_length,public_key,private_key,0);
+	return ed448_sign_all(signature,message,message_length,context,context_length,public_key,private_key,0);
 }
 
 /**
@@ -182,7 +192,7 @@ static int ed448ph_signctx(
 	const argEdDSA_PrivateKey private_key
 )
 {
-	return ed448_sign(signature,message,message_length,context,context_length,public_key,private_key,1);
+	return ed448_sign_all(signature,message,message_length,context,context_length,public_key,private_key,1);
 }
 
 
@@ -196,7 +206,7 @@ static int ed448ph_signctx(
  * @param signature
  * @return
  */
-static int ed448_verify(
+static int ed448_verify_all(
 		const uint8_t *message,
 		uint64_t message_length,
 		const uint8_t * context,
@@ -242,14 +252,14 @@ static int ed448_verify(
 		return EDDSA_ERROR_PHFLAG;
 	}
 	Final2(&hash,H_RAM,ED448_HASH_BYTES_PARAM);
-	modular_reduction_448(H_RAM);
+	modular_reduction_ed448(H_RAM);
 
-	if(point_decoding_448(&A,(uint8_t *)public_key) != 0)
+	if(point_decoding_ed448(&A,(uint8_t *)public_key) != 0)
 	{
 		return EDDSA_ERROR_PUBLICKEY;
 	}
 
-	double_point_multiplication_448(Q,signature+ED448_KEY_SIZE_BYTES_PARAM,H_RAM,&A);
+	double_point_multiplication_ed448(Q,signature+ED448_KEY_SIZE_BYTES_PARAM,H_RAM,&A);
 	return (memcmp(signature,Q,ED448_KEY_SIZE_BYTES_PARAM) == 0) ? EDDSA_VERIFICATION_OK : EDDSA_INVALID_SIGNATURE;
 }
 
@@ -272,7 +282,7 @@ static int ed448_verifyctx(
 	const argEdDSA_Signature signature
 )
 {
-	return ed448_verify(message,message_length,context,context_length,public_key,signature,0);
+	return ed448_verify_all(message,message_length,context,context_length,public_key,signature,0);
 }
 
 /**
@@ -294,7 +304,7 @@ static int ed448ph_verifyctx(
 	const argEdDSA_Signature signature
 )
 {
-	return ed448_verify(message,message_length,context,context_length,public_key,signature,1);
+	return ed448_verify_all(message,message_length,context,context_length,public_key,signature,1);
 }
 
 

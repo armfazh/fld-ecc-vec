@@ -79,11 +79,16 @@ static inline void cmov(int bit, uint64_t * const pX,uint64_t * const pY)
 }
 #endif
 
+static uint8_t * newX448_Key()
+{
+	return (uint8_t*) allocate_bytes(ECDH448_KEY_SIZE_BYTES * sizeof(uint8_t));
+}
+
 /**
  *
  * @param C
  */
-static inline void perm4E(__m256i * C)
+static inline void  perm4E_x448(__m256i * C)
 {
 	int i=0;
 	for(i=0;i<(NUM_DIGITS_FP448/2);i++)
@@ -130,7 +135,7 @@ static inline void step_ladder(
 			/* Z2Z3: [B|D] = [X2|X3] - [Z2|Z3]  */
 			addsub_Element_2w_h0h8(X2X3, Z2Z3);
 			/* Z2Z3: [D|B] = Permute([B|D])     */
-			perm4E(Z2Z3);
+			 perm4E_x448(Z2Z3);
 
 			/* t0:   [DA|CB] = [A|C] * [D|B]    */
 			mul_Element_2w_h0h8(t0, X2X3, Z2Z3);
@@ -241,9 +246,9 @@ static inline void step_ladder(
  * @return
  */
 static int x448_shared(
-		argECDHX_SharedSecret shared_secret,
-		argECDHX_SessionKey   session_key,
-		argECDHX_PrivateKey   private_key
+		argECDHX_Key shared_secret,
+		argECDHX_Key session_key,
+		argECDHX_Key private_key
 )  
 {
 	uint64_t save;
@@ -285,12 +290,12 @@ static int x448_shared(
  * @return
  */
 static int x448_keygen(
-	argECDHX_SessionKey public_key,
-	argECDHX_PrivateKey private_key
+	argECDHX_Key session_key,
+	argECDHX_Key private_key
 )
 {
 	ECDH_X448_KEY X1 = {0};
 	X1[0] = 5;
-	return x448_shared(public_key, X1, private_key);
+	return x448_shared(session_key, X1, private_key);
 }
 

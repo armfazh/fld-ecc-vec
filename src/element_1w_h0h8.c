@@ -1,40 +1,4 @@
 
-static void print_bytes(uint8_t * A, int num_bytes)
-{
-	int i;
-	printf("0x");
-	for(i=num_bytes-1;i>=0;i--)
-	{
-		printf("%02x", A[i]);
-	}
-	printf("\n");
-}
-
-static int compare_bytes(uint8_t* A, uint8_t* B,unsigned int num_bytes)
-{
-	unsigned int i=0;
-	uint8_t ret=0;
-	for(i=0;i<num_bytes;i++)
-	{
-		ret += A[i]^B[i];
-	}
-	return ret;
-}
-
-static void * allocate_bytes(size_t num_bytes)
-{
-	return _mm_malloc(num_bytes,ALIGN_BYTES);
-}
-
-static void deallocate_bytes(void * A)
-{
-	if(A != NULL)
-	{
-		_mm_free(A);
-	}
-}
-
-
 #define copy_Element_1w_h0h8(C,A)\
 	STORE(C+0,LOAD(A+0));\
 	STORE(C+1,LOAD(A+1));\
@@ -802,10 +766,5 @@ static void print_Element_1w_h0h8(uint64_t *A)
 static uint64_t * new_Element_1w_h0h8()
 {
 	return (uint64_t*) allocate_bytes(NUM_DIGITS_FP448 * sizeof(uint64_t));
-}
-
-static void clean_Element_1w_h0h8(uint64_t * A)
-{
-	deallocate_bytes((void*)A);
 }
 

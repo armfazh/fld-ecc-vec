@@ -1,7 +1,6 @@
-#ifndef _TABLES_VERIFICATION_w7_H_
-#define _TABLES_VERIFICATION_w7_H_
-#include<stdint.h>
-#include"avx2.h"
+#ifndef _TABVERIF_W4_3675K_ED448_H_
+#define _TABVERIF_W4_3675K_ED448_H_
+
 #define OMEGA_STATIC 7
 
 /**
@@ -16,7 +15,7 @@
  * Format for each pre-computed point:
  *     [x+y, y-x, 2*d*x*y]
  **/
-ALIGN static const uint64_t TableVerification_static_w7[(1<<(OMEGA_STATIC-2))*3*7] =
+ALIGN static const uint64_t TableVerif_static_w7_Ed448[(1<<(OMEGA_STATIC-2))*3*7] =
 {
 /* 1P */
 				0xc86079b4dfdd4a65,0x199b0c1e3ab470a1,0x14181844d73f48e5,0x93d5242bd0452714,0x05264370504c74c3,0x8d06c13078ca2408,0x0508de14f04286d4,
@@ -148,4 +147,4 @@ ALIGN static const uint64_t TableVerification_static_w7[(1<<(OMEGA_STATIC-2))*3*
 				0x911535277c3f33ac,0x0990f3f4c4f98d33,0x928335619f626975,0xb3889e803896ef04,0xdcd8353c79be9567,0xf381be46e62d3eb2,0xa03d2a7523370e32
 };
 
-#endif  /* _TABLES_VERIFICATION_w7_H_ */
+#endif  /* _TABVERIF_W4_3675K_ED448_H_ */

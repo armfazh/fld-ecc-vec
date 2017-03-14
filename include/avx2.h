@@ -3,6 +3,7 @@
 
 #define HASWELL 0x80
 #define	SKYLAKE 0x40
+#define PROCESSOR SKYLAKE
 
 #include <immintrin.h>
 

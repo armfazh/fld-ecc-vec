@@ -1,3 +1,5 @@
+#include <fp.h>
+
 static void bench_Element_1w(const struct _struct_Fp_1way * fp)
 {
 	long int BENCH = 3000;
@@ -45,12 +47,24 @@ static void bench_Element_Nw(const struct _struct_Fp_Nway * fp)
 	fp->clean(c);
 }
 
-static void bench_fp(const struct _struct_Fp_Arith * field)
+static void bench_fp25519()
 {
 	printf("======  1-way AVX2  ======\n");
-	bench_Element_1w(&field->_1way);
+	bench_Element_1w(&Fp.fp25519._1way);
+	printf("======  1-way x64  ======\n");
+	bench_Element_1w(&Fp.fp25519._1way_x64);
 	printf("======  2-way AVX2  ======\n");
-	bench_Element_Nw(&field->_2way);
+	bench_Element_Nw(&Fp.fp25519._2way);
 	printf("======  4-way AVX2  ======\n");
-	bench_Element_Nw(&field->_4way);
+	bench_Element_Nw(&Fp.fp25519._4way);
+}
+
+static void bench_fp448()
+{
+	printf("======  1-way AVX2  ======\n");
+	bench_Element_1w(&Fp.fp448._1way);
+	printf("======  2-way AVX2  ======\n");
+	bench_Element_Nw(&Fp.fp448._2way);
+	printf("======  4-way AVX2  ======\n");
+	bench_Element_Nw(&Fp.fp448._4way);
 }

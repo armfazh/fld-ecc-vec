@@ -1,10 +1,12 @@
-#ifndef ED448_AVX2_TABLE_SIGN_W4_3675K_H
-#define ED448_AVX2_TABLE_SIGN_W4_3675K_H
+#ifndef _TABSIGN_W4_3675K_ED448_H_
+#define _TABSIGN_W4_3675K_ED448_H_
 
-#include<stdint.h>
-#include"avx2.h"
+#define NUM_LUT_ED448 (28)
+#define SIZE_POINT_ED448 (3*448/8)
+#define SIZE_ONE_LUT_ED448 (8*SIZE_POINT_ED448)
+#define SIZE_ALL_LUT_ED448 (NUM_LUT_ED448*SIZE_POINT_ED448)
 
-ALIGN static const uint64_t TableSign_w4_3675k [SIZE_ALL_LUT] = {
+ALIGN static const uint64_t TableSign_w4_3675k [SIZE_ALL_LUT_ED448] = {
 0xc86079b4dfdd4a65,0xc86079b4dfdd4a64,0x17df1c4564ea331a,0xa3b1deddd748890d,
 0xc1481880173e63f8,0x084cccedba886412,0x0818762033a8e9d1,0xc59d41f91a5d116b,
 0x5e0b42f0ea3bafb0,0x504640cd24f5486c,0x548f1cd1191a0316,0xb6bb6508725d44b1,
@@ -1183,4 +1185,4 @@ ALIGN static const uint64_t TableSign_w4_3675k [SIZE_ALL_LUT] = {
 0x0df6a4f8006b84ef,0x8caeec83387804b9,0xfea07ac5f6036b2f,0xf142c5e1b689b542,
 };
 
-#endif /* ED448_AVX2_TABLE_SIGN_W4_3675K_H */
+#endif /* _TABSIGN_W4_3675K_ED448_H_ */

@@ -1,45 +1,8 @@
-#include "fp.c"
-#include "ecc.h"
+#include "ecc_ed448.h"
 
-#include "table_sign_w4_3675k.h"
-#include "table_verf_w7.h"
+#include "table_sign_w4_3675k_ed448.h"
+#include "table_verf_w7_ed448.h"
 #include <string.h>
-
-
-/**
- *
- * @param C
- * @param A
- * @param numA
- * @param B
- * @param numB
- */
-static void word64_multiplier(
-		uint64_t*C,
-		const uint64_t*A, int numA,
-		const uint64_t*B, int numB)
-{
-	int i,j;
-#define mul64x64(Z,X,Y)	__asm__ __volatile__ (\
-			"movq 0(%3), %%rax     ;"\
-			"mulq 0(%4)            ;"\
-			"addq %%rax, %0        ;"\
-			"adcq %%rdx, %1        ;"\
-			"adcq $0x0,  %2        ;"\
-	:/* out  */ "+r" ((Z)[0]),"+r" ((Z)[1]),"+r" ((Z)[2])\
-	:/* in   */ "r" (X),"r" (Y)\
-	:/* regs */ "memory","cc","%rax","%rdx");
-
-	for(i=0;i<numA;i++)
-	{
-		for(j=0;j<numB;j++)
-		{
-			mul64x64(C+i+j,A+i,B+j);
-		}
-	}
-#undef mul64x64
-}
-
 
 /**
  * This function performs a modular reduction
@@ -52,7 +15,7 @@ static void word64_multiplier(
  *
  * @param a
  */
-static void modular_reduction_448(uint8_t *a)
+static void modular_reduction_ed448(uint8_t *a)
 {
 	int i;
 	const uint64_t ellx4[4] = {0x721cf5b5529eec34,0x7a4cf635c8e9c2ab,0xeec492d944a725bf,0x20cd77058};
@@ -129,7 +92,7 @@ static void div4(uint8_t * number_div_4,const uint8_t * number)
 		((uint8_t*)a)[i] = number[i];
 	}
 	word64_multiplier(product,ifour,7,a,7);
-	modular_reduction_448((uint8_t*)product);
+	modular_reduction_ed448((uint8_t*)product);
 	for(i=0;i<56;i++)
 	{
 		number_div_4[i] = ((uint8_t*)product)[i];
@@ -201,7 +164,7 @@ void recoding_signed_scalar_fold4w4_448(uint64_t *list_signs, uint64_t *list_dig
  * @param secret_signs
  * @param secret_digits
  */
-static void query_table_fold4w4_448(Point_precmp_4way *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits)
+static void query_table_fold4w4_ed448(Point_precmp_4way_Fp448 *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits)
 {
 	const __m256i _P[16] = {
 			SET1_64(0xfffffff),	SET1_64(0xffffffe),
@@ -308,9 +271,9 @@ static void query_table_fold4w4_448(Point_precmp_4way *P, const uint8_t * table,
  * @param secret_signs
  * @param secret_digits
  */
-void query_table_448(Point_precmp_4way *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits)
+void query_table_ed448(Point_precmp_4way_Fp448 *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits)
 {
-	query_table_fold4w4_448(P,table,secret_signs,secret_digits);
+	query_table_fold4w4_ed448(P,table,secret_signs,secret_digits);
 }
 
 /**
@@ -322,7 +285,7 @@ void query_table_448(Point_precmp_4way *P, const uint8_t * table,uint64_t * secr
  * @param Q
  * @param P
  */
-void _4way_mixadd_448(PointXYZT_4way *Q, Point_precmp_4way *P)
+void _4way_mixadd_448(PointXYZT_4way_Fp448 *Q, Point_precmp_4way_Fp448 *P)
 {
 	__m256i * const X1 = Q->X;
 	__m256i * const Y1 = Q->Y;
@@ -362,9 +325,9 @@ void _4way_mixadd_448(PointXYZT_4way *Q, Point_precmp_4way *P)
  * @param R0
  * @param Q
  */
-static void join_points_2w_H0H8(PointXYZT_2w_H0H8 *R0, PointXYZT_4way *Q)
+static void join_points_2w_H0H8(PointXYZT_2w_H0H8 *R0, PointXYZT_4way_Fp448 *Q)
 {
-	PointXYZT_1way Q1,Q2,Q3,Q0;
+	PointXYZT_1way_Fp448 Q1,Q2,Q3,Q0;
 	PointXYZT_2w_H0H8 R1,R2,R3;
 
     unzip_Element_4w_h0h8(Q0.X,Q1.X,Q2.X,Q3.X,Q->X);
@@ -469,9 +432,9 @@ static void isogeny_2w_H0H8(PointXYZT_2w_H0H8 *P)
 static void point_multiplication_fold4w4(uint8_t *rB, uint8_t *r)
 {
 	unsigned int i;
-	PointXYZT_4way Q;
+	PointXYZT_4way_Fp448 Q;
 	PointXYZT_2w_H0H8 Q0;
-	Point_precmp_4way P;
+	Point_precmp_4way_Fp448 P;
 	ALIGN uint64_t K[112];
 	ALIGN uint64_t S[112];
 	const Element_4w_Fp448 one_half = {
@@ -492,7 +455,7 @@ static void point_multiplication_fold4w4(uint8_t *rB, uint8_t *r)
 		Q.Z[i] = ZERO;
 	}
 
-	query_table_fold4w4_448(&P, ((uint8_t*)TableSign_w4_3675k),S,K);
+	query_table_fold4w4_ed448(&P, ((uint8_t*)TableSign_w4_3675k),S,K);
 	sub_Element_4w_h0h8(Q.X,P.addYX,P.subYX);
 	add_Element_4w_h0h8(Q.Y,P.addYX,P.subYX);
 	compress_Element_4w_h0h8(Q.X);
@@ -500,10 +463,10 @@ static void point_multiplication_fold4w4(uint8_t *rB, uint8_t *r)
 	mul_Element_4w_h0h8(Q.T,Q.X,Q.Y);							compress_Element_4w_h0h8(Q.T);
 	mul_Element_4w_h0h8(Q.T,Q.T,(argElement_4w)one_half);	compress_Element_4w_h0h8(Q.T);
 
-	for(i=1;i<NUM_LUT;i++)
+	for(i=1;i<NUM_LUT_ED448;i++)
 	{
         _mm_prefetch( (void*)  (((uint8_t*)TableSign_w4_3675k)+768*(i+1) ),_MM_HINT_T0);
-        query_table_448(&P, ((uint8_t*)TableSign_w4_3675k)+SIZE_ONE_LUT*i,S+4*i,K+4*i);
+		query_table_fold4w4_ed448(&P, ((uint8_t*)TableSign_w4_3675k)+SIZE_ONE_LUT_ED448*i,S+4*i,K+4*i);
 		_4way_mixadd_448(&Q, &P);
 	}
 	join_points_2w_H0H8(&Q0, &Q);
@@ -556,7 +519,7 @@ static void fixed_point_multiplication_448(uint8_t *rB, uint8_t *r)
  * @param A
  * @return
  */
-static int point_decoding_448(PointXYZT_2w_H0H8 * P, const uint8_t * A)
+static int point_decoding_ed448(PointXYZT_2w_H0H8 * P, const uint8_t * A)
 {
 	/**
 	 * Using the d parameter using the
@@ -892,7 +855,7 @@ void _1way_mixadd_2w_H0H8(PointXYZT_2w_H0H8 *Q, PointXYZT_precompute_2w_H0H8 *P)
  * @param table 
  * @param P 
  */
-static void precompute_points(PointXYZT_precompute_2w_H0H8 * table, PointXYZT_2w_H0H8* P)
+static void precompute_points_ed448(PointXYZT_precompute_2w_H0H8 * table, PointXYZT_2w_H0H8* P)
 {
 	const int num = (1<<(OMEGA_DYNAMIC-2));
 	int i=0;
@@ -937,7 +900,7 @@ static void read_point(PointXYZT_precompute_2w_H0H8 * P, int8_t index)
 	uint8_t abs_index_r = index > 0 ? index: -index;
 	abs_index_r >>= 1;
 
-	const uint64_t * ptr_point = &TableVerification_static_w7[3*7*abs_index_r];
+	const uint64_t * ptr_point = &TableVerif_static_w7_Ed448[3*7*abs_index_r];
 	Element_1w_Fp448 add,sub,_2dT;
 
 	str_bytes_To_Element_1w_h0h8( add,(uint8_t*)(ptr_point+0));
@@ -964,7 +927,7 @@ static void read_point(PointXYZT_precompute_2w_H0H8 * P, int8_t index)
  * @param h 
  * @param A 
  */
-static void double_point_multiplication_448(uint8_t *sB_hA, const uint8_t *s, uint8_t *h, PointXYZT_2w_H0H8 * A)
+static void double_point_multiplication_ed448(uint8_t *sB_hA, const uint8_t *s, uint8_t *h, PointXYZT_2w_H0H8 * A)
 {
 	int i;
 	int8_t wnaf_r[460]={0};
@@ -987,7 +950,7 @@ static void double_point_multiplication_448(uint8_t *sB_hA, const uint8_t *s, ui
 	int l_h = wnaf_448bits(wnaf_h,h_div_4, OMEGA_DYNAMIC);
 	int l = l_r > l_h ? l_r : l_h;
 
-	precompute_points(tableA,A);
+	precompute_points_ed448(tableA,A);
 
 	for(i=1;i<(NUM_DIGITS_FP448/2);i++)
 	{

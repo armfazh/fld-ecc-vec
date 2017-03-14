@@ -1,5 +1,5 @@
-#ifndef _ED448_AVX2_VECTORS_H_
-#define _ED448_AVX2_VECTORS_H_
+#ifndef _EDDSA_TEST_VECTORS_H_
+#define _EDDSA_TEST_VECTORS_H_
 
 
 enum EDDSA_SCHEME{
@@ -10,7 +10,9 @@ enum EDDSA_SCHEME{
     Ed448ph
 };
 
-#define NUM_TEST_VECTORS 11
+#define NUM_TEST_VECTORS_ED25519 10
+#define NUM_TEST_VECTORS_ED448 11
+
 typedef struct _struct_EdDSA_testdata {
 	char *name_test;
 	enum EDDSA_SCHEME signature_scheme;
@@ -24,4 +26,4 @@ typedef struct _struct_EdDSA_testdata {
 } EdDSA_TestData;
 
 
-#endif /* _ED448_AVX2_VECTORS_H_ */
+#endif /* _EDDSA_TEST_VECTORS_H_ */

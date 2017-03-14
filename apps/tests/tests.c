@@ -4,14 +4,11 @@
 #include <string.h>
 #include <random.h>
 
-#include <fp.h>
-#include <eddsa_avx2.h>
-
 #define TEST_TIMES 50000
 
 #include "test_fp.c"
-#include "test_x448.c"
-#include "test_ed448.c"
+#include "test_ecdh.c"
+#include "test_eddsa.c"
 
 int main(void)
 {
@@ -20,11 +17,16 @@ int main(void)
 	printf("  High Performance Implementation of the Edwards Digital  \n");
 	printf("       Signature Algorithm using Vector Instructions      \n");
 	printf("==========================================================\n\n");
-	printf("===== Testing =====\n");
+	printf("===== Testing Ed25519 =====\n");
+	
+	test_fp25519();
+	test_x25519();
+	test_ed25519();
 
-	test_fp(&Fp.fp448);
-	test_eddsa();
+	printf("===== Testing Ed448 =====\n");
+	test_fp448();
 	test_x448();
+	test_ed448();
 
 	return 0;
 }
