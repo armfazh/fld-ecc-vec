@@ -103,9 +103,26 @@ void _2way_fulladd(PointXYZT_2way_Fp25519 *Q, PointXYZT_2way_Fp25519 *P)
 	compress_Element_2w_h0h5(Y1);
 }
 
+static void point_encoding_ed25519(uint8_t*enc, PointXYZT_2w_H0H5* P)
+{
+	Element_1w_x64 X, Y, Z, invZ;
+	Element_1w_Fp25519 tX,tY,tZ,tT;
 
+	deinterleave_2w_h0h5(tX,tY,P->XY);
+	deinterleave_2w_h0h5(tT,tZ,P->TZ);
 
+	singleH0H5_To_str_bytes((uint8_t*)X,tX);
+	singleH0H5_To_str_bytes((uint8_t*)Y,tY);
+	singleH0H5_To_str_bytes((uint8_t*)Z,tZ);
 
+	inv_Element_1w_x64(invZ,Z);
+	mul_Element_1w_x64(X,X,invZ);
+	mul_Element_1w_x64((uint64_t*)enc,Y,invZ);
+	fred_Element_1w_x64(X);
+	fred_Element_1w_x64((uint64_t*)enc);
+
+	enc[ED25519_KEY_SIZE_BYTES_PARAM-1] = enc[ED25519_KEY_SIZE_BYTES_PARAM-1] | (uint8_t)((X[0]&0x1)<<7);
+}
 
 #if LOOKUP_TABLE_SIZE == LUT_12KB
 
@@ -162,7 +179,8 @@ void recoding_signed_scalar_fold4w4_ed25519(uint64_t *list_signs, uint64_t *list
 			list_digits[32*i+2*j+1] = (int64_t) digit;
 			list_signs [32*i+2*j+1] = (int64_t) -carry;
 		}
-	}/* list_digits[64] = carry; */ /* This is always equal to 0 iff r < 2**253 */
+	}
+	list_digits[64] = carry; /* This is always equal to 0 iff r < 2**253 */
 }
 
 /**
@@ -174,7 +192,7 @@ void recoding_signed_scalar_fold4w4_ed25519(uint64_t *list_signs, uint64_t *list
  */
 void query_table_fold4w4_ed25519(Point_precmp_4way_Fp25519 *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits)
 {
-	const __m256i _P[10] = {
+	const __m256i _P[NUM_DIGITS_FP25519] = {
 			SET1_64(0x3ffffed),	SET1_64(0x1ffffff),
 			SET1_64(0x1ffffff),	SET1_64(0x3ffffff),
 			SET1_64(0x3ffffff),	SET1_64(0x1ffffff),
@@ -285,16 +303,14 @@ void query_table_fold4w4_ed25519(Point_precmp_4way_Fp25519 *P, const uint8_t * t
  * @param rB
  * @param r
  */
-void point_multiplication_fold4w4_ed25519(uint8_t *rB, uint8_t *r)
+void point_multiplication_fold4w4_ed25519(PointXYZT_2w_H0H5 *rB, uint8_t *r)
 {
 	int i;
 	PointXYZT_4way_Fp25519 Q;
 	Point_precmp_4way_Fp25519 P;
-	PointXYZT_2w_H0H5 Q0,Q1,Q2,Q3;
-	Element_1w_Fp25519 XX, YY, ZZ, invZZ;
-	Element_1w_x64 X, Y, Z, invZ;
-	ALIGN uint64_t K[64];
-	ALIGN uint64_t S[64];
+	PointXYZT_2w_H0H5 Q1,Q2,Q3;
+	ALIGN uint64_t K[64+3];
+	ALIGN uint64_t S[64+3];
 	const Element_4w_Fp25519 one_half = {
 			SET1_64(0x3fffff7),SET1_64(0x1ffffff),
 			SET1_64(0x1ffffff),SET1_64(0x3ffffff),
@@ -306,7 +322,7 @@ void point_multiplication_fold4w4_ed25519(uint8_t *rB, uint8_t *r)
 	recoding_signed_scalar_fold4w4_ed25519(S,K,r);
 
 	Q.Z[0] = SET1_64(2);
-	for(i=1;i<10;i++)
+	for(i=1;i<NUM_DIGITS_FP25519;i++)
 	{
 		Q.Z[i] = ZERO;
 	}
@@ -336,10 +352,10 @@ void point_multiplication_fold4w4_ed25519(uint8_t *rB, uint8_t *r)
 		__m256i Z_D50B50 = UPKH64(Q.Z[2*i],Q.Z[2*i+1]);
 		__m256i T_D50B50 = UPKH64(Q.T[2*i],Q.T[2*i+1]);
 
-		Q0.XY[i] = PERM128(X_C50A50,Y_C50A50,0x20);
-		Q2.XY[i] = PERM128(X_C50A50,Y_C50A50,0x31);
-		Q0.TZ[i] = PERM128(T_C50A50,Z_C50A50,0x20);
-		Q2.TZ[i] = PERM128(T_C50A50,Z_C50A50,0x31);
+		rB->XY[i] = PERM128(X_C50A50,Y_C50A50,0x20);
+		Q2.XY[i]  = PERM128(X_C50A50,Y_C50A50,0x31);
+		rB->TZ[i] = PERM128(T_C50A50,Z_C50A50,0x20);
+		Q2.TZ[i]  = PERM128(T_C50A50,Z_C50A50,0x31);
 
 		Q1.XY[i] = PERM128(X_D50B50,Y_D50B50,0x20);
 		Q3.XY[i] = PERM128(X_D50B50,Y_D50B50,0x31);
@@ -361,21 +377,7 @@ void point_multiplication_fold4w4_ed25519(uint8_t *rB, uint8_t *r)
 	_1way_doubling_2w_H0H5(&Q1);
 	_1way_doubling_2w_H0H5(&Q1);
 	_1way_doubling_2w_H0H5(&Q1);
-	_1way_fulladd_2w_H0H5(&Q0,&Q1);
-
-	deinterleave_2w_h0h5(XX,YY,Q0.XY);
-	deinterleave_2w_h0h5(invZZ,ZZ,Q0.TZ);
-	singleH0H5_To_str_bytes((uint8_t*)X,XX);
-	singleH0H5_To_str_bytes((uint8_t*)Y,YY);
-	singleH0H5_To_str_bytes((uint8_t*)Z,ZZ);
-
-	inv_Element_1w_x64(invZ,Z);
-	mul_Element_1w_x64(X,X,invZ);
-	mul_Element_1w_x64((uint64_t*)rB,Y,invZ);
-	fred_Element_1w_x64(X);
-	fred_Element_1w_x64((uint64_t*)rB);
-
-	rB[31] = rB[31] | (uint8_t)((X[0]&0x1)<<7);
+	_1way_fulladd_2w_H0H5(rB,&Q1);
 }
 
 #elif LOOKUP_TABLE_SIZE == LUT_24KB
@@ -594,32 +596,6 @@ static void join_points(PointXYZT_2w_H0H5 *T0, PointXYZT_4way_Fp25519 *Q)
 	_1way_fulladd_2w_H0H5(T0,&T1);
 }
 
-static void encode_point(uint8_t*enc, PointXYZT_2w_H0H5* P)
-{
-	Element_1w_x64 X, Y, Z, invZ;
-	Element_1w_Fp25519 tX,tY,tZ,tT;
-
-	deinterleave_2w_h0h5(tX,tY,P->XY);
-	deinterleave_2w_h0h5(tT,tZ,P->TZ);
-
-	singleH0H5_To_str_bytes((uint8_t*)X,tX);
-	singleH0H5_To_str_bytes((uint8_t*)Y,tY);
-	singleH0H5_To_str_bytes((uint8_t*)Z,tZ);
-
-//	printf("X: ");Fp.fp25519._1way_x64.print(X);
-//	printf("Y: ");Fp.fp25519._1way_x64.print(Y);
-//	printf("Z: ");Fp.fp25519._1way_x64.print(Z);
-	inv_Element_1w_x64(invZ,Z);
-	mul_Element_1w_x64(X,X,invZ);
-	mul_Element_1w_x64((uint64_t*)enc,Y,invZ);
-	fred_Element_1w_x64(X);
-	fred_Element_1w_x64((uint64_t*)enc);
-
-//	printf("x: ");Fp.fp25519._1way_x64.print(X);
-//	printf("y: ");Fp.fp25519._1way_x64.print(enc);
-
-	enc[ED25519_KEY_SIZE_BYTES_PARAM-1] = enc[ED25519_KEY_SIZE_BYTES_PARAM-1] | (uint8_t)((X[0]&0x1)<<7);
-}
 
 /**
  * This function will use a pre-computed table of 24KB.
@@ -709,7 +685,7 @@ void query_table_ed25519(Point_precmp_4way_Fp25519 *P, const uint8_t * table,uin
 static void point_multiplication_ed25519(PointXYZT_2w_H0H5 *P, uint8_t *r)
 {
 #if LOOKUP_TABLE_SIZE == LUT_12KB
-	point_multiplication_fold4w4_ed25519(rB,r);
+	point_multiplication_fold4w4_ed25519(P,r);
 #elif LOOKUP_TABLE_SIZE == LUT_24KB
 	point_multiplication_fold2w4_ed25519(P,r);
 #else

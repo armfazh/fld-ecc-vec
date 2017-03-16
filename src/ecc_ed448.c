@@ -100,6 +100,24 @@ static void div4(uint8_t * number_div_4,const uint8_t * number)
 	number_div_4[ED448_KEY_SIZE_BYTES_PARAM-1] = 0;
 }
 
+static void point_encoding_ed448(uint8_t*enc, PointXYZT_2w_H0H8* P)
+{
+	/* convert to affine coordinates */
+	Ed448_PublicKey bufX;
+	Element_1w_Fp448 Z,X,Y,invZ;
+
+	deinterleave_2w_h0h8(X,Y,P->XY);
+	deinterleave_2w_h0h8(invZ,Z,P->TZ);
+	invsqrt_Element_1w_h0h8(invZ,Z,1);
+	mul_Element_1w_h0h8(X,X,invZ);compress_Element_1w_h0h8(X);
+	mul_Element_1w_h0h8(Y,Y,invZ);compress_Element_1w_h0h8(Y);
+
+	/* encoding */
+	singleH0H8_To_str_bytes(bufX,X);
+	singleH0H8_To_str_bytes(enc,Y);
+	enc[ED448_KEY_SIZE_BYTES_PARAM-1] = (bufX[0]&0x1)<<7;
+}
+
 /**
  * Recoding to a signed radix 2^OMEGA (fold4w4)
  * Given:
@@ -429,11 +447,10 @@ static void isogeny_2w_H0H8(PointXYZT_2w_H0H8 *P)
  * @param rB
  * @param r
  */
-static void point_multiplication_fold4w4(uint8_t *rB, uint8_t *r)
+static void point_multiplication_fold4w4(PointXYZT_2w_H0H8 *rB, uint8_t *r)
 {
 	unsigned int i;
 	PointXYZT_4way_Fp448 Q;
-	PointXYZT_2w_H0H8 Q0;
 	Point_precmp_4way_Fp448 P;
 	ALIGN uint64_t K[112];
 	ALIGN uint64_t S[112];
@@ -469,24 +486,10 @@ static void point_multiplication_fold4w4(uint8_t *rB, uint8_t *r)
 		query_table_fold4w4_ed448(&P, ((uint8_t*)TableSign_w4_3675k)+SIZE_ONE_LUT_ED448*i,S+4*i,K+4*i);
 		_4way_mixadd_448(&Q, &P);
 	}
-	join_points_2w_H0H8(&Q0, &Q);
+	join_points_2w_H0H8(rB, &Q);
 
 	/* inverse isogeny */
-	isogeny_2w_H0H8(&Q0);
-
-	/* convert to affine coordinates */
-	Element_1w_Fp448 Z,X,Y,invZ;
-	deinterleave_2w_h0h8(X,Y,Q0.XY);
-	deinterleave_2w_h0h8(invZ,Z,Q0.TZ);
-	invsqrt_Element_1w_h0h8(invZ,Z,1);
-	mul_Element_1w_h0h8(X,X,invZ);compress_Element_1w_h0h8(X);
-	mul_Element_1w_h0h8(Y,Y,invZ);compress_Element_1w_h0h8(Y);
-
-	/* encoding */
-	Ed448_PublicKey bufX;
-	singleH0H8_To_str_bytes(bufX,X);
-	singleH0H8_To_str_bytes(rB,Y);
-	rB[ED448_KEY_SIZE_BYTES_PARAM-1] = (bufX[0]&0x1)<<7;
+	isogeny_2w_H0H8(rB);
 }
 
 /**
@@ -499,7 +502,7 @@ static void point_multiplication_fold4w4(uint8_t *rB, uint8_t *r)
  * @param rB
  * @param r
  */
-static void fixed_point_multiplication_448(uint8_t *rB, uint8_t *r)
+static void fixed_point_multiplication_ed448(PointXYZT_2w_H0H8 *rB, uint8_t *r)
 {
 	/**
 	 * Compute a division by 4 because the point multiplication

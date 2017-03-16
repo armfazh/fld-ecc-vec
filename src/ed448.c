@@ -23,13 +23,15 @@ static int ed448_keygen(
 )
 {
 	Ed448_Digest h;
+	PointXYZT_2w_H0H8 hB;
 	SHAKE256(private_key,ED448_KEY_SIZE_BYTES_PARAM*8,h,ED448_HASH_BYTES_PARAM);
 
 	h[0]  &= -((uint8_t)1<<ED448_C_PARAM);
 	h[ED448_KEY_SIZE_BYTES_PARAM-2] |= 0x80;
 	h[ED448_KEY_SIZE_BYTES_PARAM-1]  = 0x00;
 
-	fixed_point_multiplication_448(public_key,h);
+	fixed_point_multiplication_ed448(&hB,h);
+	point_encoding_ed448(public_key,&hB);
 	return EDDSA_KEYGEN_OK;
 }
 
@@ -81,6 +83,7 @@ static int ed448_sign_all(
 		const uint8_t phflag
 )
 {
+	PointXYZT_2w_H0H8 rB;
 	Ed448_Digest H_RAM,r,ah,pre_hash_message;
 	const int size_prefix = 10;
 	hashState hash;
@@ -121,7 +124,8 @@ static int ed448_sign_all(
 	Final2(&hash,r,ED448_HASH_BYTES_PARAM);
 	modular_reduction_ed448(r);
 
-	fixed_point_multiplication_448(signature,r);
+	fixed_point_multiplication_ed448(&rB,r);
+	point_encoding_ed448(signature,&rB);
 
 	Init(&hash,256);
 	Update(&hash,prefix,size_prefix*8);

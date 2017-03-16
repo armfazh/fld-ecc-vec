@@ -33,7 +33,7 @@ static int ed25519_keygen(
 	az[31] &= 127;
 	az[31] |= 64;
 	point_multiplication_ed25519(&azB,az);
-	encode_point(public_key,&azB);
+	point_encoding_ed25519(public_key,&azB);
 	return EDDSA_KEYGEN_OK;
 }
 
@@ -294,7 +294,7 @@ static int ed25519_sign_all(
 	modular_reduction_ed25519(r);
 
 	point_multiplication_ed25519(&rB,r);
-	encode_point(signature,&rB);
+	point_encoding_ed25519(signature,&rB);
 
 	sph_sha512_init(&hash_context);
 	if(pureEdDSA == 0 )

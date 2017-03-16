@@ -283,6 +283,43 @@ static int x448_shared(
 	return 0;
 }
 
+static void point_Edwards2Montgomery_ed448(uint8_t * enc,PointXYZT_2w_H0H8 * P)
+{
+	Element_1w_Fp448 add,sub,inv_sub,tmp;
+	Element_2w_Fp448 addZY,subZY;
+
+	add_Element_2w_h0h8(addZY,P->TZ,P->XY);
+	sub_Element_2w_h0h8(subZY,P->TZ,P->XY);
+	compress_Element_2w_h0h8(addZY);
+	compress_Element_2w_h0h8(subZY);
+
+	deinterleave_2w_h0h8(tmp,add,addZY);
+	deinterleave_2w_h0h8(tmp,sub,subZY);
+
+	invsqrt_Element_1w_h0h8(inv_sub,sub,1);
+	mul_Element_1w_h0h8((uint64_t*)tmp,add,inv_sub);
+	compress_Element_1w_h0h8((uint64_t*)tmp);
+
+	singleH0H8_To_str_bytes(enc,tmp);
+}
+
+#define div_4_448(r) \
+{\
+    uint64_t bit6 = r[6]<<62;\
+    uint64_t bit5 = r[5]<<62;\
+    uint64_t bit4 = r[4]<<62;\
+    uint64_t bit3 = r[3]<<62;\
+    uint64_t bit2 = r[2]<<62;\
+    uint64_t bit1 = r[1]<<62;\
+    r[6] = (r[6]>>2);        \
+    r[5] = (r[5]>>2) | bit6;\
+    r[4] = (r[4]>>2) | bit5;\
+    r[3] = (r[3]>>2) | bit4;\
+    r[2] = (r[2]>>2) | bit3;\
+    r[1] = (r[1]>>2) | bit2;\
+    r[0] = (r[0]>>2) | bit1;\
+}
+
 /**
  *
  * @param public_key
@@ -294,8 +331,29 @@ static int x448_keygen(
 	argECDHX_Key private_key
 )
 {
-	ECDH_X448_KEY X1 = {0};
-	X1[0] = 5;
-	return x448_shared(session_key, X1, private_key);
+	int i=0;
+	PointXYZT_2w_H0H8 kB;
+	ECDH_X448_KEY scalar;
+	uint64_t * ptrScalar = (uint64_t*)scalar;
+
+	for(i=0;i<ECDH448_KEY_SIZE_BYTES;i++)
+	{
+		scalar[i] = private_key[i];
+	}
+	/* clampC function */
+	scalar[0] = scalar[0] & (~(uint8_t)0x3);
+	scalar[ECDH448_KEY_SIZE_BYTES-1] |= 0x80;
+
+//	div_4_448(ptrScalar);
+	fixed_point_multiplication_ed448(&kB,scalar);
+	_1way_doubling_2w_H0H8(&kB);
+	_1way_doubling_2w_H0H8(&kB);
+
+	point_Edwards2Montgomery_ed448(session_key,&kB);
+	spc_memset(scalar,0,ECDH448_KEY_SIZE_BYTES);
+	return 0;
+//	ECDH_X448_KEY X1 = {0};
+//	X1[0] = 5;
+//	return x448_shared(session_key, X1, private_key);
 }
 

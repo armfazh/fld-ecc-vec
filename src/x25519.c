@@ -288,7 +288,8 @@ static int x25519_shared_avx2(
 	private_key[0]  = (uint8_t)(save & 0xFF);
 	return 0;
 }
-static void point_Edwards2Montgomery(uint8_t * enc,PointXYZT_2w_H0H5 * P)
+
+static void point_Edwards2Montgomery_ed25519(uint8_t * enc,PointXYZT_2w_H0H5 * P)
 {
 	Element_1w_x64 add,sub,inv_sub;
 	Element_1w_Fp25519 t0,t1,t2;
@@ -304,16 +305,9 @@ static void point_Edwards2Montgomery(uint8_t * enc,PointXYZT_2w_H0H5 * P)
 
 	singleH0H5_To_str_bytes((uint8_t*)add,t0);
 	singleH0H5_To_str_bytes((uint8_t*)sub,t1);
-
-//	printf("X: ");Fp.fp25519._1way_x64.print(X);
-//	printf("Y: ");Fp.fp25519._1way_x64.print(Y);
-//	printf("Z: ");Fp.fp25519._1way_x64.print(Z);
-
 	inv_Element_1w_x64(inv_sub,sub);
 	mul_Element_1w_x64((uint64_t*)enc,add,inv_sub);
 	fred_Element_1w_x64((uint64_t*)enc);
-
-//	printf("x: ");Fp.fp25519._1way_x64.print(enc);
 }
 
 #define div_8_256(r)                \
@@ -351,7 +345,7 @@ static __inline int x25519_keygen_avx2(
 	_1way_doubling_2w_H0H5(&kB);
 	_1way_doubling_2w_H0H5(&kB);
 
-	point_Edwards2Montgomery(session_key,&kB);
+	point_Edwards2Montgomery_ed25519(session_key,&kB);
 	spc_memset(scalar,0,ECDH25519_KEY_SIZE_BYTES);
 	return 0;
 }
@@ -391,7 +385,6 @@ static int x25519_shared_x64(
 	uint64_t *const AB   = A;
 	uint64_t *const DC   = D;
 	uint64_t *const DACB = DA;
-//	uint64_t *const buffer_1w = buffer;
 	uint64_t *const buffer_2w = buffer;
 
 	/* clampC function */
