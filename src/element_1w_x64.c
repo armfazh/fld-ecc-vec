@@ -324,7 +324,7 @@ static void sqr2_256x256_integer_x64(uint64_t *const c, uint64_t *const a)
 		" 	adcq	120(%0), %%r14     \n\t"  " 	movq	%%r14, 120(%0)  \n\t"
 	:
 	: "r"  (c), "r" (a)
-	:  "cc", "%rax", "%rcx", "%rdx",
+	:  "memory", "cc", "%rax", "%rcx", "%rdx",
 	"%r8",  "%r9", "%r10", "%r11",
 	"%r12", "%r13", "%r14"
 	);
@@ -365,7 +365,7 @@ static void red_Element_2w_x64(uint64_t *const c, uint64_t *const a)
 		                                                       "  adcx  %%rcx,  %%r9  \n\t"  "  movq     %%r9, 40(%0)  \n\t"
 	:
 	: "r"  (c), "r" (a)
-	: "cc", "%rax", "%rbx", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11"
+	: "memory", "cc", "%rax", "%rbx", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11"
 	);
 #else
 	__asm__ __volatile__(
@@ -404,7 +404,7 @@ static void red_Element_2w_x64(uint64_t *const c, uint64_t *const a)
 
 	:
 	: "r"  (c), "r" (a)
-	: "cc", "%rax", "%rbx", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11", "%r12", "%r13"
+	: "memory", "cc", "%rax", "%rbx", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11", "%r12", "%r13"
 	);
 #endif
 #else    /* Without BMI2 */
@@ -418,33 +418,33 @@ static void mul_256x256_integer_x64(uint64_t *const c, uint64_t *const a, uint64
 #ifdef __BMI2__
 #ifdef __ADX__
 	__asm__ __volatile__(
-		"   movq      (%1), %%rdx  # A[0]               \n\t"
-		"   mulx	  (%2),  %%r8,  %%r9  # A[0]*B[0]   \n\t"    "  xorl   %%r10d, %%r10d    \n\t"                                      "   movq	%%r8,  (%0)      \n\t"
-		"   mulx	 8(%2), %%r10, %%r11  # A[0]*B[1]   \n\t"    "  adox	 %%r9, %%r10     \n\t"                                      "   movq   %%r10, 8(%0)      \n\t"
-		"   mulx	16(%2), %%r12, %%r13  # A[0]*B[2]   \n\t"    "  adox	%%r11, %%r12     \n\t"
-		"   mulx	24(%2), %%r14, %%rdx  # A[0]*B[3]   \n\t"    "  adox	%%r13, %%r14     \n\t"                                                                          "   movq    $0, %%rax  \n\t"
-																 "  adox	%%rdx, %%rax     \n\t"
+		"movq      (%1), %%rdx  # A[0]            \n\t"
+		"mulx	  (%2),  %%r8,  %%r9  # A[0]*B[0] \n\t"    "xorl   %%r10d, %%r10d  \n\t"                                      "   movq	%%r8,  (%0)      \n\t"
+		"mulx	 8(%2), %%r10, %%r11  # A[0]*B[1] \n\t"    "adox	 %%r9, %%r10   \n\t"                                      "   movq   %%r10, 8(%0)      \n\t"
+		"mulx	16(%2), %%r12, %%r13  # A[0]*B[2] \n\t"    "adox	%%r11, %%r12   \n\t"
+		"mulx	24(%2), %%r14, %%rdx  # A[0]*B[3] \n\t"    "adox	%%r13, %%r14   \n\t"                                                                          "   movq    $0, %%rax  \n\t"
+														   "adox	%%rdx, %%rax   \n\t"
 
-		"   movq     8(%1), %%rdx  # A[1]               \n\t"
-		"   mulx	  (%2),  %%r8,  %%r9  # A[1]*B[0]   \n\t"    "  xorl   %%r10d, %%r10d    \n\t"  "   adcx	8(%0),  %%r8   \n\t"    "   movq	 %%r8,  8(%0)    \n\t"
-		"   mulx	 8(%2), %%r10, %%r11  # A[1]*B[1]   \n\t"    "  adox 	 %%r9, %%r10     \n\t"  "   adcx	%%r12, %%r10   \n\t"    "   movq	%%r10, 16(%0)    \n\t"
-		"   mulx	16(%2), %%r12, %%r13  # A[1]*B[2]   \n\t"    "  adox	%%r11, %%r12     \n\t"  "   adcx	%%r14, %%r12   \n\t"                                        "   movq    $0, %%r8   \n\t"
-		"   mulx	24(%2), %%r14, %%rdx  # A[1]*B[3]   \n\t"    "  adox	%%r13, %%r14     \n\t"  "   adcx	%%rax, %%r14   \n\t"                                        "   movq    $0, %%rax  \n\t"
-																 "  adox 	%%rdx, %%rax     \n\t"  "   adcx	 %%r8, %%rax   \n\t"
+		"movq     8(%1), %%rdx  # A[1]            \n\t"
+		"mulx	  (%2),  %%r8,  %%r9  # A[1]*B[0] \n\t"    "xorl   %%r10d, %%r10d  \n\t"  "adcx	8(%0),  %%r8  \n\t"    "   movq	 %%r8,  8(%0)    \n\t"
+		"mulx	 8(%2), %%r10, %%r11  # A[1]*B[1] \n\t"    "adox 	 %%r9, %%r10   \n\t"  "adcx	%%r12, %%r10  \n\t"    "   movq	%%r10, 16(%0)    \n\t"
+		"mulx	16(%2), %%r12, %%r13  # A[1]*B[2] \n\t"    "adox	%%r11, %%r12   \n\t"  "adcx	%%r14, %%r12  \n\t"                                        "   movq    $0, %%r8   \n\t"
+		"mulx	24(%2), %%r14, %%rdx  # A[1]*B[3] \n\t"    "adox	%%r13, %%r14   \n\t"  "adcx	%%rax, %%r14  \n\t"                                        "   movq    $0, %%rax  \n\t"
+														   "adox 	%%rdx, %%rax   \n\t"  "adcx	 %%r8, %%rax  \n\t"
 
-		"   movq    16(%1), %%rdx  # A[2]               \n\t"
-		"   mulx	  (%2),  %%r8,  %%r9  # A[2]*B[0]   \n\t"    "  xorl   %%r10d, %%r10d    \n\t"  "   adcx   16(%0),  %%r8   \n\t"    "   movq	 %%r8, 16(%0)    \n\t"
-		"   mulx	 8(%2), %%r10, %%r11  # A[2]*B[1]   \n\t"    "  adox	 %%r9, %%r10     \n\t"  "   adcx	%%r12, %%r10   \n\t"    "   movq	%%r10, 24(%0)    \n\t"
-		"   mulx	16(%2), %%r12, %%r13  # A[2]*B[2]   \n\t"    "  adox	%%r11, %%r12     \n\t"  "   adcx	%%r14, %%r12   \n\t"                                        "   movq    $0, %%r8   \n\t"
-		"   mulx	24(%2), %%r14, %%rdx  # A[2]*B[3]   \n\t"    "  adox	%%r13, %%r14     \n\t"  "   adcx	%%rax, %%r14   \n\t"                                        "   movq    $0, %%rax  \n\t"
-																 "  adox	%%rdx, %%rax     \n\t"  "   adcx	 %%r8, %%rax   \n\t"
+		"movq    16(%1), %%rdx  # A[2]            \n\t"
+		"mulx	  (%2),  %%r8,  %%r9  # A[2]*B[0] \n\t"    "xorl   %%r10d, %%r10d  \n\t"  "adcx 16(%0), %%r8  \n\t"    "   movq	 %%r8, 16(%0)    \n\t"
+		"mulx	 8(%2), %%r10, %%r11  # A[2]*B[1] \n\t"    "adox	 %%r9, %%r10   \n\t"  "adcx	%%r12, %%r10  \n\t"    "   movq	%%r10, 24(%0)    \n\t"
+		"mulx	16(%2), %%r12, %%r13  # A[2]*B[2] \n\t"    "adox	%%r11, %%r12   \n\t"  "adcx	%%r14, %%r12  \n\t"                                        "   movq    $0, %%r8   \n\t"
+		"mulx	24(%2), %%r14, %%rdx  # A[2]*B[3] \n\t"    "adox	%%r13, %%r14   \n\t"  "adcx	%%rax, %%r14  \n\t"                                        "   movq    $0, %%rax  \n\t"
+				                                           "adox	%%rdx, %%rax   \n\t"  "adcx	 %%r8, %%rax  \n\t"
 
-		"   movq	24(%1), %%rdx  # A[3]               \n\t"
-		"   mulx	  (%2),  %%r8,  %%r9  # A[3]*B[0]   \n\t"    "  xorl   %%r10d, %%r10d    \n\t"  "   adcx   24(%0),  %%r8   \n\t"    "   movq	 %%r8, 24(%0)    \n\t"
-		"   mulx	 8(%2), %%r10, %%r11  # A[3]*B[1]   \n\t"    "  adox	 %%r9, %%r10     \n\t"  "   adcx	%%r12, %%r10   \n\t"    "   movq	%%r10, 32(%0)    \n\t"
-		"   mulx	16(%2), %%r12, %%r13  # A[3]*B[2]   \n\t"    "  adox	%%r11, %%r12     \n\t"  "   adcx	%%r14, %%r12   \n\t"    "   movq	%%r12, 40(%0)    \n\t"  "   movq    $0, %%r8   \n\t"
-		"   mulx	24(%2), %%r14, %%rdx  # A[3]*B[3]   \n\t"    "  adox	%%r13, %%r14     \n\t"  "   adcx	%%rax, %%r14   \n\t"    "   movq	%%r14, 48(%0)    \n\t"  "   movq    $0, %%rax  \n\t"
-																 "  adox	%%rdx, %%rax     \n\t"  "   adcx	 %%r8, %%rax   \n\t"    "   movq	%%rax, 56(%0)    \n\t"
+		"movq	24(%1), %%rdx  # A[3]             \n\t"
+		"mulx	  (%2),  %%r8,  %%r9  # A[3]*B[0] \n\t"    "xorl   %%r10d, %%r10d  \n\t"  "adcx 24(%0), %%r8  \n\t"    "   movq	 %%r8, 24(%0)    \n\t"
+		"mulx	 8(%2), %%r10, %%r11  # A[3]*B[1] \n\t"    "adox	 %%r9, %%r10   \n\t"  "adcx	%%r12, %%r10  \n\t"    "   movq	%%r10, 32(%0)    \n\t"
+		"mulx	16(%2), %%r12, %%r13  # A[3]*B[2] \n\t"    "adox	%%r11, %%r12   \n\t"  "adcx	%%r14, %%r12  \n\t"    "   movq	%%r12, 40(%0)    \n\t"  "   movq    $0, %%r8   \n\t"
+		"mulx	24(%2), %%r14, %%rdx  # A[3]*B[3] \n\t"    "adox	%%r13, %%r14   \n\t"  "adcx	%%rax, %%r14  \n\t"    "   movq	%%r14, 48(%0)    \n\t"  "   movq    $0, %%rax  \n\t"
+														   "adox	%%rdx, %%rax   \n\t"  "adcx	 %%r8, %%rax  \n\t"    "   movq	%%rax, 56(%0)    \n\t"
 	:
 	: "r"  (c), "r" (a), "r"  (b)
 	: "memory", "cc", "%rax", "%rdx",
@@ -757,7 +757,7 @@ static __inline void mul_a24_Element_1w_x64(uint64_t *const c, uint64_t *const a
 		"adcq	%%r10, 24(%0)         \n\t"
 	:
 	: "r" (c), "r" (a), "r" (a24)
-	: "cc", "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11"
+	: "memory", "cc", "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11"
 	);
 #else /* Without BMI2 */
 	/**

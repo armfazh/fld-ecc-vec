@@ -1,4 +1,4 @@
-
+#include "faz_ecdh_avx2.h"
 /****** Implementation of Montgomery Ladder Algorithm ************/
 /**
  * Swap method
@@ -242,7 +242,7 @@ static __inline void step_ladder_x25519(
 static int x25519_shared_avx2(
 		argECDHX_Key shared_secret,
 		argECDHX_Key session_key,
-		argECDHX_Key secret_key
+		argECDHX_Key private_key
 )
 {
 	uint64_t save;
@@ -254,9 +254,9 @@ static int x25519_shared_avx2(
 	_mm256_zeroupper();
 
 	/* clampC function */
-	save = secret_key[ECDH25519_KEY_SIZE_BYTES-1]<<16 | secret_key[0];
-	secret_key[0] = secret_key[0] & (~(uint8_t)0x7);
-	secret_key[ECDH25519_KEY_SIZE_BYTES-1] = (uint8_t)64 | (secret_key[ECDH25519_KEY_SIZE_BYTES-1] & (uint8_t)0x7F);
+	save = private_key[ECDH25519_KEY_SIZE_BYTES-1]<<16 | private_key[0];
+	private_key[0] = private_key[0] & (~(uint8_t)0x7);
+	private_key[ECDH25519_KEY_SIZE_BYTES-1] = (uint8_t)64 | (private_key[ECDH25519_KEY_SIZE_BYTES-1] & (uint8_t)0x7F);
 	/**
 	 * As in the draft:
 	 * When receiving such an array, implementations of curve25519
@@ -274,7 +274,7 @@ static int x25519_shared_avx2(
 	interleave_2w_h0h5(QxPx,X1,X1);
 
 	/* main-loop */
-	step_ladder_x25519((uint64_t*)secret_key, QxPx, QzPz);
+	step_ladder_x25519((uint64_t*)private_key, QxPx, QzPz);
 	deinterleave_2w_h0h5(XX, X1, QxPx);
 	deinterleave_2w_h0h5(ZZ, X1, QzPz);
 	_mm256_zeroupper();
@@ -284,9 +284,47 @@ static int x25519_shared_avx2(
 	inv_Element_1w_x64(invZ, Z);
 	mul_Element_1w_x64((uint64_t*)shared_secret, X, invZ);
 	fred_Element_1w_x64((uint64_t*)shared_secret);
-	secret_key[ECDH25519_KEY_SIZE_BYTES-1] = (uint8_t)((save>>16) & 0xFF);
-	secret_key[0]  = (uint8_t)(save & 0xFF);
+	private_key[ECDH25519_KEY_SIZE_BYTES-1] = (uint8_t)((save>>16) & 0xFF);
+	private_key[0]  = (uint8_t)(save & 0xFF);
 	return 0;
+}
+static void point_Edwards2Montgomery(uint8_t * enc,PointXYZT_2w_H0H5 * P)
+{
+	Element_1w_x64 add,sub,inv_sub;
+	Element_1w_Fp25519 t0,t1,t2;
+	Element_2w_Fp25519 addZY,subZY;
+
+	add_Element_2w_h0h5(addZY,P->TZ,P->XY);
+	sub_Element_2w_h0h5(subZY,P->TZ,P->XY);
+	compress_Element_2w_h0h5(addZY);
+	compress_Element_2w_h0h5(subZY);
+
+	deinterleave_2w_h0h5(t2,t0,addZY);
+	deinterleave_2w_h0h5(t2,t1,subZY);
+
+	singleH0H5_To_str_bytes((uint8_t*)add,t0);
+	singleH0H5_To_str_bytes((uint8_t*)sub,t1);
+
+//	printf("X: ");Fp.fp25519._1way_x64.print(X);
+//	printf("Y: ");Fp.fp25519._1way_x64.print(Y);
+//	printf("Z: ");Fp.fp25519._1way_x64.print(Z);
+
+	inv_Element_1w_x64(inv_sub,sub);
+	mul_Element_1w_x64((uint64_t*)enc,add,inv_sub);
+	fred_Element_1w_x64((uint64_t*)enc);
+
+//	printf("x: ");Fp.fp25519._1way_x64.print(enc);
+}
+
+#define div_8_256(r)                \
+{                               \
+    uint64_t bit3 = r[3]<<61;   \
+    uint64_t bit2 = r[2]<<61;   \
+    uint64_t bit1 = r[1]<<61;   \
+    r[3] = (r[3]>>3);           \
+    r[2] = (r[2]>>3) | bit3;    \
+    r[1] = (r[1]>>3) | bit2;    \
+    r[0] = (r[0]>>3) | bit1;    \
 }
 
 static __inline int x25519_keygen_avx2(
@@ -294,15 +332,34 @@ static __inline int x25519_keygen_avx2(
 		argECDHX_Key private_key
 )
 {
-	ECDH_X25519_KEY X1 = {0};
-	X1[0] = 9;
-	return x25519_shared_avx2(session_key,X1,private_key);
+	int i=0;
+	PointXYZT_2w_H0H5 kB;
+	ECDH_X25519_KEY scalar;
+	uint64_t * ptrScalar = (uint64_t*)scalar;
+
+	for(i=0;i<ECDH25519_KEY_SIZE_BYTES;i++)
+	{
+		scalar[i] = private_key[i];
+	}
+	/* clampC function */
+	scalar[0] = scalar[0] & (~(uint8_t)0x7);
+	scalar[ECDH25519_KEY_SIZE_BYTES-1] = (uint8_t)64 | (scalar[ECDH25519_KEY_SIZE_BYTES-1] & (uint8_t)0x7F);
+
+	div_8_256(ptrScalar);
+	point_multiplication_ed25519(&kB,scalar);
+	_1way_doubling_2w_H0H5(&kB);
+	_1way_doubling_2w_H0H5(&kB);
+	_1way_doubling_2w_H0H5(&kB);
+
+	point_Edwards2Montgomery(session_key,&kB);
+	spc_memset(scalar,0,ECDH25519_KEY_SIZE_BYTES);
+	return 0;
 }
 
 static int x25519_shared_x64(
 		argECDHX_Key shared_secret,
 		argECDHX_Key session_key,
-		argECDHX_Key secret_key
+		argECDHX_Key private_key
 )
 {
 	ALIGN uint64_t buffer[4*NUM_DIGITS_FP25519];
@@ -313,7 +370,7 @@ static int x25519_shared_x64(
 
 	int i=0, j=0;
 	uint64_t prev = 0;
-	uint64_t *const key = (uint64_t*)secret_key;
+	uint64_t *const key = (uint64_t*)private_key;
 	uint64_t *const Px = coordinates+0;
 	uint64_t *const Pz = coordinates+4;
 	uint64_t *const Qx = coordinates+8;
@@ -338,9 +395,9 @@ static int x25519_shared_x64(
 	uint64_t *const buffer_2w = buffer;
 
 	/* clampC function */
-	save = secret_key[ECDH25519_KEY_SIZE_BYTES-1]<<16 | secret_key[0];
-	secret_key[0] = secret_key[0] & (~(uint8_t)0x7);
-	secret_key[ECDH25519_KEY_SIZE_BYTES-1] = (uint8_t)64 | (secret_key[ECDH25519_KEY_SIZE_BYTES-1] & (uint8_t)0x7F);
+	save = private_key[ECDH25519_KEY_SIZE_BYTES-1]<<16 | private_key[0];
+	private_key[0] = private_key[0] & (~(uint8_t)0x7);
+	private_key[ECDH25519_KEY_SIZE_BYTES-1] = (uint8_t)64 | (private_key[ECDH25519_KEY_SIZE_BYTES-1] & (uint8_t)0x7F);
 
 	/**
 	* As in the draft:
@@ -403,18 +460,8 @@ static int x25519_shared_x64(
 	inv_Element_1w_x64(A,Qz);
 	mul_Element_1w_x64((uint64_t*)shared_secret,Qx,A);
 	fred_Element_1w_x64((uint64_t*)shared_secret);
-	secret_key[ECDH25519_KEY_SIZE_BYTES-1] = (uint8_t)((save>>16) & 0xFF);
-	secret_key[0]  = (uint8_t)(save & 0xFF);
+	private_key[ECDH25519_KEY_SIZE_BYTES-1] = (uint8_t)((save>>16) & 0xFF);
+	private_key[0]  = (uint8_t)(save & 0xFF);
 	return 0;
-}
-
-static __inline int x25519_keygen_x64(
-		argECDHX_Key session_key,
-		argECDHX_Key private_key
-)
-{
-	ECDH_X25519_KEY X1 = {0};
-	X1[0] = 9;
-	return x25519_shared_x64(session_key,X1,private_key);
 }
 

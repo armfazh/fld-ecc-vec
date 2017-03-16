@@ -24,6 +24,7 @@ static int ed25519_keygen(
 {
 	sph_sha512_context context;
 	Ed25519_Digest az;
+	PointXYZT_2w_H0H5 azB;
 
 	sph_sha512_init(&context);
 	sph_sha512(&context,private_key,ED25519_KEY_SIZE_BYTES_PARAM);
@@ -31,7 +32,8 @@ static int ed25519_keygen(
 	az[0]  &= -((uint8_t)1<<ED25519_C_PARAM);
 	az[31] &= 127;
 	az[31] |= 64;
-	point_multiplication_ed25519(public_key,az);
+	point_multiplication_ed25519(&azB,az);
+	encode_point(public_key,&azB);
 	return EDDSA_KEYGEN_OK;
 }
 
@@ -242,6 +244,7 @@ static int ed25519_sign_all(
 		const uint8_t phflag
 )
 {
+	PointXYZT_2w_H0H5 rB;
 	sph_sha512_context hash_context;
 	Ed25519_Digest H_RAM,r,ah,pre_hash_message;
 	unsigned char prefix[34] = "SigEd25519 no Ed25519 collisions";
@@ -290,7 +293,8 @@ static int ed25519_sign_all(
 	sph_sha512_close(&hash_context,r);
 	modular_reduction_ed25519(r);
 
-	point_multiplication_ed25519(signature,r);
+	point_multiplication_ed25519(&rB,r);
+	encode_point(signature,&rB);
 
 	sph_sha512_init(&hash_context);
 	if(pureEdDSA == 0 )

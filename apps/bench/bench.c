@@ -23,8 +23,8 @@ int main(void)
 
 	printf("===== Benchmarking Ed448 =====\n");
 	bench_fp448();
-	bench_x448();
 	bench_ecc();
+	bench_x448();
 	bench_ed448();
 
 	return 0;

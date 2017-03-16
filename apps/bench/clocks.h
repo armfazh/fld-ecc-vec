@@ -49,7 +49,7 @@ do{ \
 
 #define oper_second(RANDOM,LABEL,FUNCTION) \
 do{\
-	printf("Operations per second: %s.\n",#LABEL);\
+	printf("%-14s : ",#LABEL);\
 	RANDOM;\
 \
 	unsigned i;\
@@ -70,7 +70,7 @@ do{\
 	end = time_now();\
 	end_c = cycles_now();\
 \
-	printf("%lu us, %g op/s, %lu cycles/op\n",\
+	printf("%3lu µs, %8.1f oper/s, %6lu cycles/op\n",\
 			(unsigned long) ((end - start) / iterations),\
 			iterations*1000000. / (end - start),\
 			(unsigned long)((end_c-start_c)/iterations) );\

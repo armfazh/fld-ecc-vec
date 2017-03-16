@@ -90,7 +90,7 @@ static void zip_Element_4w_h0h5(argElement_4w A,uint64_t*pA,uint64_t*pB,uint64_t
  * @param pD
  * @param A
  */
-static void unzip_Element_4w_h0h5(uint64_t*pA,uint64_t*pB,uint64_t*pC,uint64_t*pD,argElement_4w A)
+void unzip_Element_4w_h0h5(uint64_t*pA,uint64_t*pB,uint64_t*pC,uint64_t*pD,argElement_4w A)
 {
 	__m256i A02,A13,C02,C13,A0,B0,C0,D0,
 			A46,A57,C46,C57,A4,B4,C4,D4,AC8,BD8;

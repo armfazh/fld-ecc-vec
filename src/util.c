@@ -1,5 +1,6 @@
 
-static void print_bytes(uint8_t * A, int num_bytes)
+
+void print_bytes(uint8_t * A, int num_bytes)
 {
 	int i;
 	printf("0x");
@@ -69,3 +70,9 @@ static void word64_multiplier(
 }
 
 
+volatile void *spc_memset(volatile void *dst, int c, size_t len) {
+	volatile char *buf;
+
+	for (buf = (volatile char *)dst;  len;  buf[--len] = c);
+	return dst;
+}

@@ -2,7 +2,6 @@
 
 static void bench_eddsa(const SignatureSchemeCtx * eddsa)
 {
-	const int BENCH = 250;
 	const int MESSAGE_LENGTH = 64;
 
 	argEdDSA_PublicKey public_key = eddsa->newKey();
@@ -11,35 +10,16 @@ static void bench_eddsa(const SignatureSchemeCtx * eddsa)
 	uint8_t message[MESSAGE_LENGTH];
 	unsigned long long messageLength=MESSAGE_LENGTH;
 
-	CLOCKS_RANDOM(
-			random_bytes(private_key,eddsa->key_size),
-			eddsa->keygen,
-			eddsa->keygen(public_key,private_key));
-
 	oper_second(
 			random_bytes(private_key,eddsa->key_size),
 			eddsa->keygen,
 			eddsa->keygen(public_key,private_key));
-
-	CLOCKS_RANDOM(
-			random_bytes(message,messageLength);
-			random_bytes(private_key,eddsa->key_size);,
-	        eddsa->sign,
-			eddsa->sign(signature,message,messageLength,EDDSA_NOCONTEXT,0,public_key,private_key));
 
 	oper_second(
 			random_bytes(message,messageLength);
 			random_bytes(private_key,eddsa->key_size);,
 	        eddsa->sign,
 			eddsa->sign(signature,message,messageLength,EDDSA_NOCONTEXT,0,public_key,private_key));
-
-	CLOCKS_RANDOM(
-			random_bytes(message,messageLength);
-			random_bytes(private_key,eddsa->key_size);
-			eddsa->keygen(public_key,private_key);
-			eddsa->sign(signature,message,messageLength,EDDSA_NOCONTEXT,0,public_key,private_key);,
-	        eddsa->verify,
-			eddsa->verify(message,messageLength,EDDSA_NOCONTEXT,0,public_key,signature));
 
 	oper_second(
 			random_bytes(message,messageLength);
@@ -54,9 +34,11 @@ static void bench_eddsa(const SignatureSchemeCtx * eddsa)
 }
 static void bench_ed25519()
 {
+	printf("====== Ed25519 AVX2 ======\n");
 	bench_eddsa(&EdDSA.Ed25519ctx);
 }
 static void bench_ed448()
 {
+	printf("======  Ed448 AVX2  ======\n");
 	bench_eddsa(&EdDSA.Ed448);
 }

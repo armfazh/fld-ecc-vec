@@ -12,7 +12,7 @@ const struct _struct_ECDHX ECDHX = {
 		.cleanKey = deallocate_bytes
 	},
 	.X25519_x64 = {
-		.keygen = x25519_keygen_x64,
+		.keygen = x25519_keygen_avx2,
 		.shared = x25519_shared_x64,
 		.key_size = ECDH25519_KEY_SIZE_BYTES,
 		.newKey = newX25519_Key,

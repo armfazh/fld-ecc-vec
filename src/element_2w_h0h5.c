@@ -36,7 +36,7 @@ static void interleave_2w_h0h5(argElement_2w C, argElement_1w LOW, argElement_1w
  * @param HIGH
  * @param A
  */
-static void deinterleave_2w_h0h5(argElement_1w LOW, argElement_1w HIGH, argElement_2w A)
+void deinterleave_2w_h0h5(argElement_1w LOW, argElement_1w HIGH, argElement_2w A)
 {
 	STORE(LOW  + 0, _mm256_permute2f128_si256(A[0], A[1], 0x20));
 	STORE(HIGH + 0, _mm256_permute2f128_si256(A[0], A[1], 0x31));
