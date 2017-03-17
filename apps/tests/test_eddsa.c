@@ -1,10 +1,6 @@
 #include <faz_eddsa_avx2.h>
 #include "vectors.c"
 
-#define LABEL "Test passed? [%s]\n"
-#define OK "Ok"
-#define ERROR "No"
-
 static void test_vector(const EdDSA_TestData * test)
 {
     int valid = EDDSA_INVALID_SIGNATURE;

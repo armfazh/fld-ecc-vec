@@ -1,7 +1,4 @@
 #include <faz_ecdh_avx2.h>
-#define LABEL "Test passed? [%s]\n"
-#define OK "Ok"
-#define ERROR "No"
 
 static void test0_rfc7748_x25519(const DiffieHellmanXFunction *x25519)
 {

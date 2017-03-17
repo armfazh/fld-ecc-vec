@@ -172,7 +172,8 @@ void recoding_signed_scalar_fold4w4_448(uint64_t *list_signs, uint64_t *list_dig
 			list_signs [56*i+2*j+1] = (int64_t) -carry;
 		}
 	}
-	/* list_digits[112] = carry;*/ /* This is always equal to 0 iff r < 2**447 */
+//	printf("Carry: %d\n",carry);
+	list_digits[112] = carry; /* This is always equal to 0 iff r < 2**447 */
 }
 
 /**
@@ -452,8 +453,8 @@ static void point_multiplication_fold4w4(PointXYZT_2w_H0H8 *rB, uint8_t *r)
 	unsigned int i;
 	PointXYZT_4way_Fp448 Q;
 	Point_precmp_4way_Fp448 P;
-	ALIGN uint64_t K[112];
-	ALIGN uint64_t S[112];
+	ALIGN uint64_t K[112+3];
+	ALIGN uint64_t S[112+3];
 	const Element_4w_Fp448 one_half = {
 			SET1_64(0x0000000),SET1_64(0xfffffff),
 			SET1_64(0x0000000),SET1_64(0xfffffff),
@@ -477,7 +478,7 @@ static void point_multiplication_fold4w4(PointXYZT_2w_H0H8 *rB, uint8_t *r)
 	add_Element_4w_h0h8(Q.Y,P.addYX,P.subYX);
 	compress_Element_4w_h0h8(Q.X);
 	compress_Element_4w_h0h8(Q.Y);
-	mul_Element_4w_h0h8(Q.T,Q.X,Q.Y);							compress_Element_4w_h0h8(Q.T);
+	mul_Element_4w_h0h8(Q.T,Q.X,Q.Y);						compress_Element_4w_h0h8(Q.T);
 	mul_Element_4w_h0h8(Q.T,Q.T,(argElement_4w)one_half);	compress_Element_4w_h0h8(Q.T);
 
 	for(i=1;i<NUM_LUT_ED448;i++)
@@ -511,6 +512,7 @@ static void fixed_point_multiplication_ed448(PointXYZT_2w_H0H8 *rB, uint8_t *r)
 	 **/
 	Ed448_PublicKey r_div_4;
 	div4(r_div_4,r);
+//	printf("div4> ");print_bytes(r_div_4,ED448_KEY_SIZE_BYTES_PARAM);
 	point_multiplication_fold4w4(rB,r_div_4);
 }
 

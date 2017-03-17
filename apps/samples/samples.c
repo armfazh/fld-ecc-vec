@@ -88,7 +88,6 @@ void ed448()
 	ECDHX.X448.keygen(bobSession,bobPrivate);
 	ECDHX.X448.shared(aliceShared,bobSession,alicePrivate);
 	ECDHX.X448.shared(bobShared,aliceSession,bobPrivate);
-
 }
 
 void ed25519()
@@ -169,6 +168,7 @@ void fp25519()
 	Fp.fp25519._2way.clean(a2);	Fp.fp25519._2way.clean(b2);	Fp.fp25519._2way.clean(c2);
 	Fp.fp25519._4way.clean(a4);	Fp.fp25519._4way.clean(b4);	Fp.fp25519._4way.clean(c4);
 }
+
 int main()
 {
 	ed25519();

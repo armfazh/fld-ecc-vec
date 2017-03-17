@@ -821,7 +821,12 @@ static int compare_Element_1w_x64(uint64_t *A, uint64_t *B)
 {
 	return compare_bytes((uint8_t*)A,(uint8_t*)B,SIZE_FP25519);
 }
-
+/**
+ * Given u,v, it computes (u/v)^(p+3)/8
+ * @param uv_p38
+ * @param u
+ * @param v
+ */
 static void invsqrt_Element_1w_x64(uint64_t *const uv_p38, uint64_t *const u, uint64_t *const v)
 {
 	Element_1w_x64 sqrt_minus_one = {

@@ -35,7 +35,7 @@ typedef ALIGN struct pointxytz_2w_h0h5_fp25519{
 
 #define LUT_24KB 24
 #define LUT_12KB 12
-#define LOOKUP_TABLE_SIZE LUT_12KB
+#define LOOKUP_TABLE_SIZE LUT_24KB
 
 
 void _4way_mixadd_25519(PointXYZT_4way_Fp25519 *Q, Point_precmp_4way_Fp25519 *P);

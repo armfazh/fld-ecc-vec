@@ -291,6 +291,10 @@ static int x25519_shared_avx2(
 
 static void point_Edwards2Montgomery_ed25519(uint8_t * enc,PointXYZT_2w_H0H5 * P)
 {
+	/**
+	 * Using the birational map between
+	 * edwards25519-> curve25519
+	 */
 	Element_1w_x64 add,sub,inv_sub;
 	Element_1w_Fp25519 t0,t1,t2;
 	Element_2w_Fp25519 addZY,subZY;
