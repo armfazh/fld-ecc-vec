@@ -27,6 +27,7 @@ add_executable(tests apps/tests/tests.c
 add_executable(samples apps/samples/samples.c
 	${SRC}/random.c
 )
+add_executable(cpu_id apps/samples/cpu_id.c )
 
 target_link_libraries(
         bench
