@@ -2,9 +2,9 @@
 
 static void bench_ecdh(const DiffieHellmanXFunction * ecdh)
 {
-	argECDHX_Key secret_key = ecdh->newKey();
-	argECDHX_Key session_key = ecdh->newKey();
-	argECDHX_Key shared_secret = ecdh->newKey();
+	argECDHX_Key secret_key = ecdh->initKey();
+	argECDHX_Key session_key = ecdh->initKey();
+	argECDHX_Key shared_secret = ecdh->initKey();
 
 	random_bytes(secret_key, ecdh->key_size);
 
@@ -20,6 +20,9 @@ static void bench_ecdh(const DiffieHellmanXFunction * ecdh)
 		ecdh->shared,
 		ecdh->shared(shared_secret, session_key, secret_key)
 	);
+	ecdh->clearKey(secret_key);
+	ecdh->clearKey(session_key);
+	ecdh->clearKey(shared_secret);
 }
 
 static void bench_x25519()

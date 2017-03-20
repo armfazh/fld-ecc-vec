@@ -19,8 +19,8 @@ typedef struct _struct_DiffieHellmanXFunction {
 	XKeyGen keygen;
 	XSharedSecret shared;
 	uint64_t key_size;
-	ZeroOperandReturnKey newKey;
-	OneOperandGeneric cleanKey;
+	ZeroOperandReturnKey initKey;
+	OneOperandGeneric clearKey;
 } DiffieHellmanXFunction;
 
 struct _struct_ECDHX {

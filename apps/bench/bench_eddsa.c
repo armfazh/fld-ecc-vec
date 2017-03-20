@@ -4,9 +4,9 @@ static void bench_eddsa(const SignatureSchemeCtx * eddsa)
 {
 	const int MESSAGE_LENGTH = 64;
 
-	argEdDSA_PublicKey public_key = eddsa->newKey();
-	argEdDSA_PublicKey private_key = eddsa->newKey();
-	argEdDSA_Signature signature = eddsa->newSignature();
+	argEdDSA_PublicKey public_key = eddsa->initKey();
+	argEdDSA_PublicKey private_key = eddsa->initKey();
+	argEdDSA_Signature signature = eddsa->initSignature();
 	uint8_t message[MESSAGE_LENGTH];
 	unsigned long long messageLength=MESSAGE_LENGTH;
 
@@ -28,9 +28,9 @@ static void bench_eddsa(const SignatureSchemeCtx * eddsa)
 			eddsa->sign(signature,message,messageLength,EDDSA_NOCONTEXT,0,public_key,private_key);,
 			eddsa->verify,
 			eddsa->verify(message,messageLength,EDDSA_NOCONTEXT,0,public_key,signature));
-	eddsa->cleanKey(public_key);
-	eddsa->cleanKey(private_key);
-	eddsa->cleanSignature(signature);
+	eddsa->clearKey(public_key);
+	eddsa->clearKey(private_key);
+	eddsa->clearSignature(signature);
 }
 static void bench_ed25519()
 {

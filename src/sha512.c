@@ -183,7 +183,7 @@ sph_sha384_init(void *cc)
 {
 	sph_sha384_context *sc;
 
-	sc = cc;
+	sc = (sph_sha384_context *)cc;
 	memcpy(sc->val, H384, sizeof H384);
 	sc->count = 0;
 }
@@ -194,7 +194,7 @@ sph_sha512_init(void *cc)
 {
 	sph_sha512_context *sc;
 
-	sc = cc;
+	sc = (sph_sha512_context *)cc;
 	memcpy(sc->val, H512, sizeof H512);
 	sc->count = 0;
 }
@@ -337,7 +337,7 @@ SPH_XCAT(sph_, HASH)(void *cc, const void *data, size_t len)
 	SPH_XCAT(sph_, SPH_XCAT(HASH, _context)) *sc;
 	unsigned current;
 
-	sc = cc;
+	sc = (SPH_XCAT(sph_, SPH_XCAT(HASH, _context)) *) cc;
 #if SPH_64
 	current = (unsigned)sc->count & (SPH_BLEN - 1U);
 #else
@@ -387,7 +387,7 @@ SPH_XCAT(sph_, HASH)(void *cc, const void *data, size_t len)
 		SPH_XCAT(HASH, _short)(cc, data, len);
 		return;
 	}
-	sc = cc;
+	sc = (SPH_XCAT(sph_, SPH_XCAT(HASH, _context)) *)cc;
 #if SPH_64
 	current = (unsigned)sc->count & (SPH_BLEN - 1U);
 #else
@@ -409,7 +409,7 @@ SPH_XCAT(sph_, HASH)(void *cc, const void *data, size_t len)
 #endif
 	orig_len = len;
 	while (len >= SPH_BLEN) {
-		RFUN(data, SPH_VAL);
+		RFUN((const unsigned char *)data, SPH_VAL);
 		len -= SPH_BLEN;
 		data = (const unsigned char *)data + SPH_BLEN;
 	}
@@ -451,7 +451,7 @@ SPH_XCAT(HASH, _addbits_and_close)(void *cc,
 	sph_u32 low, high;
 #endif
 
-	sc = cc;
+	sc = (SPH_XCAT(sph_, SPH_XCAT(HASH, _context)) *)cc;
 #if SPH_64
 	current = (unsigned)sc->count & (SPH_BLEN - 1U);
 #else

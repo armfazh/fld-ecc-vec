@@ -8,21 +8,21 @@ const struct _struct_ECDHX ECDHX = {
 		.keygen = x25519_keygen_avx2,
 		.shared = x25519_shared_avx2,
 		.key_size = ECDH25519_KEY_SIZE_BYTES,
-		.newKey = newX25519_Key,
-		.cleanKey = deallocate_bytes
+		.initKey = initX25519_Key,
+		.clearKey = deallocate_bytes
 	},
 	.X25519_x64 = {
 		.keygen = x25519_keygen_avx2,
 		.shared = x25519_shared_x64,
 		.key_size = ECDH25519_KEY_SIZE_BYTES,
-		.newKey = newX25519_Key,
-		.cleanKey = deallocate_bytes
+		.initKey = initX25519_Key,
+		.clearKey = deallocate_bytes
 	},
 	.X448 = {
 		.keygen = x448_keygen,
 		.shared = x448_shared,
 		.key_size = ECDH448_KEY_SIZE_BYTES,
-		.newKey = newX448_Key,
-		.cleanKey = deallocate_bytes
+		.initKey = initX448_Key,
+		.clearKey = deallocate_bytes
 	},
 };

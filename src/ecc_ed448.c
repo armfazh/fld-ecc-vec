@@ -483,7 +483,7 @@ static void point_multiplication_fold4w4(PointXYZT_2w_H0H8 *rB, uint8_t *r)
 
 	for(i=1;i<NUM_LUT_ED448;i++)
 	{
-        _mm_prefetch( (void*)  (((uint8_t*)TableSign_w4_3675k)+768*(i+1) ),_MM_HINT_T0);
+        _mm_prefetch( (const char *)  (((uint8_t*)TableSign_w4_3675k)+768*(i+1) ),_MM_HINT_T0);
 		query_table_fold4w4_ed448(&P, ((uint8_t*)TableSign_w4_3675k)+SIZE_ONE_LUT_ED448*i,S+4*i,K+4*i);
 		_4way_mixadd_448(&Q, &P);
 	}

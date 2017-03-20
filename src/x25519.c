@@ -15,7 +15,7 @@
 #define SWAP_METHOD PERMUTATION
 
 
-static uint8_t * newX25519_Key()
+static uint8_t * initX25519_Key()
 {
 	return (uint8_t*) allocate_bytes(ECDH25519_KEY_SIZE_BYTES * sizeof(uint8_t));
 }

@@ -6,7 +6,7 @@
 #include "bench_fp.c"
 #include "bench_ecc.c"
 #include "bench_ecdh.c"
-#include "bench_ed448.c"
+#include "bench_eddsa.c"
 
 int main(void)
 {

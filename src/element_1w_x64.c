@@ -948,7 +948,7 @@ static void print_Element_1w_x64(uint64_t *A)
 	print_bytes((uint8_t*)A,SIZE_FP25519);
 }
 
-static uint64_t * new_Element_1w_x64()
+static uint64_t * init_Element_1w_x64()
 {
 	return (uint64_t*) allocate_bytes(NUM_DIGITS_FP25519_X64 * sizeof(uint64_t));
 }

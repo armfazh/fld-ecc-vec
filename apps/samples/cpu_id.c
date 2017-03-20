@@ -41,7 +41,6 @@
 #define bit_SSE4_2	(1 << 20)
 #endif
 
-
 int main()
 {
 	printf("Program compiled with: %s\n",__VERSION__);

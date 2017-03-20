@@ -596,7 +596,7 @@ static int compare_Element_4w_h0h8(argElement_4w X0_X1_X2_X3, argElement_4w Y0_Y
 		   compare_Element_1w_h0h8(X3, Y3);
 }
 
-static __m256i * new_Element_4w_h0h8()
+static __m256i * init_Element_4w_h0h8()
 {
 	return (__m256i*) allocate_bytes(NUM_DIGITS_FP448 * sizeof(__m256i));
 }

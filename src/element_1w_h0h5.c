@@ -730,7 +730,7 @@ static void print_Element_1w_h0h5(uint64_t * A)
 	singleH0H5_To_str_bytes(a,A);
 	print_bytes(a,SIZE_FP25519);
 }
-static uint64_t * new_Element_1w_h0h5()
+static uint64_t * init_Element_1w_h0h5()
 {
 	return (uint64_t*) allocate_bytes((4*((NUM_DIGITS_FP25519+3)/4)) * sizeof(uint64_t));
 }

@@ -714,7 +714,7 @@ static int compare_Element_2w_h0h8(argElement_2w X0_X1, argElement_2w Y0_Y1)
 	return compare_Element_1w_h0h8(X0, Y0) && compare_Element_1w_h0h8(X1, Y1);
 }
 
-static __m256i * new_Element_2w_h0h8()
+static __m256i * init_Element_2w_h0h8()
 {
 	return (__m256i*) allocate_bytes((NUM_DIGITS_FP448/2) * sizeof(__m256i));
 }

@@ -1,12 +1,12 @@
 #include "ecc_ed448.c"
 #include "sha3.c"
 
-static uint8_t * newEd448_Key()
+static uint8_t * initEd448_Key()
 {
 	return (uint8_t*) allocate_bytes(ED448_KEY_SIZE_BYTES_PARAM * sizeof(uint8_t));
 }
 
-static uint8_t * newEd448_Signature()
+static uint8_t * initEd448_Signature()
 {
 	return (uint8_t*) allocate_bytes(ED448_SIG_SIZE_BYTES_PARAM * sizeof(uint8_t));
 }

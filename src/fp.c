@@ -26,8 +26,8 @@ const struct _struct_Fp Fp = {
 						.cmp   = compare_Element_1w_x64,
 						.rand  = random_Element_1w_x64,
 						.print = print_Element_1w_x64,
-						.new = new_Element_1w_x64,
-						.clean = deallocate_bytes
+						.init = init_Element_1w_x64,
+						.clear = deallocate_bytes
 				},
 				._1way = {
 						.add   = add_Element_1w_h0h5,
@@ -40,8 +40,8 @@ const struct _struct_Fp Fp = {
 						.cmp   = compare_Element_1w_h0h5,
 						.rand  = random_Element_1w_h0h5,
 						.print = print_Element_1w_h0h5,
-						.new = new_Element_1w_h0h5,
-						.clean = deallocate_bytes
+						.init = init_Element_1w_h0h5,
+						.clear = deallocate_bytes
 				},
 				._2way = {
 						.add = add_Element_2w_h0h5,
@@ -52,8 +52,8 @@ const struct _struct_Fp Fp = {
 						.cmp = compare_Element_2w_h0h5,
 						.rand = random_Element_2w_h0h5,
 						.print = print_Element_2w_h0h5,
-						.new = new_Element_2w_h0h5,
-						.clean = deallocate_bytes
+						.init = init_Element_2w_h0h5,
+						.clear = deallocate_bytes
 				},
 				._4way = {
 						.add = add_Element_4w_h0h5,
@@ -64,8 +64,8 @@ const struct _struct_Fp Fp = {
 						.cmp = compare_Element_4w_h0h5,
 						.rand = random_Element_4w_h0h5,
 						.print = print_Element_4w_h0h5,
-						.new = new_Element_4w_h0h5,
-						.clean = deallocate_bytes
+						.init = init_Element_4w_h0h5,
+						.clear = deallocate_bytes
 				}
 		},
 		.fp448 = {
@@ -80,8 +80,8 @@ const struct _struct_Fp Fp = {
 						.cmp = compare_Element_1w_h0h8,
 						.rand = random_Element_1w_h0h8,
 						.print = print_Element_1w_h0h8,
-						.new = new_Element_1w_h0h8,
-						.clean = deallocate_bytes
+						.init = init_Element_1w_h0h8,
+						.clear = deallocate_bytes
 				},
 				._2way = {
 						.add = add_Element_2w_h0h8,
@@ -92,8 +92,8 @@ const struct _struct_Fp Fp = {
 						.cmp = compare_Element_2w_h0h8,
 						.rand = random_Element_2w_h0h8,
 						.print = print_Element_2w_h0h8,
-						.new = new_Element_2w_h0h8,
-						.clean = deallocate_bytes
+						.init = init_Element_2w_h0h8,
+						.clear = deallocate_bytes
 				},
 				._4way = {
 						.add = add_Element_4w_h0h8,
@@ -104,8 +104,8 @@ const struct _struct_Fp Fp = {
 						.cmp = compare_Element_4w_h0h8,
 						.rand = random_Element_4w_h0h8,
 						.print = print_Element_4w_h0h8,
-						.new = new_Element_4w_h0h8,
-						.clean = deallocate_bytes
+						.init = init_Element_4w_h0h8,
+						.clear = deallocate_bytes
 				}
 		}
 };

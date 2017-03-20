@@ -763,7 +763,7 @@ static void print_Element_1w_h0h8(uint64_t *A)
 	print_bytes(a,SIZE_FP448);
 }
 
-static uint64_t * new_Element_1w_h0h8()
+static uint64_t * init_Element_1w_h0h8()
 {
 	return (uint64_t*) allocate_bytes(NUM_DIGITS_FP448 * sizeof(uint64_t));
 }

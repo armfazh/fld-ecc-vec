@@ -10,12 +10,12 @@ void x25519()
 {
 	const DiffieHellmanXFunction *ecdh = &ECDHX.X25519;
 
-	argECDHX_Key alice_private_key = ecdh->newKey();
-	argECDHX_Key alice_session_key = ecdh->newKey();
-	argECDHX_Key alice_shared_key  = ecdh->newKey();
-	argECDHX_Key bob_private_key   = ecdh->newKey();
-	argECDHX_Key bob_session_key   = ecdh->newKey();
-	argECDHX_Key bob_shared_key    = ecdh->newKey();
+	argECDHX_Key alice_private_key = ecdh->initKey();
+	argECDHX_Key alice_session_key = ecdh->initKey();
+	argECDHX_Key alice_shared_key  = ecdh->initKey();
+	argECDHX_Key bob_private_key   = ecdh->initKey();
+	argECDHX_Key bob_session_key   = ecdh->initKey();
+	argECDHX_Key bob_shared_key    = ecdh->initKey();
 
 	random_bytes(alice_private_key, ecdh->key_size);
 	random_bytes(bob_private_key, ecdh->key_size);
@@ -27,12 +27,12 @@ void x25519()
 	ecdh->shared(bob_shared_key, alice_session_key, bob_private_key);
 //	memcmp(alice_shared_key, bob_shared_key, ecdh->key_size);
 
-	ecdh->cleanKey(alice_private_key);
-	ecdh->cleanKey(alice_session_key);
-	ecdh->cleanKey(alice_shared_key);
-	ecdh->cleanKey(bob_private_key);
-	ecdh->cleanKey(bob_session_key);
-	ecdh->cleanKey(bob_shared_key);
+	ecdh->clearKey(alice_private_key);
+	ecdh->clearKey(alice_session_key);
+	ecdh->clearKey(alice_shared_key);
+	ecdh->clearKey(bob_private_key);
+	ecdh->clearKey(bob_session_key);
+	ecdh->clearKey(bob_shared_key);
 
 }
 
@@ -40,12 +40,12 @@ void x448()
 {
 	const DiffieHellmanXFunction *ecdh = &ECDHX.X448;
 
-	argECDHX_Key alice_private_key = ecdh->newKey();
-	argECDHX_Key alice_session_key = ecdh->newKey();
-	argECDHX_Key alice_shared_key  = ecdh->newKey();
-	argECDHX_Key bob_private_key   = ecdh->newKey();
-	argECDHX_Key bob_session_key   = ecdh->newKey();
-	argECDHX_Key bob_shared_key    = ecdh->newKey();
+	argECDHX_Key alice_private_key = ecdh->initKey();
+	argECDHX_Key alice_session_key = ecdh->initKey();
+	argECDHX_Key alice_shared_key  = ecdh->initKey();
+	argECDHX_Key bob_private_key   = ecdh->initKey();
+	argECDHX_Key bob_session_key   = ecdh->initKey();
+	argECDHX_Key bob_shared_key    = ecdh->initKey();
 
 	random_bytes(alice_private_key, ecdh->key_size);
 	random_bytes(bob_private_key, ecdh->key_size);
@@ -57,12 +57,12 @@ void x448()
 	ecdh->shared(bob_shared_key, alice_session_key, bob_private_key);
 //	memcmp(alice_shared_key, bob_shared_key, ecdh->key_size);
 
-	ecdh->cleanKey(alice_private_key);
-	ecdh->cleanKey(alice_session_key);
-	ecdh->cleanKey(alice_shared_key);
-	ecdh->cleanKey(bob_private_key);
-	ecdh->cleanKey(bob_session_key);
-	ecdh->cleanKey(bob_shared_key);
+	ecdh->clearKey(alice_private_key);
+	ecdh->clearKey(alice_session_key);
+	ecdh->clearKey(alice_shared_key);
+	ecdh->clearKey(bob_private_key);
+	ecdh->clearKey(bob_session_key);
+	ecdh->clearKey(bob_shared_key);
 
 }
 
@@ -117,17 +117,17 @@ void ed25519()
 
 void fp448()
 {
-	argElement_1w a1 = Fp.fp448._1way.new();
-	argElement_1w b1 = Fp.fp448._1way.new();
-	argElement_1w c1 = Fp.fp448._1way.new();
+	argElement_1w a1 = Fp.fp448._1way.init();
+	argElement_1w b1 = Fp.fp448._1way.init();
+	argElement_1w c1 = Fp.fp448._1way.init();
 
-	argElement_2w a2 = Fp.fp448._2way.new();
-	argElement_2w b2 = Fp.fp448._2way.new();
-	argElement_2w c2 = Fp.fp448._2way.new();
+	argElement_2w a2 = Fp.fp448._2way.init();
+	argElement_2w b2 = Fp.fp448._2way.init();
+	argElement_2w c2 = Fp.fp448._2way.init();
 
-	argElement_4w a4 = Fp.fp448._4way.new();
-	argElement_4w b4 = Fp.fp448._4way.new();
-	argElement_4w c4 = Fp.fp448._4way.new();
+	argElement_4w a4 = Fp.fp448._4way.init();
+	argElement_4w b4 = Fp.fp448._4way.init();
+	argElement_4w c4 = Fp.fp448._4way.init();
 
 	Fp.fp448._1way.mul(c1,a1,b1);
 	Fp.fp448._2way.mul(c2,a2,b2);
@@ -135,38 +135,38 @@ void fp448()
 
 	Fp.fp448._1way.add(c1,a1,b1);
 
-	Fp.fp448._1way.clean(a1);	Fp.fp448._1way.clean(b1);	Fp.fp448._1way.clean(c1);
-	Fp.fp448._2way.clean(a2);	Fp.fp448._2way.clean(b2);	Fp.fp448._2way.clean(c2);
-	Fp.fp448._4way.clean(a4);	Fp.fp448._4way.clean(b4);	Fp.fp448._4way.clean(c4);
+	Fp.fp448._1way.clear(a1);	Fp.fp448._1way.clear(b1);	Fp.fp448._1way.clear(c1);
+	Fp.fp448._2way.clear(a2);	Fp.fp448._2way.clear(b2);	Fp.fp448._2way.clear(c2);
+	Fp.fp448._4way.clear(a4);	Fp.fp448._4way.clear(b4);	Fp.fp448._4way.clear(c4);
 }
 
 void fp25519()
 {
-	argElement_1w a = Fp.fp25519._1way_x64.new();
-	argElement_1w b = Fp.fp25519._1way_x64.new();
-	argElement_1w c = Fp.fp25519._1way_x64.new();
+	argElement_1w a = Fp.fp25519._1way_x64.init();
+	argElement_1w b = Fp.fp25519._1way_x64.init();
+	argElement_1w c = Fp.fp25519._1way_x64.init();
 
-	argElement_1w a1 = Fp.fp25519._1way.new();
-	argElement_1w b1 = Fp.fp25519._1way.new();
-	argElement_1w c1 = Fp.fp25519._1way.new();
+	argElement_1w a1 = Fp.fp25519._1way.init();
+	argElement_1w b1 = Fp.fp25519._1way.init();
+	argElement_1w c1 = Fp.fp25519._1way.init();
 
-	argElement_2w a2 = Fp.fp25519._2way.new();
-	argElement_2w b2 = Fp.fp25519._2way.new();
-	argElement_2w c2 = Fp.fp25519._2way.new();
+	argElement_2w a2 = Fp.fp25519._2way.init();
+	argElement_2w b2 = Fp.fp25519._2way.init();
+	argElement_2w c2 = Fp.fp25519._2way.init();
 
-	argElement_4w a4 = Fp.fp25519._4way.new();
-	argElement_4w b4 = Fp.fp25519._4way.new();
-	argElement_4w c4 = Fp.fp25519._4way.new();
+	argElement_4w a4 = Fp.fp25519._4way.init();
+	argElement_4w b4 = Fp.fp25519._4way.init();
+	argElement_4w c4 = Fp.fp25519._4way.init();
 
 	Fp.fp25519._1way_x64.mul(c,a,b);
 	Fp.fp25519._1way.mul(c1,a1,b1);
 	Fp.fp25519._2way.mul(c2,a2,b2);
 	Fp.fp25519._4way.mul(c4,a4,b4);
 
-	Fp.fp25519._1way_x64.clean(a);	Fp.fp25519._1way_x64.clean(b);	Fp.fp25519._1way_x64.clean(c);
-	Fp.fp25519._1way.clean(a1);	Fp.fp25519._1way.clean(b1);	Fp.fp25519._1way.clean(c1);
-	Fp.fp25519._2way.clean(a2);	Fp.fp25519._2way.clean(b2);	Fp.fp25519._2way.clean(c2);
-	Fp.fp25519._4way.clean(a4);	Fp.fp25519._4way.clean(b4);	Fp.fp25519._4way.clean(c4);
+	Fp.fp25519._1way_x64.clear(a);	Fp.fp25519._1way_x64.clear(b);	Fp.fp25519._1way_x64.clear(c);
+	Fp.fp25519._1way.clear(a1);	Fp.fp25519._1way.clear(b1);	Fp.fp25519._1way.clear(c1);
+	Fp.fp25519._2way.clear(a2);	Fp.fp25519._2way.clear(b2);	Fp.fp25519._2way.clear(c2);
+	Fp.fp25519._4way.clear(a4);	Fp.fp25519._4way.clear(b4);	Fp.fp25519._4way.clear(c4);
 }
 
 int main()

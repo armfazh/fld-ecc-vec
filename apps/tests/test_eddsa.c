@@ -9,8 +9,8 @@ static void test_vector(const EdDSA_TestData * test)
 	if(test->signature_scheme == Ed25519)
 	{
 		const SignatureScheme * scheme = &EdDSA.Ed25519;
-		argEdDSA_PublicKey run_publickey = scheme->newKey();
-		argEdDSA_Signature run_signature = scheme->newSignature();
+		argEdDSA_PublicKey run_publickey = scheme->initKey();
+		argEdDSA_Signature run_signature = scheme->initSignature();
 
 		scheme->keygen(run_publickey, test->private_key);
 		printf(LABEL, memcmp(run_publickey, test->public_key, scheme->key_size) == 0 ? OK : ERROR);
@@ -21,8 +21,8 @@ static void test_vector(const EdDSA_TestData * test)
 							   run_publickey,run_signature);
 		printf(LABEL, valid == EDDSA_VERIFICATION_OK ? OK : ERROR);
 
-		scheme->cleanKey(run_publickey);
-		scheme->cleanSignature(run_signature);
+		scheme->clearKey(run_publickey);
+		scheme->clearSignature(run_signature);
 	}
 	else
 	{
@@ -47,8 +47,8 @@ static void test_vector(const EdDSA_TestData * test)
 		}
 		if(schemectx != NULL)
 		{
-			argEdDSA_PublicKey run_publickey = schemectx->newKey();
-			argEdDSA_Signature run_signature = schemectx->newSignature();
+			argEdDSA_PublicKey run_publickey = schemectx->initKey();
+			argEdDSA_Signature run_signature = schemectx->initSignature();
 
 			schemectx->keygen(run_publickey, test->private_key);
 			printf(LABEL, memcmp(run_publickey, test->public_key, schemectx->key_size) == 0 ? OK : ERROR);
@@ -61,8 +61,8 @@ static void test_vector(const EdDSA_TestData * test)
 									  run_publickey, run_signature);
 			printf(LABEL, valid == EDDSA_VERIFICATION_OK ? OK : ERROR);
 
-			schemectx->cleanKey(run_publickey);
-			schemectx->cleanSignature(run_signature);
+			schemectx->clearKey(run_publickey);
+			schemectx->clearSignature(run_signature);
 		}
 	}
 }

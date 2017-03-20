@@ -79,7 +79,7 @@ static inline void cmov(int bit, uint64_t * const pX,uint64_t * const pY)
 }
 #endif
 
-static uint8_t * newX448_Key()
+static uint8_t * initX448_Key()
 {
 	return (uint8_t*) allocate_bytes(ECDH448_KEY_SIZE_BYTES * sizeof(uint8_t));
 }

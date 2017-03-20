@@ -4,12 +4,12 @@ static void test_Element_1w(const struct _struct_Fp_1way * fp)
 {
 	int64_t i;
 	int64_t cnt =0 , match=0;
-	argElement_1w a = fp->new();
-	argElement_1w b = fp->new();
-	argElement_1w c = fp->new();
-	argElement_1w d = fp->new();
-	argElement_1w e = fp->new();
-	argElement_1w f = fp->new();
+	argElement_1w a = fp->init();
+	argElement_1w b = fp->init();
+	argElement_1w c = fp->init();
+	argElement_1w d = fp->init();
+	argElement_1w e = fp->init();
+	argElement_1w f = fp->init();
 
 	/**
 	* Test identity:
@@ -70,12 +70,12 @@ static void test_Element_1w(const struct _struct_Fp_1way * fp)
 	}
 	printf(" %ld %s\n",cnt , cnt == TEST_TIMES? "OK" : "FAIL" );
 
-	fp->clean(a);
-	fp->clean(b);
-	fp->clean(c);
-	fp->clean(d);
-	fp->clean(e);
-	fp->clean(f);
+	fp->clear(a);
+	fp->clear(b);
+	fp->clear(c);
+	fp->clear(d);
+	fp->clear(e);
+	fp->clear(f);
 }
 
 
@@ -84,11 +84,11 @@ static void test_Element_Nw(const struct _struct_Fp_Nway * fp)
 	int64_t i;
 	int64_t cnt =0 , match=0;
 
-	argElement_Nw a = fp->new();
-	argElement_Nw b = fp->new();
-	argElement_Nw c = fp->new();
-	argElement_Nw d = fp->new();
-	argElement_Nw e = fp->new();
+	argElement_Nw a = fp->init();
+	argElement_Nw b = fp->init();
+	argElement_Nw c = fp->init();
+	argElement_Nw d = fp->init();
+	argElement_Nw e = fp->init();
 
 	/**
 	* Test identity:
@@ -120,11 +120,11 @@ static void test_Element_Nw(const struct _struct_Fp_Nway * fp)
 		cnt += match;
 	}
 	printf(" %ld %s\n",cnt , cnt == TEST_TIMES? "OK" : "FAIL" );
-	fp->clean(a);
-	fp->clean(b);
-	fp->clean(c);
-	fp->clean(d);
-	fp->clean(e);
+	fp->clear(a);
+	fp->clear(b);
+	fp->clear(c);
+	fp->clear(d);
+	fp->clear(e);
 }
 
 static void test_fp25519()

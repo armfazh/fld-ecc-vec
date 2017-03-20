@@ -49,8 +49,8 @@ typedef struct _struct_SignatureScheme {
 	Verify verify;
 	uint64_t key_size;
 	uint64_t signature_size;
-	ZeroOperandReturnKey newKey,newSignature;
-	OneOperandGeneric cleanKey,cleanSignature;
+	ZeroOperandReturnKey initKey,initSignature;
+	OneOperandGeneric clearKey,clearSignature;
 } SignatureScheme;
 
 typedef struct _struct_SignatureSchemeCtx {
@@ -59,8 +59,8 @@ typedef struct _struct_SignatureSchemeCtx {
 	VerifyCtx verify;
 	uint64_t key_size;
 	uint64_t signature_size;
-	ZeroOperandReturnKey newKey,newSignature;
-	OneOperandGeneric cleanKey,cleanSignature;
+	ZeroOperandReturnKey initKey,initSignature;
+	OneOperandGeneric clearKey,clearSignature;
 } SignatureSchemeCtx;
 
 struct _struct_EdDSA {

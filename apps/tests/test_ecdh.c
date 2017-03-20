@@ -222,8 +222,8 @@ static void test0_rfc7748_x448()
 
 static void times(uint64_t n,argECDHX_Key k,uint8_t x_coordinate,const DiffieHellmanXFunction *ecdh)
 {
-	argECDHX_Key r = ecdh->newKey();
-	argECDHX_Key u = ecdh->newKey();
+	argECDHX_Key r = ecdh->initKey();
+	argECDHX_Key u = ecdh->initKey();
 	uint64_t i;
 	for(i=0;i<ecdh->key_size;i++)
 	{
@@ -240,8 +240,8 @@ static void times(uint64_t n,argECDHX_Key k,uint8_t x_coordinate,const DiffieHel
 		memcpy(u,k,ecdh->key_size);
 		memcpy(k,r,ecdh->key_size);
 	}
-	ecdh->cleanKey(r);
-	ecdh->cleanKey(u);
+	ecdh->clearKey(r);
+	ecdh->clearKey(u);
 }
 
 static void test1_rfc7748_x25519(const DiffieHellmanXFunction *x25519)
@@ -318,12 +318,12 @@ static void test_dh(const DiffieHellmanXFunction *ecdh)
 	printf("Testing Diffie-Hellman\n");
 	cnt = 0;
 	test = 0;
-	argECDHX_Key alice_private_key = ecdh->newKey();
-	argECDHX_Key alice_session_key = ecdh->newKey();
-	argECDHX_Key alice_shared_key  = ecdh->newKey();
-	argECDHX_Key bob_private_key   = ecdh->newKey();
-	argECDHX_Key bob_session_key   = ecdh->newKey();
-	argECDHX_Key bob_shared_key    = ecdh->newKey();
+	argECDHX_Key alice_private_key = ecdh->initKey();
+	argECDHX_Key alice_session_key = ecdh->initKey();
+	argECDHX_Key alice_shared_key  = ecdh->initKey();
+	argECDHX_Key bob_private_key   = ecdh->initKey();
+	argECDHX_Key bob_session_key   = ecdh->initKey();
+	argECDHX_Key bob_shared_key    = ecdh->initKey();
 
 	for (i = 0; i < TIMES; i++)
 	{
@@ -344,12 +344,12 @@ static void test_dh(const DiffieHellmanXFunction *ecdh)
 	}
 	printf(" %ld %s\n",cnt , cnt == TIMES? OK : ERROR );
 
-	ecdh->cleanKey(alice_private_key);
-	ecdh->cleanKey(alice_session_key);
-	ecdh->cleanKey(alice_shared_key);
-	ecdh->cleanKey(bob_private_key);
-	ecdh->cleanKey(bob_session_key);
-	ecdh->cleanKey(bob_shared_key);
+	ecdh->clearKey(alice_private_key);
+	ecdh->clearKey(alice_session_key);
+	ecdh->clearKey(alice_shared_key);
+	ecdh->clearKey(bob_private_key);
+	ecdh->clearKey(bob_session_key);
+	ecdh->clearKey(bob_shared_key);
 }
 
 static void test_x25519()

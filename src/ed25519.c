@@ -1,12 +1,12 @@
 #include "ecc_ed25519.c"
 #include "sha512.c"
 
-static uint8_t * newEd25519_Key()
+static uint8_t * initEd25519_Key()
 {
 	return (uint8_t*) allocate_bytes(ED25519_KEY_SIZE_BYTES_PARAM * sizeof(uint8_t));
 }
 
-static uint8_t * newEd25519_Signature()
+static uint8_t * initEd25519_Signature()
 {
 	return (uint8_t*) allocate_bytes(ED25519_SIG_SIZE_BYTES_PARAM * sizeof(uint8_t));
 }

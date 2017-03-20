@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.4)
-project(faz_eddsa_avx2)
+project(faz_eddsa_avx2 C)
 
 include_directories(./include)
 link_directories(./lib)
@@ -9,8 +9,8 @@ set(TARGET faz_eddsa_avx2)
 set(SRC ./src)
 enable_language(ASM-ATT)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -O3 -march=native -mtune=native -std=c99 -pedantic")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wall -Wextra -O3 -march=native -mtune=native -std=c99 -pedantic")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -O3 -std=c99 -pedantic -mavx2 -march=native -mtune=native")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wall -Wextra -O3 -std=c99 -pedantic -mavx2 -march=native -mtune=native")
 
 add_library(${TARGET} STATIC ${SRC}/${TARGET}.c)
 
@@ -48,6 +48,6 @@ INSTALL(TARGETS ${TARGET}
 		DESTINATION "lib"
 )
 
-INSTALL(FILES include/${TARGET}.h
+INSTALL(FILES include/${TARGET}.h include/faz_ecdh_avx2.h
 		DESTINATION "include"
 )

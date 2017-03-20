@@ -52,29 +52,29 @@ typedef void (*ThreeOperand)(argElement_1w C, argElement_1w A, argElement_1w B);
 typedef void (*TwoOperand)(argElement_1w C, argElement_1w A);
 typedef int  (*TwoOperandReturn)(argElement_1w C, argElement_1w A);
 typedef void (*OneOperand)(argElement_1w C);
-typedef argElement_1w (*ZeroOperandReturn)();
+typedef argElement_1w (*ZeroOperandReturn)(void);
 
 typedef void (*ThreeOperandVector)(argElement_2w C, argElement_2w A, argElement_2w B);
 typedef void (*TwoOperandVector)(argElement_2w C, argElement_2w A);
 typedef int (*TwoOperandReturnVector)(argElement_2w C, argElement_2w A);
 typedef void (*OneOperandVector)(argElement_2w C);
-typedef argElement_2w (*ZeroOperandReturnVector)();
+typedef argElement_2w (*ZeroOperandReturnVector)(void);
 
 struct _struct_Fp_1way {
 	ThreeOperand add,sub,mul;
 	TwoOperand inv,sqrt;
 	TwoOperandReturn cmp;
 	OneOperand sqr,cred,rand,print;
-	OneOperandGeneric clean;
-	ZeroOperandReturn new;
+	OneOperandGeneric clear;
+	ZeroOperandReturn init;
 };
 
 struct _struct_Fp_Nway {
 	ThreeOperandVector add,sub,mul;
 	TwoOperandReturnVector cmp;
 	OneOperandVector sqr,cred,rand,print;
-	OneOperandGeneric clean;
-	ZeroOperandReturnVector new;
+	OneOperandGeneric clear;
+	ZeroOperandReturnVector init;
 };
 
 struct _struct_Fp {
