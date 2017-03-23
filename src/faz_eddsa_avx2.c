@@ -4,10 +4,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include "faz_eddsa_avx2.h"
-#include "fp.c"
 #include "ed25519.c"
 #include "ed448.c"
-#include "faz_ecdh_avx2.c"
 
 const struct _struct_EdDSA EdDSA = {
 		.Ed25519 = {

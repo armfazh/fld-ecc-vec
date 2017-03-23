@@ -1,7 +1,7 @@
 #ifndef _ECC_ED448_H_
 #define _ECC_ED448_H_
 
-#include "fp.h"
+#include "faz_fp_avx2.h"
 
 typedef ALIGN struct point_extended_1way_fp448{
 	Element_1w_Fp448 X,Y,Z,T;
@@ -35,7 +35,7 @@ typedef ALIGN struct pointxytz_2w_h0h8_fp448{
 } PointXYZT_2w_H0H8;
 
 
-void _4way_mixadd_448(PointXYZT_4way_Fp448 *Q, Point_precmp_4way_Fp448 *P);
+void _4way_mixadd_ed448(PointXYZT_4way_Fp448 *Q, Point_precmp_4way_Fp448 *P);
 void _1way_doubling_2w_H0H8(PointXYZT_2w_H0H8 * P);
 void _1way_mixadd_2w_H0H8(PointXYZT_2w_H0H8 *Q, PointXYZT_precompute_2w_H0H8 *P);
 void _1way_fulladd_2w_H0H8(PointXYZT_2w_H0H8 *Q, PointXYZT_2w_H0H8 *P);

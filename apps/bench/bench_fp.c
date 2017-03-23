@@ -1,4 +1,4 @@
-#include <fp.h>
+#include <faz_fp_avx2.h>
 
 static void bench_Element_1w(const struct _struct_Fp_1way * fp)
 {

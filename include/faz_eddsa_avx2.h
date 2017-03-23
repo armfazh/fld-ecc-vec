@@ -1,7 +1,17 @@
 #ifndef _EDDSA_AVX2_H_
 #define _EDDSA_AVX2_H_
 
-#include "util.h"
+//#include <util.h>
+#include <stdint.h>
+#define ALIGN_BYTES 32
+#ifdef __INTEL_COMPILER
+#define ALIGN __declspec(align(ALIGN_BYTES))
+#else
+#define ALIGN __attribute__ ((aligned (ALIGN_BYTES)))
+#endif
+
+#define ZeroOperandReturnKey(X) uint8_t * (*X)()
+#define OneOperandGeneric(X) void (*X)(void* C)
 
 #define argEdDSA_PrivateKey uint8_t *
 #define argEdDSA_PublicKey  uint8_t *
@@ -49,8 +59,10 @@ typedef struct _struct_SignatureScheme {
 	Verify verify;
 	uint64_t key_size;
 	uint64_t signature_size;
-	ZeroOperandReturnKey initKey,initSignature;
-	OneOperandGeneric clearKey,clearSignature;
+	ZeroOperandReturnKey (initKey);
+	ZeroOperandReturnKey (initSignature);
+	OneOperandGeneric(clearKey);
+	OneOperandGeneric(clearSignature);
 } SignatureScheme;
 
 typedef struct _struct_SignatureSchemeCtx {
@@ -59,8 +71,10 @@ typedef struct _struct_SignatureSchemeCtx {
 	VerifyCtx verify;
 	uint64_t key_size;
 	uint64_t signature_size;
-	ZeroOperandReturnKey initKey,initSignature;
-	OneOperandGeneric clearKey,clearSignature;
+    ZeroOperandReturnKey(initKey);
+    ZeroOperandReturnKey(initSignature);
+    OneOperandGeneric(clearKey);
+    OneOperandGeneric(clearSignature);
 } SignatureSchemeCtx;
 
 struct _struct_EdDSA {

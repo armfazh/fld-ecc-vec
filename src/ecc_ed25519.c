@@ -151,7 +151,7 @@ static void point_encoding_ed25519(uint8_t*enc, PointXYZT_2w_H0H5* P)
  * @param list_digits
  * @param r
  */
-void recoding_signed_scalar_fold4w4_ed25519(uint64_t *list_signs, uint64_t *list_digits, uint8_t *r)
+static void recoding_signed_scalar_fold4w4_ed25519(uint64_t *list_signs, uint64_t *list_digits, uint8_t *r)
 {
 	const int OMEGA = 4;
 	int i,j;
@@ -190,7 +190,7 @@ void recoding_signed_scalar_fold4w4_ed25519(uint64_t *list_signs, uint64_t *list
  * @param secret_signs
  * @param secret_digits
  */
-void query_table_fold4w4_ed25519(Point_precmp_4way_Fp25519 *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits)
+static void query_table_fold4w4_ed25519(Point_precmp_4way_Fp25519 *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits)
 {
 	const __m256i _P[NUM_DIGITS_FP25519] = {
 			SET1_64(0x3ffffed),	SET1_64(0x1ffffff),
@@ -288,7 +288,7 @@ void query_table_fold4w4_ed25519(Point_precmp_4way_Fp25519 *P, const uint8_t * t
 }
 
 /**
- * This function will use a pre-computed table of 12KB.
+ * @brief This function will use a pre-computed table of 12KB.
  * Folding 4 means four queries at the same time.
  * Using w=4, means that scalar will be partitioned in
  * 4-bit signed digits.
@@ -303,7 +303,7 @@ void query_table_fold4w4_ed25519(Point_precmp_4way_Fp25519 *P, const uint8_t * t
  * @param rB
  * @param r
  */
-void point_multiplication_fold4w4_ed25519(PointXYZT_2w_H0H5 *rB, uint8_t *r)
+static void point_multiplication_fold4w4_ed25519(PointXYZT_2w_H0H5 *rB, uint8_t *r)
 {
 	int i;
 	PointXYZT_4way_Fp25519 Q;
@@ -405,7 +405,7 @@ void point_multiplication_fold4w4_ed25519(PointXYZT_2w_H0H5 *rB, uint8_t *r)
  * @param list_digits
  * @param r
  */
-void recoding_signed_scalar_fold2w4_ed25519(uint64_t *list_signs, uint64_t *list_digits, uint8_t *r)
+static void recoding_signed_scalar_fold2w4_ed25519(uint64_t *list_signs, uint64_t *list_digits, uint8_t *r)
 {
 	const int OMEGA = 4;
 	int i,j;
@@ -555,7 +555,6 @@ static void unzip_2w_Element_4w_h0h5(argElement_2w pA,argElement_2w pB,argElemen
 	pA[4] = UPKL64(A[8],A[9]);	pB[4] = UPKH64(A[8],A[9]);
 }
 
-
 /**
  * Given Q = [P3,P2,P1,P0]
  * Computes Q0 as:
@@ -595,7 +594,6 @@ static void join_points(PointXYZT_2w_H0H5 *T0, PointXYZT_4way_Fp25519 *Q)
 
 	_1way_fulladd_2w_H0H5(T0,&T1);
 }
-
 
 /**
  * This function will use a pre-computed table of 24KB.
@@ -657,6 +655,24 @@ static void point_multiplication_fold2w4_ed25519(PointXYZT_2w_H0H5* rB, uint8_t 
 
 /**
  *
+ * @param list_signs
+ * @param list_digits
+ * @param r
+ */
+void recoding_signed_scalar_ed25519(uint64_t *list_signs, uint64_t *list_digits, uint8_t *r)
+{
+#if LOOKUP_TABLE_SIZE == LUT_12KB
+    recoding_signed_scalar_fold4w4_ed25519(list_signs,list_digits,r);
+#elif LOOKUP_TABLE_SIZE == LUT_24KB
+    recoding_signed_scalar_fold2w4_ed25519(list_signs,list_digits,r);
+#else
+#error Define symbol LOOKUP_TABLE_SIZE with LUT_12KB or LUT_24KB.
+#endif
+}
+
+/**
+ * Secure query to a Table
+ *
  * @param P
  * @param table
  * @param secret_signs
@@ -692,7 +708,6 @@ static void point_multiplication_ed25519(PointXYZT_2w_H0H5 *P, uint8_t *r)
 #error Define symbol LOOKUP_TABLE_SIZE with LUT_12KB or LUT_24KB.
 #endif
 }
-
 
 /**
  * Given a compressed point xy,

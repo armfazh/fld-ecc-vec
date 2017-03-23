@@ -1,7 +1,5 @@
 #ifndef TABLE_SIGN_W4_12K_H_
 #define TABLE_SIGN_W4_12K_H_
-#include<stdint.h>
-#include"avx2.h"
 
 #define NUM_LUT_12_ED25519 (16)
 #define NUM_LUT_24_ED25519 (32)

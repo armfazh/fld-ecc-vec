@@ -1,3 +1,6 @@
+//#include "faz_fp_avx2.h"
+#include "ecc_ed448.h"
+
 /**
  * Swap method
  * ===========

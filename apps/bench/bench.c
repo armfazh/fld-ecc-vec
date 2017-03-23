@@ -1,5 +1,4 @@
 #include "clocks.h"
-#include <random.h>
 #include <time.h>
 #include <stdio.h>
 
@@ -18,12 +17,13 @@ int main(void)
 
 	printf("===== Benchmarking Ed25519 =====\n");
 	bench_fp25519();
+	bench_ecc25519();
 	bench_x25519();
 	bench_ed25519();
 
 	printf("===== Benchmarking Ed448 =====\n");
 	bench_fp448();
-	bench_ecc();
+	bench_ecc448();
 	bench_x448();
 	bench_ed448();
 

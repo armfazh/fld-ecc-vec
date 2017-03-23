@@ -1,8 +1,11 @@
 #ifndef _ECC_ED25519_H_
 #define _ECC_ED25519_H_
 
-#include "fp.h"
-
+#include "faz_fp_avx2.h"
+/*!
+ * A point \f$ (x,y)\in\mathbb{F}_p \f$
+ *
+ */
 typedef ALIGN struct point_extended_1way_fp25519{
 	Element_1w_Fp25519 X,Y,Z,T;
 } PointXYZT_1way_Fp25519;
@@ -38,7 +41,7 @@ typedef ALIGN struct pointxytz_2w_h0h5_fp25519{
 #define LOOKUP_TABLE_SIZE LUT_24KB
 
 
-void _4way_mixadd_25519(PointXYZT_4way_Fp25519 *Q, Point_precmp_4way_Fp25519 *P);
+void _4way_mixadd_ed25519(PointXYZT_4way_Fp25519 *Q, Point_precmp_4way_Fp25519 *P);
 void _1way_doubling_2w_H0H5(PointXYZT_2w_H0H5 *P);
 void _1way_mixadd_2w_H0H5(PointXYZT_2w_H0H5 *Q, PointXYZT_precompute_2w_H0H5 *P);
 void _1way_fulladd_2w_H0H5(PointXYZT_2w_H0H5 *Q, PointXYZT_2w_H0H5 *P);

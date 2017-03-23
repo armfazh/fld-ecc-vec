@@ -1,4 +1,4 @@
-#include "faz_ecdh_avx2.h"
+#include "ecc_ed25519.h"
 /****** Implementation of Montgomery Ladder Algorithm ************/
 /**
  * Swap method

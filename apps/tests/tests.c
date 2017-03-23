@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
-#include <random.h>
 
 #define TEST_TIMES 50000
 #define LABEL "Test passed? [%s]\n"

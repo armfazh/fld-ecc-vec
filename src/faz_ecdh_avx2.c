@@ -1,3 +1,9 @@
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #include "faz_ecdh_avx2.h"
 
 #include "x25519.c"
@@ -24,5 +30,9 @@ const struct _struct_ECDHX ECDHX = {
 		.key_size = ECDH448_KEY_SIZE_BYTES,
 		.initKey = initX448_Key,
 		.clearKey = deallocate_bytes
-	},
+	}
 };
+
+#ifdef __cplusplus
+};
+#endif /* __cplusplus */

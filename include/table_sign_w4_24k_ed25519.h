@@ -1,7 +1,5 @@
 #ifndef TABLE_SIGN_W4_24K_H_
 #define TABLE_SIGN_W4_24K_H_
-#include<stdint.h>
-#include"avx2.h"
 
 ALIGN static const uint64_t TableSign_w4_24k [3072] = {
 0x2fbc93c6f58c3b85,0x583b04bfacad8ea2,0x9d103905d740913e,0x5f3a7562eb3dbe47,

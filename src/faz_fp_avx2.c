@@ -1,9 +1,10 @@
-#include "fp.h"
-#include "random.h"
-#include <stdio.h>
-#include <stdlib.h>
 
-#include "avx2.h"
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+#include "faz_fp_avx2.h"
+
 #include "util.c"
 #include "element_1w_x64.c"
 #include "element_1w_h0h5.c"
@@ -110,3 +111,7 @@ const struct _struct_Fp Fp = {
 		}
 };
 
+
+#ifdef __cplusplus
+};
+#endif /* __cplusplus */

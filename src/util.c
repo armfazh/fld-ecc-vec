@@ -1,4 +1,4 @@
-
+#include <stdio.h>
 
 void print_bytes(uint8_t * A, int num_bytes)
 {
@@ -20,6 +20,17 @@ static int compare_bytes(uint8_t* A, uint8_t* B,unsigned int num_bytes)
 		ret += A[i]^B[i];
 	}
 	return ret;
+}
+/**
+ * @warning Provide a secure random number generator.
+ **/
+void random_bytes(uint8_t *A, int length)
+{
+	int i;
+	for(i=0; i<length; i++)
+	{
+		A[i] = (uint8_t) rand();
+	}
 }
 
 static void * allocate_bytes(size_t num_bytes)

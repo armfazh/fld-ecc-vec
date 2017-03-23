@@ -1,7 +1,17 @@
 #ifndef _FAZ_ECDH_AVX2_H_
 #define _FAZ_ECDH_AVX2_H_
 
-#include "util.h"
+#include <stdint.h>
+
+#define ALIGN_BYTES 32
+#ifdef __INTEL_COMPILER
+#define ALIGN __declspec(align(ALIGN_BYTES))
+#else
+#define ALIGN __attribute__ ((aligned (ALIGN_BYTES)))
+#endif
+
+#define ZeroOperandReturnKey(X) uint8_t * (*X)()
+#define OneOperandGeneric(X) void (*X)(void* C)
 
 typedef uint8_t * argECDHX_Key;
 
@@ -19,8 +29,8 @@ typedef struct _struct_DiffieHellmanXFunction {
 	XKeyGen keygen;
 	XSharedSecret shared;
 	uint64_t key_size;
-	ZeroOperandReturnKey initKey;
-	OneOperandGeneric clearKey;
+	ZeroOperandReturnKey(initKey);
+	OneOperandGeneric(clearKey);
 } DiffieHellmanXFunction;
 
 struct _struct_ECDHX {

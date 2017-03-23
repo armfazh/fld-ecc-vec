@@ -72,14 +72,14 @@ static void add_Element_2w_h0h5(argElement_2w C,argElement_2w A,argElement_2w B)
 		C[i] = ADD(A[i],B[i]);
 }
 
-const ALIGN uint64_t CONST_2P_2P_H0H5[20] = {
+static const ALIGN uint64_t CONST_2P_2P_H0H5[20] = {
 		0x7ffffda,0x3fffffe,0x7ffffda,0x3fffffe,
 		0x3fffffe,0x7fffffe,0x3fffffe,0x7fffffe,
 		0x7fffffe,0x3fffffe,0x7fffffe,0x3fffffe,
 		0x3fffffe,0x7fffffe,0x3fffffe,0x7fffffe,
 		0x7fffffe,0x3fffffe,0x7fffffe,0x3fffffe};
 
-const ALIGN uint64_t CONST_2P_00_H0H5[20] = {
+static const ALIGN uint64_t CONST_2P_00_H0H5[20] = {
 		0x7ffffda,0x3fffffe,0x0000000,0x0000000,
 		0x3fffffe,0x7fffffe,0x0000000,0x0000000,
 		0x7fffffe,0x3fffffe,0x0000000,0x0000000,

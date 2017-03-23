@@ -1,10 +1,6 @@
 #include <faz_eddsa_avx2.h>
 #include <faz_ecdh_avx2.h>
-#include <fp.h>
-#include <random.h>
-#include <stdio.h>
-#include <string.h>
-
+#include <faz_fp_avx2.h>
 
 void x25519()
 {
@@ -33,6 +29,13 @@ void x25519()
 	ecdh->clearKey(bob_private_key);
 	ecdh->clearKey(bob_session_key);
 	ecdh->clearKey(bob_shared_key);
+
+	ECDH_X25519_KEY aliceSession,alicePrivate,bobSession,bobPrivate,aliceShared,bobShared;
+
+	ECDHX.X25519.keygen(aliceSession,alicePrivate);
+	ECDHX.X25519.keygen(bobSession,bobPrivate);
+	ECDHX.X25519.shared(aliceShared,bobSession,alicePrivate);
+	ECDHX.X25519.shared(bobShared,aliceSession,bobPrivate);
 
 }
 
@@ -64,6 +67,12 @@ void x448()
 	ecdh->clearKey(bob_session_key);
 	ecdh->clearKey(bob_shared_key);
 
+	ECDH_X448_KEY aliceSession,alicePrivate,bobSession,bobPrivate,aliceShared,bobShared;
+
+	ECDHX.X448.keygen(aliceSession,alicePrivate);
+	ECDHX.X448.keygen(bobSession,bobPrivate);
+	ECDHX.X448.shared(aliceShared,bobSession,alicePrivate);
+	ECDHX.X448.shared(bobShared,aliceSession,bobPrivate);
 }
 
 void ed448()
@@ -82,12 +91,6 @@ void ed448()
 	EdDSA.Ed448.verify((uint8_t*)mes,5,EDDSA_NOCONTEXT,0,public,signature);
 	EdDSA.Ed448ph.verify((uint8_t*)mes,5,EDDSA_NOCONTEXT,0,public,signature);
 
-	ECDH_X448_KEY aliceSession,alicePrivate,bobSession,bobPrivate,aliceShared,bobShared;
-
-	ECDHX.X448.keygen(aliceSession,alicePrivate);
-	ECDHX.X448.keygen(bobSession,bobPrivate);
-	ECDHX.X448.shared(aliceShared,bobSession,alicePrivate);
-	ECDHX.X448.shared(bobShared,aliceSession,bobPrivate);
 }
 
 void ed25519()
@@ -106,14 +109,8 @@ void ed25519()
 	EdDSA.Ed25519.verify((uint8_t*)mes,5,public,signature);
 	EdDSA.Ed25519ph.verify((uint8_t*)mes,5,EDDSA_NOCONTEXT,0,public,signature);
 
-	ECDH_X25519_KEY aliceSession,alicePrivate,bobSession,bobPrivate,aliceShared,bobShared;
-
-	ECDHX.X25519.keygen(aliceSession,alicePrivate);
-	ECDHX.X25519.keygen(bobSession,bobPrivate);
-	ECDHX.X25519.shared(aliceShared,bobSession,alicePrivate);
-	ECDHX.X25519.shared(bobShared,aliceSession,bobPrivate);
-
 }
+
 
 void fp448()
 {

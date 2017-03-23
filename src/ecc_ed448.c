@@ -2,7 +2,6 @@
 
 #include "table_sign_w4_3675k_ed448.h"
 #include "table_verf_w7_ed448.h"
-#include <string.h>
 
 /**
  * This function performs a modular reduction
@@ -123,9 +122,9 @@ static void point_encoding_ed448(uint8_t*enc, PointXYZT_2w_H0H8* P)
  * Given:
  *      r   A 256-bit integer
  * Returns:
- *      (-1)^(S[i])*K[1] for i \in [0,64]
+ *      (-1)^(S[i])*K[1] for i in [0,64]
  * such that
- *      K[i] \in {0, 1, 2, ..., 2^OMEGA}
+ *      K[i] in {0, 1, 2, ..., 2^OMEGA}
  *      S[i]=000..0  if k[i] is positive
  *      S[i]=111..1  if k[i] is negative
  *
@@ -304,7 +303,7 @@ void query_table_ed448(Point_precmp_4way_Fp448 *P, const uint8_t * table,uint64_
  * @param Q
  * @param P
  */
-void _4way_mixadd_448(PointXYZT_4way_Fp448 *Q, Point_precmp_4way_Fp448 *P)
+void _4way_mixadd_ed448(PointXYZT_4way_Fp448 *Q, Point_precmp_4way_Fp448 *P)
 {
 	__m256i * const X1 = Q->X;
 	__m256i * const Y1 = Q->Y;
@@ -485,7 +484,7 @@ static void point_multiplication_fold4w4(PointXYZT_2w_H0H8 *rB, uint8_t *r)
 	{
         _mm_prefetch( (const char *)  (((uint8_t*)TableSign_w4_3675k)+768*(i+1) ),_MM_HINT_T0);
 		query_table_fold4w4_ed448(&P, ((uint8_t*)TableSign_w4_3675k)+SIZE_ONE_LUT_ED448*i,S+4*i,K+4*i);
-		_4way_mixadd_448(&Q, &P);
+		_4way_mixadd_ed448(&Q, &P);
 	}
 	join_points_2w_H0H8(rB, &Q);
 
