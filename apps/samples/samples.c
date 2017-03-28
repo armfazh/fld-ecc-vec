@@ -175,5 +175,9 @@ int main()
 	ed448();
 	fp448();
 	x448();
+    ECDH_X25519_KEY x;
+    random_bytes(x,ECDH25519_KEY_SIZE_BYTES);
+    random_bytes(x,ECDH25519_KEY_SIZE_BYTES);
+    print_bytes(x,ECDH25519_KEY_SIZE_BYTES);
 	return 0;
 }

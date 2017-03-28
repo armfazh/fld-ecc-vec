@@ -1,22 +1,13 @@
-//#include "faz_fp_avx2.h"
 #include "ecc_ed448.h"
 
-/**
- * Swap method
- * ===========
- *
- * The flag SWAP_METHOD defines the method used for
- * performing constant time conditional move.
- *  1) PERMUTATION. Uses AVX2 permutation instructions
- *  2) CMOV. Uses the 64-bit CMOV instruction.
- */
-#define PERMUTATION 0x1
-#define LOGIC       0x2
-#define CMOV        0x4
-#define SWAP_METHOD PERMUTATION
-
 #if SWAP_METHOD == CMOV
-static inline void cmov(int bit, uint64_t * const pX,uint64_t * const pY)
+/**
+ *
+ * @param bit
+ * @param pX
+ * @param pY
+ */
+static inline void cmov_x448(int bit, uint64_t * const pX,uint64_t * const pY)
 {
 	__asm__ __volatile__(
 		"test       %0,    %0     \n\t"
@@ -82,6 +73,10 @@ static inline void cmov(int bit, uint64_t * const pX,uint64_t * const pY)
 }
 #endif
 
+/**
+ *
+ * @return
+ */
 static uint8_t * initX448_Key()
 {
 	return (uint8_t*) allocate_bytes(ECDH448_KEY_SIZE_BYTES * sizeof(uint8_t));
@@ -175,9 +170,9 @@ static inline void step_ladder(
 #elif SWAP_METHOD == CMOV
             /* Using 64-bit CMOV instruction          */
             uint64_t *pX = (uint64_t *) X2X3;
-            cmov(swap,pX,pX + 2);
+            cmov_x448(swap,pX,pX + 2);
             pX = (uint64_t *) Z2Z3;
-            cmov(1-swap,pX,pX + 2);
+            cmov_x448(1-swap,pX,pX + 2);
 #else
 #error "Define SWAP_METHOD with PERMUTATION or CMOV or LOGIC."
 #endif

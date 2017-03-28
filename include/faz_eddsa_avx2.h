@@ -1,8 +1,12 @@
 #ifndef _EDDSA_AVX2_H_
 #define _EDDSA_AVX2_H_
 
-//#include <util.h>
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #include <stdint.h>
+
 #define ALIGN_BYTES 32
 #ifdef __INTEL_COMPILER
 #define ALIGN __declspec(align(ALIGN_BYTES))
@@ -143,5 +147,8 @@ enum EDDSA_FLAGS {
 	EDDSA_ERROR_PHFLAG,
 };
 
+#ifdef __cplusplus
+};
+#endif /* __cplusplus */
 
 #endif  /* _EDDSA_AVX2_H_ */

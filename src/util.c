@@ -1,16 +1,28 @@
 #include <stdio.h>
 
-void print_bytes(uint8_t * A, int num_bytes)
+/**
+ *
+ * @param buffer
+ * @param num_bytes
+ */
+void print_bytes(uint8_t * buffer, int num_bytes)
 {
 	int i;
 	printf("0x");
 	for(i=num_bytes-1;i>=0;i--)
 	{
-		printf("%02x", A[i]);
+		printf("%02x", buffer[i]);
 	}
 	printf("\n");
 }
 
+/**
+ *
+ * @param A
+ * @param B
+ * @param num_bytes
+ * @return
+ */
 static int compare_bytes(uint8_t* A, uint8_t* B,unsigned int num_bytes)
 {
 	unsigned int i=0;
@@ -21,16 +33,36 @@ static int compare_bytes(uint8_t* A, uint8_t* B,unsigned int num_bytes)
 	}
 	return ret;
 }
-/**
- * @warning Provide a secure random number generator.
- **/
-void random_bytes(uint8_t *A, int length)
+
+ /** Random number Generator:
+  * Taken from: https://github.com/relic-toolkit/relic/src/rand/relic_rand_call.c
+  *
+  * @warning Provide a secure random number generator.
+  * @param buffer
+  * @param num_bytes
+  */
+#include <unistd.h>
+#include <fcntl.h>
+void random_bytes(uint8_t *buffer, int num_bytes)
 {
-	int i;
-	for(i=0; i<length; i++)
-	{
-		A[i] = (uint8_t) rand();
-	}
+    int c, l, fd = open("/dev/urandom", O_RDONLY);
+
+    if (fd == -1)
+    {
+        printf("Error opening /dev/urandom\n");
+    }
+
+    l = 0;
+    do {
+        c = read(fd, buffer + l, num_bytes - l);
+        l += c;
+        if (c == -1)
+        {
+            printf("Error reading /dev/urandom\n");
+        }
+    } while (l < num_bytes);
+
+    close(fd);
 }
 
 static void * allocate_bytes(size_t num_bytes)

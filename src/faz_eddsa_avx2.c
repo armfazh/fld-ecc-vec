@@ -1,8 +1,3 @@
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 #include "faz_eddsa_avx2.h"
 #include "ed25519.c"
 #include "ed448.c"
@@ -64,7 +59,3 @@ const struct _struct_EdDSA EdDSA = {
 				.clearSignature = deallocate_bytes
 		}
 };
-
-#ifdef __cplusplus
-};
-#endif /* __cplusplus */

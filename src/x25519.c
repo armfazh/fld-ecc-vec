@@ -1,20 +1,9 @@
 #include "ecc_ed25519.h"
-/****** Implementation of Montgomery Ladder Algorithm ************/
+
 /**
- * Swap method
- * ===========
  *
- * The flag SWAP_METHOD defines the method used for
- * performing constant time conditional move.
- *  1) PERMUTATION. Uses AVX2 permutation instructions
- *  2) CMOV. Uses the 64-bit CMOV instruction.
+ * @return
  */
-#define PERMUTATION 0x1
-#define LOGIC       0x2
-#define CMOV        0x4
-#define SWAP_METHOD PERMUTATION
-
-
 static uint8_t * initX25519_Key()
 {
 	return (uint8_t*) allocate_bytes(ECDH25519_KEY_SIZE_BYTES * sizeof(uint8_t));
@@ -28,7 +17,13 @@ static __inline void  perm4E_x25519(__m256i * C)
 }
 
 #if SWAP_METHOD == CMOV
-static __inline void cmov(int bit, uint64_t * const pX,uint64_t * const pY)
+/**
+ *
+ * @param bit
+ * @param pX
+ * @param pY
+ */
+static __inline void cmov_x25519(int bit, uint64_t * const pX,uint64_t * const pY)
 {
     __asm__ __volatile__(
         "test       %0,    %0     \n\t"
@@ -73,7 +68,12 @@ static __inline void cmov(int bit, uint64_t * const pX,uint64_t * const pY)
 }
 #endif
 
-
+/**
+ *
+ * @param bit
+ * @param px
+ * @param py
+ */
 static __inline void select_cmov_x64(uint64_t bit, uint64_t *const px, uint64_t *const py)
 {
 	__asm__ __volatile__(
@@ -177,9 +177,9 @@ static __inline void step_ladder_x25519(
 #elif SWAP_METHOD == CMOV
             /* Using 64-bit CMOV instruction          */
             uint64_t *pX = (uint64_t *) X2X3;
-            cmov(swap,pX,pX + 2);
+            cmov_x25519(swap,pX,pX + 2);
             pX = (uint64_t *) Z2Z3;
-            cmov(1-swap,pX,pX + 2);
+            cmov_x25519(1-swap,pX,pX + 2);
 #else
 #error "Define SWAP_METHOD with PERMUTATION or CMOV or LOGIC."
 #endif

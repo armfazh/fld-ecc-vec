@@ -1,6 +1,10 @@
 #ifndef _FAZ_ECDH_AVX2_H_
 #define _FAZ_ECDH_AVX2_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #include <stdint.h>
 
 #define ALIGN_BYTES 32
@@ -47,6 +51,25 @@ typedef ALIGN uint8_t ECDH_X25519_KEY[ECDH25519_KEY_SIZE_BYTES];
 #define ECDH448_KEY_SIZE_BYTES 56
 typedef ALIGN uint8_t ECDH_X448_KEY[ECDH448_KEY_SIZE_BYTES];
 
+
+/**
+ * Swap method
+ * ===========
+ *
+ * The flag SWAP_METHOD defines the method used for
+ * performing constant time conditional move.
+ *  1) PERMUTATION. Uses AVX2 permutation instructions
+ *  2) LOGIC. Uses the AVX2 LOGIC instructions.
+ *  3) CMOV. Uses the 64-bit CMOV instruction.
+ */
+#define PERMUTATION 0x1
+#define LOGIC       0x2
+#define CMOV        0x4
+#define SWAP_METHOD PERMUTATION
+
+#ifdef __cplusplus
+};
+#endif /* __cplusplus */
 
 #endif /* _FAZ_ECDH_AVX2_H_ */
 

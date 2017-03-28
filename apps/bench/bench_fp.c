@@ -2,7 +2,7 @@
 
 static void bench_Element_1w(const struct _struct_Fp_1way * fp)
 {
-	long int BENCH = 3000;
+	long int BENCH = 1000;
 	argElement_1w a = fp->init();
 	argElement_1w b = fp->init();
 	argElement_1w c = fp->init();
@@ -27,7 +27,7 @@ static void bench_Element_1w(const struct _struct_Fp_1way * fp)
 
 static void bench_Element_Nw(const struct _struct_Fp_Nway * fp)
 {
-	long int BENCH = 3000;
+	long int BENCH = 1000;
 	argElement_Nw a = fp->init();
 	argElement_Nw b = fp->init();
 	argElement_Nw c = fp->init();

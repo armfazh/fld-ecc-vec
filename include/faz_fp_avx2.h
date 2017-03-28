@@ -1,19 +1,19 @@
 #ifndef _FAZ_FP_AVX2_H_
 #define _FAZ_FP_AVX2_H_
 
-//#include "util.h"
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 #include <stdint.h>
 #include <immintrin.h>
-//#include <avx2.h>
-
 
 #ifndef _AVX2_H_ /* _AVX2_H_ */
 #define _AVX2_H_
 
 #define HASWELL 0x80
 #define	SKYLAKE 0x40
-#define PROCESSOR HASWELL 
+#define PROCESSOR SKYLAKE
 
 #include <immintrin.h>
 
@@ -159,6 +159,14 @@ struct _struct_Fp {
 };
 
 extern const struct _struct_Fp Fp;
+
+void random_bytes(uint8_t *buffer, int num_bytes);
+void print_bytes (uint8_t *buffer, int num_bytes);
+
+#ifdef __cplusplus
+};
+#endif /* __cplusplus */
+
 
 #endif /* _FAZ_FP_AVX2_H_ */
 
