@@ -48,6 +48,11 @@ void _1way_fulladd_2w_H0H5(PointXYZT_2w_H0H5 *Q, PointXYZT_2w_H0H5 *P);
 
 void recoding_signed_scalar_ed25519(uint64_t *list_signs, uint64_t *list_digits, uint8_t *r);
 int wnaf_256bits(int8_t *K, const uint8_t *p8_r, int w);
-void query_table_ed25519(Point_precmp_4way_Fp25519 *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits);
+void query_table_ed25519(
+		Point_precmp_4way_Fp25519 *P,
+		uint64_t * secret_signs,
+		uint64_t * secret_digits,
+		uint64_t index_table
+);
 
 #endif /* _ECC_ED25519_H_ */

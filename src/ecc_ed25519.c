@@ -184,13 +184,18 @@ static void recoding_signed_scalar_fold4w4_ed25519(uint64_t *list_signs, uint64_
 }
 
 /**
- * Query Table
+ *
  * @param P
- * @param table
  * @param secret_signs
  * @param secret_digits
+ * @param index_table
  */
-static void query_table_fold4w4_ed25519(Point_precmp_4way_Fp25519 *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits)
+static void query_table_fold4w4_ed25519(
+		Point_precmp_4way_Fp25519 *P,
+		uint64_t * secret_signs,
+		uint64_t * secret_digits,
+		uint64_t index_table
+)
 {
 	const __m256i _P[NUM_DIGITS_FP25519] = {
 			SET1_64(0x3ffffed),	SET1_64(0x1ffffff),
@@ -206,7 +211,9 @@ static void query_table_fold4w4_ed25519(Point_precmp_4way_Fp25519 *P, const uint
 	__m256i digits = LOAD(secret_digits);
 	__m256i signs  = LOAD(secret_signs);
 	__m256i iiii = ZERO;
-	uint64_t * p64Table = (uint64_t*)table;
+	uint64_t * p64Table = (uint64_t*) (((uint8_t*)TableSign_w4_12k)+768*index_table);
+
+	_mm_prefetch( (const char *) p64Table,_MM_HINT_T0);
 
 	/* create a set of masks */
 	for(i=0;i<9;i++)
@@ -327,7 +334,7 @@ static void point_multiplication_fold4w4_ed25519(PointXYZT_2w_H0H5 *rB, uint8_t 
 		Q.Z[i] = ZERO;
 	}
 
-	query_table_fold4w4_ed25519(&P, ((uint8_t*)TableSign_w4_12k),S,K);
+	query_table_fold4w4_ed25519(&P,S,K,0);
 	sub_Element_4w_h0h5(Q.X,P.addYX,P.subYX);
 	add_Element_4w_h0h5(Q.Y,P.addYX,P.subYX);
 	new_compressfast2_Element_4w_h0h5(Q.X,Q.Y);
@@ -336,7 +343,7 @@ static void point_multiplication_fold4w4_ed25519(PointXYZT_2w_H0H5 *rB, uint8_t 
 
 	for(i=1;i<16;i++)
 	{
-		query_table_fold4w4_ed25519(&P, ((uint8_t*)TableSign_w4_12k)+768*i,S+4*i,K+4*i);
+		query_table_fold4w4_ed25519(&P,S+4*i,K+4*i,i);
 		_4way_mixadd_ed25519(&Q, &P);
 	}
 
@@ -445,7 +452,12 @@ static void recoding_signed_scalar_fold2w4_ed25519(uint64_t *list_signs, uint64_
  * @param secret_signs
  * @param secret_digits
  */
-static void query_table_fold2w4_ed25519(Point_precmp_4way_Fp25519 *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits)
+static void query_table_fold2w4_ed25519(
+		Point_precmp_4way_Fp25519 *P,
+		uint64_t * secret_signs,
+		uint64_t * secret_digits,
+		uint64_t index_table
+)
 {
 	const __m256i _P[10] = {
 			SET1_64(0x3ffffed),	SET1_64(0x1ffffff),
@@ -461,6 +473,9 @@ static void query_table_fold2w4_ed25519(Point_precmp_4way_Fp25519 *P, const uint
 	__m256i digits = LOAD(secret_digits);
 	__m256i signs  = LOAD(secret_signs);
 	__m256i iiii = ZERO;
+	uint64_t * p64Table = (uint64_t*) (((uint8_t*)TableSign_w4_24k)+1536*index_table);
+
+	_mm_prefetch( (const char *) p64Table,_MM_HINT_T0);
 
 	/* create a set of masks */
 	for(i=0;i<8+1;i++)
@@ -492,9 +507,9 @@ static void query_table_fold2w4_ed25519(Point_precmp_4way_Fp25519 *P, const uint
 		P__2dYX[j] = ZERO;
 		for(i=0;i<8;i++)/* num of multiples {1B,2B,3B,...,8B} */
 		{
-			__m256i addYX = _mm256_broadcastsi128_si256(_mm_load_si128((__m128i*)table + 24*j + 3*i + 0));
-			__m256i subYX = _mm256_broadcastsi128_si256(_mm_load_si128((__m128i*)table + 24*j + 3*i + 1));
-			__m256i _2dYX = _mm256_broadcastsi128_si256(_mm_load_si128((__m128i*)table + 24*j + 3*i + 2));
+			__m256i addYX = _mm256_broadcastsi128_si256(_mm_load_si128((__m128i*)p64Table + 24*j + 3*i + 0));
+			__m256i subYX = _mm256_broadcastsi128_si256(_mm_load_si128((__m128i*)p64Table + 24*j + 3*i + 1));
+			__m256i _2dYX = _mm256_broadcastsi128_si256(_mm_load_si128((__m128i*)p64Table + 24*j + 3*i + 2));
 
 			P_addYX[j] = XOR(P_addYX[j],ANDNOT(mask[i+1],addYX));
 			P_subYX[j] = XOR(P_subYX[j],ANDNOT(mask[i+1],subYX));
@@ -634,7 +649,7 @@ static void point_multiplication_fold2w4_ed25519(PointXYZT_2w_H0H5* rB, uint8_t 
 		Q.Z[i] = ZERO;
 	}
 
-	query_table_fold2w4_ed25519(&P, ((uint8_t*)TableSign_w4_24k),S,K);
+	query_table_fold2w4_ed25519(&P,S,K,0);
 	sub_Element_4w_h0h5(Q.X,P.addYX,P.subYX);
 	add_Element_4w_h0h5(Q.Y,P.addYX,P.subYX);
 	new_compressfast2_Element_4w_h0h5(Q.X,Q.Y);
@@ -643,7 +658,7 @@ static void point_multiplication_fold2w4_ed25519(PointXYZT_2w_H0H5* rB, uint8_t 
 
 	for(i=1;i<16;i++)
 	{
-		query_table_fold2w4_ed25519(&P, ((uint8_t*)TableSign_w4_24k)+1536*i,S+4*i,K+4*i);
+		query_table_fold2w4_ed25519(&P,S+4*i,K+4*i,i);
 		_4way_mixadd_ed25519(&Q, &P);
 	}
 
@@ -678,12 +693,17 @@ void recoding_signed_scalar_ed25519(uint64_t *list_signs, uint64_t *list_digits,
  * @param secret_signs
  * @param secret_digits
  */
-void query_table_ed25519(Point_precmp_4way_Fp25519 *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits)
+void query_table_ed25519(
+		Point_precmp_4way_Fp25519 *P,
+		uint64_t * secret_signs,
+		uint64_t * secret_digits,
+        uint64_t index_table
+)
 {
 #if LOOKUP_TABLE_SIZE == LUT_12KB
-	query_table_fold4w4_ed25519(P,table,secret_signs,secret_digits);
+	query_table_fold4w4_ed25519(P,secret_signs,secret_digits,index_table);
 #elif LOOKUP_TABLE_SIZE == LUT_24KB
-	query_table_fold2w4_ed25519(P,table,secret_signs,secret_digits);
+	query_table_fold2w4_ed25519(P,secret_signs,secret_digits,index_table);
 #else
 #error Define symbol LOOKUP_TABLE_SIZE with LUT_12KB or LUT_24KB.
 #endif

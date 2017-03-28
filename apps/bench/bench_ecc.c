@@ -20,11 +20,10 @@ static void bench_ecc25519()
 	uint8_t message[ED25519_HASH_BYTES_PARAM];
 
 	printf("======       ECC    ======\n");
-
-	CLOCKS(PointAddition,_1way_fulladd_2w_H0H5(&PP, &QQ));
-	CLOCKS(PointDoubling,_1way_doubling_2w_H0H5(&PP));
-	CLOCKS(4-way_Addition,_4way_mixadd_ed25519(&Q, &P));
-//	CLOCKS_RANDOM(int t=0;, 4-way_Query,query_table_ed25519(&P, ((uint8_t*)Tab)+SIZE_ONE_LUT_ED25519*t,S, K));
+	CLOCKS(PointAddition,  _1way_fulladd_2w_H0H5(&PP, &QQ));
+	CLOCKS(PointDoubling,  _1way_doubling_2w_H0H5(&PP));
+	CLOCKS(4-way_Addition, _4way_mixadd_ed25519(&Q, &P));
+	CLOCKS(4-way_Query,    query_table_ed25519(&P,S,K,0));
 
 	printf("======      MISC    ======\n");
 	CLOCKS_RANDOM(random_bytes(key,ED25519_KEY_SIZE_BYTES_PARAM),wnaf,wnaf_256bits(L, key, 5));
@@ -54,10 +53,10 @@ static void bench_ecc448()
 
 	printf("======       ECC    ======\n");
 
-	CLOCKS(PointAddition,_1way_fulladd_2w_H0H8(&PP, &QQ));
-	CLOCKS(PointDoubling,_1way_doubling_2w_H0H8(&PP));
-	CLOCKS(4-way_Addition,_4way_mixadd_ed448(&Q, &P));
-//	CLOCKS_RANDOM(int t=0;, 4-way_Query,query_table_ed448(&P, ((uint8_t*)TableSign_w4_3675k)+SIZE_ONE_LUT_ED448*t,S, K));
+	CLOCKS(PointAddition,  _1way_fulladd_2w_H0H8(&PP, &QQ));
+	CLOCKS(PointDoubling,  _1way_doubling_2w_H0H8(&PP));
+	CLOCKS(4-way_Addition, _4way_mixadd_ed448(&Q,&P));
+	CLOCKS(4-way_query,    query_table_ed448(&P,S,K,0));
 
 	printf("======      MISC    ======\n");
 	CLOCKS_RANDOM(random_bytes(key,ED448_KEY_SIZE_BYTES_PARAM),wnaf,wnaf_448bits(L, key, 5));

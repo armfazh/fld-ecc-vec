@@ -1,26 +1,28 @@
 #include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
 #include <string.h>
+#include <stdio.h>
 
 #define TEST_TIMES 50000
 #define LABEL "Test passed? [%s]\n"
 #define OK "Ok"
 #define ERROR "error"
 
+#include "cpu_id.c"
 #include "test_fp.c"
 #include "test_ecdh.c"
 #include "test_eddsa.c"
 
 int main(void)
 {
-	srand((unsigned int)time(NULL));
 	printf("==========================================================\n");
 	printf("  High Performance Implementation of the Edwards Digital  \n");
 	printf("       Signature Algorithm using Vector Instructions      \n");
 	printf("==========================================================\n\n");
+
+	printf("=== Environment Information ====\n");
+	machine_info();
+
 	printf("===== Testing Ed25519 =====\n");
-	
 	test_fp25519();
 	test_x25519();
 	test_ed25519();

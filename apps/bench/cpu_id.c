@@ -41,7 +41,7 @@
 #define bit_SSE4_2	(1 << 20)
 #endif
 
-int main()
+void machine_info()
 {
 	printf("Program compiled with: %s\n",__VERSION__);
 	unsigned int eax, ebx, ecx, edx;
@@ -70,5 +70,5 @@ int main()
 	test_capability(ebx, bit_BMI);
 	test_capability(ebx, bit_BMI2);
 	test_capability(ebx, bit_ADX);
-	return 0;
 }
+

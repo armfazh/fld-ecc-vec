@@ -178,11 +178,16 @@ void recoding_signed_scalar_fold4w4_448(uint64_t *list_signs, uint64_t *list_dig
 /**
  *
  * @param P
- * @param table
  * @param secret_signs
  * @param secret_digits
+ * @param index_table
  */
-static void query_table_fold4w4_ed448(Point_precmp_4way_Fp448 *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits)
+static void query_table_fold4w4_ed448(
+        Point_precmp_4way_Fp448 *P,
+        uint64_t * secret_signs,
+        uint64_t * secret_digits,
+        uint64_t index_table
+)
 {
 	const __m256i _P[16] = {
 			SET1_64(0xfffffff),	SET1_64(0xffffffe),
@@ -201,7 +206,9 @@ static void query_table_fold4w4_ed448(Point_precmp_4way_Fp448 *P, const uint8_t 
 	__m256i digits = LOAD(secret_digits);
 	__m256i signs  = LOAD(secret_signs);
 	__m256i iiii = ZERO;
-	uint64_t * p64Table = (uint64_t*)table;
+	uint64_t * p64Table = (uint64_t*) (((uint8_t*)TableSign_w4_3675k)+SIZE_ONE_LUT_ED448*index_table);
+
+	_mm_prefetch( (const char *) p64Table,_MM_HINT_T0);
 
 	/* create a set of masks */
 	for(i=0;i<9;i++)
@@ -228,7 +235,7 @@ static void query_table_fold4w4_ed448(Point_precmp_4way_Fp448 *P, const uint8_t 
 	 */
 	for(j=0;j<7;j++)/* num of 64-bit words */
 	{
-		P_addYX[j] = ZERO;
+        P_addYX[j] = ZERO;
 		P_subYX[j] = ZERO;
 		P__2dYX[j] = ZERO;
 		for(i=0;i<8;i++)/* num of multiples {1B,2B,3B,...,8B} */
@@ -285,13 +292,18 @@ static void query_table_fold4w4_ed448(Point_precmp_4way_Fp448 *P, const uint8_t 
 /**
  *
  * @param P
- * @param table
  * @param secret_signs
  * @param secret_digits
+ * @param index_table
  */
-void query_table_ed448(Point_precmp_4way_Fp448 *P, const uint8_t * table,uint64_t * secret_signs,uint64_t *secret_digits)
+void query_table_ed448(
+		Point_precmp_4way_Fp448 *P,
+		uint64_t * secret_signs,
+		uint64_t * secret_digits,
+		uint64_t index_table
+)
 {
-	query_table_fold4w4_ed448(P,table,secret_signs,secret_digits);
+	query_table_fold4w4_ed448(P,secret_signs,secret_digits,index_table);
 }
 
 /**
@@ -472,7 +484,7 @@ static void point_multiplication_fold4w4(PointXYZT_2w_H0H8 *rB, uint8_t *r)
 		Q.Z[i] = ZERO;
 	}
 
-	query_table_fold4w4_ed448(&P, ((uint8_t*)TableSign_w4_3675k),S,K);
+    query_table_fold4w4_ed448(&P,S,K,0);
 	sub_Element_4w_h0h8(Q.X,P.addYX,P.subYX);
 	add_Element_4w_h0h8(Q.Y,P.addYX,P.subYX);
 	compress_Element_4w_h0h8(Q.X);
@@ -482,8 +494,8 @@ static void point_multiplication_fold4w4(PointXYZT_2w_H0H8 *rB, uint8_t *r)
 
 	for(i=1;i<NUM_LUT_ED448;i++)
 	{
-        _mm_prefetch( (const char *)  (((uint8_t*)TableSign_w4_3675k)+768*(i+1) ),_MM_HINT_T0);
-		query_table_fold4w4_ed448(&P, ((uint8_t*)TableSign_w4_3675k)+SIZE_ONE_LUT_ED448*i,S+4*i,K+4*i);
+
+        query_table_fold4w4_ed448(&P,S+4*i,K+4*i,i);
 		_4way_mixadd_ed448(&Q, &P);
 	}
 	join_points_2w_H0H8(rB, &Q);
