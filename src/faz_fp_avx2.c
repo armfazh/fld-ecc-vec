@@ -23,7 +23,8 @@ const struct _struct_Fp Fp = {
 						.rand  = random_Element_1w_x64,
 						.print = print_Element_1w_x64,
 						.init = init_Element_1w_x64,
-						.clear = deallocate_bytes
+						.clear = deallocate_bytes,
+						.get_modulus = prime_Element_1w_x64
 				},
 				._1way = {
 						.add   = add_Element_1w_h0h5,
@@ -37,7 +38,8 @@ const struct _struct_Fp Fp = {
 						.rand  = random_Element_1w_h0h5,
 						.print = print_Element_1w_h0h5,
 						.init = init_Element_1w_h0h5,
-						.clear = deallocate_bytes
+						.clear = deallocate_bytes,
+						.get_modulus = prime_Element_1w_h0h5
 				},
 				._2way = {
 						.add = add_Element_2w_h0h5,
@@ -77,7 +79,8 @@ const struct _struct_Fp Fp = {
 						.rand = random_Element_1w_h0h8,
 						.print = print_Element_1w_h0h8,
 						.init = init_Element_1w_h0h8,
-						.clear = deallocate_bytes
+						.clear = deallocate_bytes,
+						.get_modulus = prime_Element_1w_h0h8
 				},
 				._2way = {
 						.add = add_Element_2w_h0h8,

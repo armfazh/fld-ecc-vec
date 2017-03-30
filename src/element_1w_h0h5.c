@@ -734,5 +734,15 @@ static uint64_t * init_Element_1w_h0h5()
 {
 	return (uint64_t*) allocate_bytes((4*((NUM_DIGITS_FP25519+3)/4)) * sizeof(uint64_t));
 }
+static uint64_t * prime_Element_1w_h0h5()
+{
+	uint64_t *prime = init_Element_1w_h0h5();
+	prime[0] = 0x3ffffed;		prime[1] = 0x1ffffff;
+	prime[2] = 0x1ffffff;		prime[3] = 0x3ffffff;
+	prime[4] = 0x3ffffff;		prime[5] = 0x1ffffff;
+	prime[6] = 0x1ffffff;		prime[7] = 0x3ffffff;
+	prime[8] = 0x3ffffff;		prime[9] = 0x1ffffff;
+	return prime;
+}
 
 

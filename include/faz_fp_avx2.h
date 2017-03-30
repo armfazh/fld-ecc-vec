@@ -136,7 +136,7 @@ struct _struct_Fp_1way {
 	TwoOperandReturn cmp;
 	OneOperand sqr,cred,rand,print;
 	OneOperandGeneric(clear);
-	ZeroOperandReturn init;
+	ZeroOperandReturn init,get_modulus;
 };
 
 struct _struct_Fp_Nway {

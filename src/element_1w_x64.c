@@ -952,6 +952,13 @@ static uint64_t * init_Element_1w_x64()
 {
 	return (uint64_t*) allocate_bytes(NUM_DIGITS_FP25519_X64 * sizeof(uint64_t));
 }
+static uint64_t * prime_Element_1w_x64()
+{
+	uint64_t * prime = init_Element_1w_x64();
+	prime[0] = 0xffffffffffffffed;
+	prime[1] = 0xffffffffffffffff;
+	prime[2] = 0xffffffffffffffff;
+	prime[3] = 0x7fffffffffffffff;
 
-
-
+	return prime;
+}

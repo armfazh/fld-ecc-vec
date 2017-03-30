@@ -24,7 +24,7 @@ extern "C" {
 typedef int (*SignKeyGen)(argEdDSA_PublicKey, const argEdDSA_PrivateKey);
 
 typedef int (*Sign)(
-		argEdDSA_Signature ,
+		argEdDSA_Signature signature,
 		const uint8_t * message,
 		uint64_t        message_length,
 		const argEdDSA_PublicKey publicKey,

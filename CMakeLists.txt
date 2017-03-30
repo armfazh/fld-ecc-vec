@@ -17,6 +17,10 @@ add_library(${TARGET} STATIC ${SRC}/${TARGET}.c)
 add_executable(bench   apps/bench/bench.c apps/bench/clocks.c)
 add_executable(tests   apps/tests/tests.c apps/tests/vectors.h )
 add_executable(samples apps/samples/samples.c )
+add_executable(hello apps/samples/hello.c )
+add_executable(field_arith apps/samples/field_arith.c )
+add_executable(ecdh apps/samples/ecdh.c )
+add_executable(eddsa apps/samples/eddsa.c )
 
 target_link_libraries(
         bench
@@ -30,6 +34,26 @@ target_link_libraries(
 
 target_link_libraries(
 		samples
+		${TARGET}
+)
+
+target_link_libraries(
+		field_arith
+		${TARGET}
+)
+
+target_link_libraries(
+		hello
+		${TARGET}
+)
+
+target_link_libraries(
+		ecdh
+		${TARGET}
+)
+
+target_link_libraries(
+		eddsa
 		${TARGET}
 )
 

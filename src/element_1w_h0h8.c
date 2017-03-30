@@ -767,4 +767,18 @@ static uint64_t * init_Element_1w_h0h8()
 {
 	return (uint64_t*) allocate_bytes(NUM_DIGITS_FP448 * sizeof(uint64_t));
 }
+static uint64_t * prime_Element_1w_h0h8()
+{
+	uint64_t *prime = init_Element_1w_h0h8();
+	prime[ 0] = 0xfffffff;		prime[ 1] = 0xffffffe;
+	prime[ 2] = 0xfffffff;		prime[ 3] = 0xfffffff;
+	prime[ 4] = 0xfffffff;		prime[ 5] = 0xfffffff;
+	prime[ 6] = 0xfffffff;		prime[ 7] = 0xfffffff;
+	prime[ 8] = 0xfffffff;		prime[ 9] = 0xfffffff;
+	prime[10] = 0xfffffff;		prime[11] = 0xfffffff;
+	prime[12] = 0xfffffff;		prime[13] = 0xfffffff;
+	prime[14] = 0xfffffff;		prime[15] = 0xfffffff;
+
+	return prime;
+}
 
