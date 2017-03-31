@@ -9,7 +9,7 @@ void identity(const struct _struct_Fp_1way * fp)
     argElement_1w prime  = fp->get_modulus();
 
     printf("Testing the identity: (a+b)*(a-b) = (a^2-b^2) \n");
-    printf("Modulus: "); fp->print(prime);
+    printf("Prime: "); fp->print(prime);
 
     fp->rand(a); printf("a: "); fp->print(a);
     fp->rand(b); printf("b: "); fp->print(b);
@@ -45,3 +45,5 @@ int main()
     identity(&Fp.fp448._1way);
     return 0;
 }
+
+
