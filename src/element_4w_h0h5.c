@@ -82,6 +82,7 @@ static void zip_Element_4w_h0h5(argElement_4w A,uint64_t*pA,uint64_t*pB,uint64_t
 	A[8] = UPKL64(AC8,BD8);
 	A[9] = UPKH64(AC8,BD8);
 }
+
 /**
  *
  * @param pA
@@ -132,7 +133,6 @@ void unzip_Element_4w_h0h5(uint64_t*pA,uint64_t*pB,uint64_t*pC,uint64_t*pD,argEl
 	STORE(pD+2,_mm256_castsi128_si256(_mm256_extracti128_si256(BD8,1)));
 }
 
-
 /**
  *
  * @param C
@@ -147,6 +147,7 @@ static void add_Element_4w_h0h5(__m256i * __restrict C, __m256i * __restrict A, 
 		C[i] = ADD(A[i], B[i]);
 	}
 }
+
 /**
  *
  * @param C
@@ -168,6 +169,7 @@ static void sub_Element_4w_h0h5(__m256i * __restrict C, __m256i * __restrict A, 
 		C[i] = ADD(A[i],SUB(_2P[i],B[i]));
 	}
 }
+
 /**
  *
  * @param C
@@ -191,6 +193,7 @@ static void addsub_Element_4w_h0h5(__m256i * __restrict C,__m256i * __restrict D
 		D[i] = ADD(A[i],SUB(_2P[i],B[i]));
 	}
 }
+
 /**
  *
  * @param A
@@ -328,6 +331,7 @@ static void mul_schoolbook_Element_4w_h0h5(__m256i * C, __m256i * A, __m256i * B
     C[6] = c3;	C[7] = c8;
     C[8] = c4;	C[9] = c9;
 }
+
 /**
  *
  * @param C
@@ -338,6 +342,7 @@ static void mul_Element_4w_h0h5(__m256i *C, __m256i *A, __m256i *B)
 {
 	mul_schoolbook_Element_4w_h0h5(C,A,B);
 }
+
 /**
  *
  * @param C
@@ -459,6 +464,7 @@ static void sqr_Element_4w_h0h5(__m256i * C)
 	C[6] = c3;	C[7] = c8;
 	C[8] = c4;	C[9] = c9;
 }
+
 /**
  *
  * @param C
@@ -549,47 +555,47 @@ static void compress2_Element_4w_h0h5(__m256i * C,__m256i * D)
 
 	__m256i h0,h1,h2,h3,h4,h5,h6,h7,h8,h9;                __m256i _D_h0,_D_h1,_D_h2,_D_h3,_D_h4,_D_h5,_D_h6,_D_h7,_D_h8,_D_h9;
 
-	h0 = SHR(c0, BASE0_FP25519);                             _D_h0 = SHR(d0, BASE0_FP25519);
+	h0 = SHR(c0, BASE0_FP25519);                          _D_h0 = SHR(d0, BASE0_FP25519);
 	c0 = AND(c0, mask26);                                 d0 = AND(d0, mask26);
 	c1 = ADD(c1, h0);                                     d1 = ADD(d1, _D_h0);
 
-	h1 = SHR(c1, BASE1_FP25519);                             _D_h1 = SHR(d1, BASE1_FP25519);
+	h1 = SHR(c1, BASE1_FP25519);                          _D_h1 = SHR(d1, BASE1_FP25519);
 	c1 = AND(c1, mask25);                                 d1 = AND(d1, mask25);
 	c2 = ADD(c2, h1);                                     d2 = ADD(d2, _D_h1);
 
-	h2 = SHR(c2, BASE0_FP25519);                             _D_h2 = SHR(d2, BASE0_FP25519);
+	h2 = SHR(c2, BASE0_FP25519);                          _D_h2 = SHR(d2, BASE0_FP25519);
 	c2 = AND(c2, mask26);                                 d2 = AND(d2, mask26);
 	c3 = ADD(c3, h2);                                     d3 = ADD(d3, _D_h2);
 
-	h3 = SHR(c3, BASE1_FP25519);                             _D_h3 = SHR(d3, BASE1_FP25519);
+	h3 = SHR(c3, BASE1_FP25519);                          _D_h3 = SHR(d3, BASE1_FP25519);
 	c3 = AND(c3, mask25);                                 d3 = AND(d3, mask25);
 	c4 = ADD(c4, h3);                                     d4 = ADD(d4, _D_h3);
 
-	h4 = SHR(c4, BASE0_FP25519);                             _D_h4 = SHR(d4, BASE0_FP25519);
+	h4 = SHR(c4, BASE0_FP25519);                          _D_h4 = SHR(d4, BASE0_FP25519);
 	c4 = AND(c4, mask26);                                 d4 = AND(d4, mask26);
 	c5 = ADD(c5, h4);                                     d5 = ADD(d5, _D_h4);
 
-	h5 = SHR(c5, BASE1_FP25519);                             _D_h5 = SHR(d5, BASE1_FP25519);
+	h5 = SHR(c5, BASE1_FP25519);                          _D_h5 = SHR(d5, BASE1_FP25519);
 	c5 = AND(c5, mask25);                                 d5 = AND(d5, mask25);
 	c6 = ADD(c6, h5);                                     d6 = ADD(d6, _D_h5);
 
-	h6 = SHR(c6, BASE0_FP25519);                             _D_h6 = SHR(d6, BASE0_FP25519);
+	h6 = SHR(c6, BASE0_FP25519);                          _D_h6 = SHR(d6, BASE0_FP25519);
 	c6 = AND(c6, mask26);                                 d6 = AND(d6, mask26);
 	c7 = ADD(c7, h6);                                     d7 = ADD(d7, _D_h6);
 
-	h7 = SHR(c7, BASE1_FP25519);                             _D_h7 = SHR(d7, BASE1_FP25519);
+	h7 = SHR(c7, BASE1_FP25519);                          _D_h7 = SHR(d7, BASE1_FP25519);
 	c7 = AND(c7, mask25);                                 d7 = AND(d7, mask25);
 	c8 = ADD(c8, h7);                                     d8 = ADD(d8, _D_h7);
 
-	h8 = SHR(c8, BASE0_FP25519);                             _D_h8 = SHR(d8, BASE0_FP25519);
+	h8 = SHR(c8, BASE0_FP25519);                          _D_h8 = SHR(d8, BASE0_FP25519);
 	c8 = AND(c8, mask26);                                 d8 = AND(d8, mask26);
 	c9 = ADD(c9, h8);                                     d9 = ADD(d9, _D_h8);
 
-	h9 = SHR(c9, BASE1_FP25519);                             _D_h9 = SHR(d9, BASE1_FP25519);
+	h9 = SHR(c9, BASE1_FP25519);                          _D_h9 = SHR(d9, BASE1_FP25519);
 	c9 = AND(c9, mask25);                                 d9 = AND(d9, mask25);
 	c0 = ADD(c0, MUL19(h9));                              d0 = ADD(d0, MUL19(_D_h9));
 
-	h0 = SHR(c0, BASE0_FP25519);                             _D_h0 = SHR(d0, BASE0_FP25519);
+	h0 = SHR(c0, BASE0_FP25519);                          _D_h0 = SHR(d0, BASE0_FP25519);
 	c0 = AND(c0, mask26);                                 d0 = AND(d0, mask26);
 	c1 = ADD(c1, h0);                                     d1 = ADD(d1, _D_h0);
 
@@ -599,6 +605,7 @@ static void compress2_Element_4w_h0h5(__m256i * C,__m256i * D)
 	STORE(C+6,c3);	STORE(C+7,c8);                        STORE(D+6,d3);	STORE(D+7,d8);
 	STORE(C+8,c4);	STORE(C+9,c9);                        STORE(D+8,d4);	STORE(D+9,d9);
 }
+
 /**
  *
  * @param C
@@ -676,6 +683,7 @@ static void random_Element_4w_h0h5(argElement_4w X_Y_Z_T)
 	random_Element_1w_h0h5(T);
 	zip_Element_4w_h0h5(X_Y_Z_T,X,Y,Z,T);
 }
+
 /**
  *
  * @param X_Y_Z_T
@@ -689,6 +697,7 @@ static void print_Element_4w_h0h5(argElement_4w X_Y_Z_T)
 	print_Element_1w_h0h5(Z);
 	print_Element_1w_h0h5(T);
 }
+
 /**
  *
  * @param X0_X1_X2_X3
@@ -707,6 +716,10 @@ static int compare_Element_4w_h0h5(argElement_4w X0_X1_X2_X3, argElement_4w Y0_Y
 			compare_Element_1w_h0h5(X3,Y3);
 }
 
+/**
+ *
+ * @return
+ */
 static __m256i * init_Element_4w_h0h5()
 {
 	return (__m256i*) allocate_bytes(NUM_DIGITS_FP25519 * sizeof(__m256i));

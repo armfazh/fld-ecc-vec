@@ -26,3 +26,7 @@ const struct _struct_ECDHX ECDHX = {
 		.clearKey = deallocate_bytes
 	}
 };
+/*!< ECDH global object.
+ * This function provides a method for accesing the Elliptic
+ * Curve Diffie-Hellman functions X22519 and X448.
+ * */

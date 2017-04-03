@@ -17,18 +17,17 @@ int main(void)
     printf("=== Environment Information ====\n");
 	machine_info();
 
-	printf("===== Benchmarking Ed25519 =====\n");
 	bench_fp25519();
 	bench_ecc25519();
 	bench_x25519();
 	bench_ed25519();
 
-	printf("===== Benchmarking Ed448 =====\n");
 	bench_fp448();
 	bench_ecc448();
 	bench_x448();
 	bench_ed448();
 
+	printf("====  End of Benchmarking  ====\n");
 	return 0;
 }
 

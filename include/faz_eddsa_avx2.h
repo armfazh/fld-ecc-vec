@@ -90,8 +90,8 @@ struct _struct_EdDSA {
 };
 
 /**
- * Global structures that provide access
- * to the library.
+ * Global object that provides access
+ * to the EdDSA operations.
  */
 extern const struct _struct_EdDSA EdDSA;
 
@@ -138,13 +138,13 @@ typedef ALIGN uint8_t Ed448_Digest[ED448_HASH_BYTES_PARAM];
  * Error codes
  **/
 enum EDDSA_FLAGS {
-	EDDSA_KEYGEN_OK,
+	EDDSA_KEYGEN_OK,          /*!< Keygen generation was accomplished without errors */
 	EDDSA_SIGNATURE_OK,
 	EDDSA_VERIFICATION_OK,
 	EDDSA_INVALID_SIGNATURE,
 	EDDSA_ERROR_PUBLICKEY,
 	EDDSA_ERROR_CONTEXT,
-	EDDSA_ERROR_PHFLAG,
+	EDDSA_ERROR_PHFLAG,       
 };
 
 #ifdef __cplusplus

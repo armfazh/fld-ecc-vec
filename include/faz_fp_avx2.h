@@ -8,9 +8,7 @@ extern "C" {
 #include <stdint.h>
 #include <immintrin.h>
 
-#ifndef _AVX2_H_ /* _AVX2_H_ */
-#define _AVX2_H_
-
+/** AVX2 Definitions */
 #define HASWELL 0x80
 #define	SKYLAKE 0x40
 #define PROCESSOR SKYLAKE
@@ -58,9 +56,6 @@ extern "C" {
 :/* out  */ "=x" (X)\
 :/* in   */ "r" (Y)\
 :/* regs */);
-
-#endif /* _AVX2_H_ */
-
 
 
 #define ALIGN_BYTES 32

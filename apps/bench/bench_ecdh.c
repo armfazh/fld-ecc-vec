@@ -27,6 +27,7 @@ static void bench_ecdh(const DiffieHellmanXFunction * ecdh)
 
 static void bench_x25519()
 {
+	printf("===== Benchmarking DH ====\n");
 	printf("======  X25519 x64  ======\n");
 	bench_ecdh(&ECDHX.X25519_x64);
 	printf("======  X25519 AVX2 ======\n");
@@ -34,6 +35,7 @@ static void bench_x25519()
 }
 static void bench_x448()
 {
+	printf("===== Benchmarking DH ====\n");
 	printf("======   X448 AVX2  ======\n");
 	bench_ecdh(&ECDHX.X448);
 }

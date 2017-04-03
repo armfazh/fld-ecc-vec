@@ -3,7 +3,7 @@
 #include<stdio.h>
 #include<string.h>
 
-int main()
+int main(void)
 {
     size_t size_key = ED25519_KEY_SIZE_BYTES_PARAM;
     size_t size_sig = ED25519_SIG_SIZE_BYTES_PARAM;

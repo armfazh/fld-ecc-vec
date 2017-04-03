@@ -1,11 +1,19 @@
 #include "ecc_ed448.c"
 #include "sha3.c"
 
+/**
+ *
+ * @return
+ */
 static uint8_t * initEd448_Key()
 {
 	return (uint8_t*) allocate_bytes(ED448_KEY_SIZE_BYTES_PARAM * sizeof(uint8_t));
 }
 
+/**
+ *
+ * @return
+ */
 static uint8_t * initEd448_Signature()
 {
 	return (uint8_t*) allocate_bytes(ED448_SIG_SIZE_BYTES_PARAM * sizeof(uint8_t));
@@ -34,7 +42,6 @@ static int ed448_keygen(
 	point_encoding_ed448(public_key,&hB);
 	return EDDSA_KEYGEN_OK;
 }
-
 
 /**
  * Calculates:
@@ -71,7 +78,18 @@ static void calculate_s_ed448(uint8_t *s_mod_l, uint8_t *r, uint8_t *h, uint8_t 
 	s_mod_l[56] = 0;
 }
 
-
+/**
+ *
+ * @param signature
+ * @param message
+ * @param message_length
+ * @param context
+ * @param context_length
+ * @param public_key
+ * @param private_key
+ * @param phflag
+ * @return
+ */
 static int ed448_sign_all(
 		argEdDSA_Signature signature,
 		const uint8_t *message,
@@ -152,7 +170,6 @@ static int ed448_sign_all(
 	return EDDSA_SIGNATURE_OK;
 }
 
-
 /**
  *
  * @param signature
@@ -199,7 +216,6 @@ static int ed448ph_signctx(
 	return ed448_sign_all(signature,message,message_length,context,context_length,public_key,private_key,1);
 }
 
-
 /**
  *
  * @param message
@@ -208,6 +224,7 @@ static int ed448ph_signctx(
  * @param context_length
  * @param public_key
  * @param signature
+ * @param phflag
  * @return
  */
 static int ed448_verify_all(
@@ -310,5 +327,4 @@ static int ed448ph_verifyctx(
 {
 	return ed448_verify_all(message,message_length,context,context_length,public_key,signature,1);
 }
-
 

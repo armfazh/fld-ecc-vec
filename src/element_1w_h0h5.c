@@ -1,7 +1,10 @@
 
 /**
  * Converts between STR_BYTES to 1w_H0H5
- * */
+ *
+ * @param pC
+ * @param p8A
+ */
 static void str_bytes_To_Element_1w_h0h5(uint64_t * pC, uint8_t * p8A)
 {
 	const uint64_t mask0 = ((uint64_t)1<<(BASE0_FP25519))-1;
@@ -56,6 +59,11 @@ static void str_bytes_To_Element_1w_h0h5(uint64_t * pC, uint8_t * p8A)
 	_mm_store_si128((__m128i*)pC+5,_mm_setzero_si128());
 }
 
+/**
+ *
+ * @param p8C
+ * @param pA
+ */
 static void singleH0H5_To_str_bytes(uint8_t * p8C, uint64_t * pA)
 {
 	uint64_t * pC = (uint64_t*)p8C;
@@ -100,6 +108,10 @@ static void singleH0H5_To_str_bytes(uint8_t * p8C, uint64_t * pA)
 
 }
 
+/**
+ *
+ * @param pA
+ */
 static void neg_Element_1w_h0h5(uint64_t * pA)
 {
 	const __m256i _2P0 = _mm256_set_epi64x(0x7fffffe,0x3fffffe,0x3fffffe,0x7ffffda);
@@ -119,6 +131,12 @@ static void neg_Element_1w_h0h5(uint64_t * pA)
 	STORE(pA+2,c2);
 }
 
+/**
+ *
+ * @param pC
+ * @param pA
+ * @param pB
+ */
 static void add_Element_1w_h0h5(uint64_t * pC, uint64_t * pA,uint64_t * pB)
 {
 	__m256i a0 = LOAD(pA+0);
@@ -138,6 +156,12 @@ static void add_Element_1w_h0h5(uint64_t * pC, uint64_t * pA,uint64_t * pB)
 	STORE(pC+2,c2);
 }
 
+/**
+ *
+ * @param pC
+ * @param pA
+ * @param pB
+ */
 static void sub_Element_1w_h0h5(uint64_t * pC, uint64_t * pA,uint64_t * pB)
 {
 	const __m256i _2P0 = _mm256_set_epi64x(0x7fffffe,0x3fffffe,0x3fffffe,0x7ffffda);
@@ -165,6 +189,12 @@ static void sub_Element_1w_h0h5(uint64_t * pC, uint64_t * pA,uint64_t * pB)
 	STORE(pC+2,c2);
 }
 
+/**
+ *
+ * @param C
+ * @param A
+ * @param B
+ */
 static void mul_schoolbook_Element_1w_h0h5(uint64_t * C, uint64_t * A, uint64_t * B)
 {
 	const __m256i k_19_1 = _mm256_set_epi32(0,1,0,19,0,1,0,19);
@@ -275,6 +305,12 @@ static void mul_schoolbook_Element_1w_h0h5(uint64_t * C, uint64_t * A, uint64_t 
 	STORE(C+2,c2);
 }
 
+/**
+ *
+ * @param pC
+ * @param pA
+ * @param pB
+ */
 static void mul_Element_1w_h0h5(uint64_t * pC, uint64_t * pA, uint64_t * pB)
 {
 	mul_schoolbook_Element_1w_h0h5(pC,pA,pB);
@@ -283,6 +319,11 @@ static void mul_Element_1w_h0h5(uint64_t * pC, uint64_t * pA, uint64_t * pB)
 #define mul19_128(A)\
 	A = _mm_shuffle_epi32(_mm_add_epi64(_mm_add_epi64(_mm_sllv_epi64(A, shift_4),_mm_sllv_epi64(A, shift_1)),A),0x4E);
 
+/**
+ *
+ * @param A
+ * @param times
+ */
 static void sqrn_Element_1w_h0h5(uint64_t * A, int times)
 {
 	int it=0;
@@ -437,11 +478,19 @@ static void sqrn_Element_1w_h0h5(uint64_t * A, int times)
 	_mm_store_si128((__m128i *) A + 4, b4);
 }
 
+/**
+ *
+ * @param A
+ */
 static void sqr_Element_1w_h0h5(uint64_t * A)
 {
 	sqrn_Element_1w_h0h5(A,1);
 }
 
+/**
+ *
+ * @param A
+ */
 static void compress_Element_1w_h0h5(uint64_t * A)
 {
 	const uint64_t ones25 = ((uint64_t) 1 << 25) - 1;
@@ -488,10 +537,6 @@ static void compress_Element_1w_h0h5(uint64_t * A)
 	c0 = _mm_and_si128(c0, mask0);
 	c1 = _mm_add_epi64(c1, h0_5);
 
-/*	h1_6 = _mm128_srlv_epi64(c1, shift1);   */
-/*	c1 = _mm128_and_si128(c1, mask1);       */
-/*	c2 = _mm128_add_epi64(c2, h1_6);        */
-
 	_mm_store_si128((__m128i*)A+0,c0);
 	_mm_store_si128((__m128i*)A+1,c1);
 	_mm_store_si128((__m128i*)A+2,c2);
@@ -499,6 +544,10 @@ static void compress_Element_1w_h0h5(uint64_t * A)
 	_mm_store_si128((__m128i*)A+4,c4);
 }
 
+/**
+ *
+ * @param A
+ */
 static void compressfast_Element_1w_h0h5(uint64_t * A)
 {
 	const uint64_t ones25 = ((uint64_t) 1 << 25) - 1;
@@ -550,7 +599,12 @@ static void compressfast_Element_1w_h0h5(uint64_t * A)
 	STORE(C+1,LOAD(A+1));\
 	STORE(C+2,LOAD(A+2));
 
-static void inv_Element_1w_h0h5(uint64_t * __restrict pC, uint64_t * __restrict pA)
+/**
+ *
+ * @param pC
+ * @param pA
+ */
+static void inv_Element_1w_h0h5(uint64_t * pC, uint64_t * pA)
 {
 	Element_1w_Fp25519 x0, x1, x2;
 	uint64_t * T[5];
@@ -593,7 +647,12 @@ static void inv_Element_1w_h0h5(uint64_t * __restrict pC, uint64_t * __restrict 
 	mul_Element_1w_h0h5(T[1], T[1], T[2]);	compress_Element_1w_h0h5(T[1]);
 }
 
-
+/**
+ *
+ * @param A
+ * @param B
+ * @return
+ */
 static int compare_Element_1w_h0h5(uint64_t * A, uint64_t * B)
 {
 	ALIGN uint8_t a[SIZE_FP25519];
@@ -612,7 +671,7 @@ static int compare_Element_1w_h0h5(uint64_t * A, uint64_t * B)
  * @param u
  * @param v
  */
-static void invsqrt_Element_1w_h0h5(uint64_t * __restrict uv_p38, uint64_t * __restrict u, uint64_t * __restrict v)
+static void invsqrt_Element_1w_h0h5(uint64_t * uv_p38, uint64_t * u, uint64_t * v)
 {
 	const Element_1w_Fp25519 sqrt_minus_one = {
 			0x20ea0b0,0x1fbd7a7,
@@ -709,6 +768,11 @@ static void invsqrt_Element_1w_h0h5(uint64_t * __restrict uv_p38, uint64_t * __r
 	}
 }
 
+/**
+ *
+ * @param C
+ * @param A
+ */
 static void sqrt_Element_1w_h0h5(uint64_t*C,uint64_t*A)
 {
 	invsqrt_Element_1w_h0h5(C,C,A);
@@ -716,6 +780,10 @@ static void sqrt_Element_1w_h0h5(uint64_t*C,uint64_t*A)
 
 /** Util functions */
 
+/**
+ *
+ * @param A
+ */
 static void random_Element_1w_h0h5(uint64_t *A)
 {
 	ALIGN uint8_t a[SIZE_FP25519];
@@ -724,16 +792,30 @@ static void random_Element_1w_h0h5(uint64_t *A)
 	str_bytes_To_Element_1w_h0h5(A,a);
 }
 
+/**
+ *
+ * @param A
+ */
 static void print_Element_1w_h0h5(uint64_t * A)
 {
 	ALIGN uint8_t a[SIZE_FP25519];
 	singleH0H5_To_str_bytes(a,A);
 	print_bytes(a,SIZE_FP25519);
 }
+
+/**
+ *
+ * @return
+ */
 static uint64_t * init_Element_1w_h0h5()
 {
 	return (uint64_t*) allocate_bytes((4*((NUM_DIGITS_FP25519+3)/4)) * sizeof(uint64_t));
 }
+
+/**
+ *
+ * @return
+ */
 static uint64_t * prime_Element_1w_h0h5()
 {
 	uint64_t *prime = init_Element_1w_h0h5();

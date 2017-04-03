@@ -15,7 +15,7 @@ static void test_Element_1w(const struct _struct_Fp_1way * fp)
 	* Test identity:
 	*    (a^2-b^2) == (a+b)(a-b)
 	*/
-	printf("Test mul/sqr:\n");
+	printf("Test mul/sqr:");
 	cnt = 0;
 	for(i=0;i<TEST_TIMES;i++)
 	{
@@ -46,7 +46,7 @@ static void test_Element_1w(const struct _struct_Fp_1way * fp)
 	* Test identity:
 	*    (a*b*a^1) == b
 	*/
-	printf("Test mul/inv:\n");
+	printf("Test mul/inv:");
 	cnt = 0;
 	for(i=0;i<TEST_TIMES;i++)
 	{
@@ -94,7 +94,7 @@ static void test_Element_Nw(const struct _struct_Fp_Nway * fp)
 	* Test identity:
 	*    (a^2-b^2) == (a+b)(a-b)
 	*/
-	printf("Test mul/sqr:\n");
+	printf("Test mul/sqr:");
 	cnt = 0;
 	for(i=0;i<TEST_TIMES;i++)
 	{
@@ -129,9 +129,12 @@ static void test_Element_Nw(const struct _struct_Fp_Nway * fp)
 
 static void test_fp25519()
 {
+	printf("=== Testing Arith  ===\n");
+	printf("===   p=2^255-19   ===\n");
+
 	printf("===== 1-way AVX2 =====\n");
 	test_Element_1w(&Fp.fp25519._1way);
-	printf("===== 1-way x64 =====\n");
+	printf("===== 1-way x64  =====\n");
 	test_Element_1w(&Fp.fp25519._1way_x64);
 	printf("===== 2-way AVX2 =====\n");
 	test_Element_Nw(&Fp.fp25519._2way);
@@ -141,6 +144,8 @@ static void test_fp25519()
 
 static void test_fp448()
 {
+	printf("=== Testing Arith  ===\n");
+	printf("=== p=2^448-2^224-1 ==\n");
 	printf("===== 1-way AVX2 =====\n");
 	test_Element_1w(&Fp.fp448._1way);
 	printf("===== 2-way AVX2 =====\n");

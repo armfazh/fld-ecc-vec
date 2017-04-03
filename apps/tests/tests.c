@@ -22,15 +22,14 @@ int main(void)
 	printf("=== Environment Information ====\n");
 	machine_info();
 
-	printf("===== Testing Ed25519 =====\n");
 	test_fp25519();
 	test_x25519();
 	test_ed25519();
 
-	printf("===== Testing Ed448 =====\n");
 	test_fp448();
 	test_x448();
 	test_ed448();
 
+	printf("=== End of Test Driver ====\n");
 	return 0;
 }

@@ -24,13 +24,13 @@ add_executable(field_arith apps/samples/field_arith.c)
 add_executable(ecdh        apps/samples/ecdh.c)
 add_executable(eddsa       apps/samples/eddsa.c)
 
-target_link_libraries(bench       ${TARGET}_shared)
+target_link_libraries(bench       ${TARGET}_static)
 target_link_libraries(tests       ${TARGET}_static)
 target_link_libraries(field_arith ${TARGET}_static)
-target_link_libraries(hello	  ${TARGET}_static)
-target_link_libraries(cpu_id	  ${TARGET}_static)
-target_link_libraries(ecdh	  ${TARGET}_static)
-target_link_libraries(eddsa	  ${TARGET}_static)
+target_link_libraries(hello	      ${TARGET}_static)
+target_link_libraries(cpu_id      ${TARGET}_static)
+target_link_libraries(ecdh        ${TARGET}_static)
+target_link_libraries(eddsa       ${TARGET}_static)
 
 INSTALL(TARGETS ${TARGET}_static ${TARGET}_shared DESTINATION "lib")
 INSTALL(FILES

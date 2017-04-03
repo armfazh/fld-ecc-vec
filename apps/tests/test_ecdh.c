@@ -315,7 +315,7 @@ static void test_dh(const DiffieHellmanXFunction *ecdh)
 	int64_t i = 0, TIMES = TEST_TIMES;
 	int64_t cnt = 0, test = 0;
 
-	printf("Testing Diffie-Hellman\n");
+	printf("Testing DH:");
 	cnt = 0;
 	test = 0;
 	argECDHX_Key alice_private_key = ecdh->initKey();
@@ -354,24 +354,24 @@ static void test_dh(const DiffieHellmanXFunction *ecdh)
 
 static void test_x25519()
 {
-	printf("Testing X25519\n");
+	printf("=== Testing X25519 ===\n");
 	test_dh(&ECDHX.X25519);
-	printf("RFC7748 test vectors \n");
+	printf("==== RFC7748 Test ====\n");
 	test0_rfc7748_x25519(&ECDHX.X25519);
 	test1_rfc7748_x25519(&ECDHX.X25519);
 
-	printf("Testing X25519 x64\n");
+	printf("= Testing X25519 x64 =\n");
 	test_dh(&ECDHX.X25519_x64);
-	printf("RFC7748 test vectors \n");
+	printf("==== RFC7748 Test ====\n");
 	test0_rfc7748_x25519(&ECDHX.X25519_x64);
 	test1_rfc7748_x25519(&ECDHX.X25519_x64);
 }
 
 static void test_x448()
 {
-	printf("Testing X448\n");
+	printf("==== Testing X448 ====\n");
 	test_dh(&ECDHX.X448);
-	printf("RFC7748 test vectors \n");
+	printf("==== RFC7748 Test ====\n");
 	test0_rfc7748_x448();
 	test1_rfc7748_x448();
 }

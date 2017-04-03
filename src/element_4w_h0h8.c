@@ -453,11 +453,21 @@ static void sqr_karatsuba_4w_h0h8(__m256i * C)
 	C[14] = ADD(x7,y7);	                    C[15] = SUB(z7,x7);
 }
 
+/**
+ *
+ * @param C
+ * @param A
+ * @param B
+ */
 static void mul_Element_4w_h0h8(__m256i *C, __m256i *A, __m256i *B)
 {
 	mul_karatsuba_4w_h0h8(C,A,B);
 }
 
+/**
+ *
+ * @param C
+ */
 static void sqr_Element_4w_h0h8(__m256i * C)
 {
 	sqr_karatsuba_4w_h0h8(C);
@@ -472,6 +482,7 @@ static void sqr_Element_4w_h0h8(__m256i * C)
 	H = SHR(X[I], BASE_FP448);\
 	X[I] = AND(X[I], mask);\
 	X[J] = ADD(X[J], H);
+
 /**
  *
  * @param C
@@ -596,6 +607,10 @@ static int compare_Element_4w_h0h8(argElement_4w X0_X1_X2_X3, argElement_4w Y0_Y
 		   compare_Element_1w_h0h8(X3, Y3);
 }
 
+/**
+ *
+ * @return
+ */
 static __m256i * init_Element_4w_h0h8()
 {
 	return (__m256i*) allocate_bytes(NUM_DIGITS_FP448 * sizeof(__m256i));

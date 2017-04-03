@@ -412,7 +412,12 @@ static void red_Element_2w_x64(uint64_t *const c, uint64_t *const a)
 #endif
 }
 
-
+/**
+ *
+ * @param c
+ * @param a
+ * @param b
+ */
 static void mul_256x256_integer_x64(uint64_t *const c, uint64_t *const a, uint64_t *const b)
 {
 #ifdef __BMI2__
@@ -511,6 +516,11 @@ static void mul_256x256_integer_x64(uint64_t *const c, uint64_t *const a, uint64
 #endif
 }
 
+/**
+ *
+ * @param c
+ * @param a
+ */
 static void sqr_256x256_integer_x64(uint64_t *const c, uint64_t *const a)
 {
 #ifdef __BMI2__
@@ -587,6 +597,11 @@ static void sqr_256x256_integer_x64(uint64_t *const c, uint64_t *const a)
 #endif
 }
 
+/**
+ *
+ * @param c
+ * @param a
+ */
 static void red_Element_1w_x64(uint64_t *const c, uint64_t *const a)
 {
 #ifdef __BMI2__
@@ -635,6 +650,12 @@ static void red_Element_1w_x64(uint64_t *const c, uint64_t *const a)
 #endif
 }
 
+/**
+ *
+ * @param c
+ * @param a
+ * @param b
+ */
 static __inline void add_Element_1w_x64(uint64_t *const c, uint64_t *const a, uint64_t *const b)
 {
 #if __ADX__
@@ -685,6 +706,12 @@ static __inline void add_Element_1w_x64(uint64_t *const c, uint64_t *const a, ui
 #endif
 }
 
+/**
+ *
+ * @param c
+ * @param a
+ * @param b
+ */
 static __inline void sub_Element_1w_x64(uint64_t *const __restrict c, uint64_t *const __restrict a, uint64_t *const __restrict b)
 {
 	__asm__ __volatile__(
@@ -710,13 +737,22 @@ static __inline void sub_Element_1w_x64(uint64_t *const __restrict c, uint64_t *
 	);
 }
 
+/**
+ *
+ * @param c
+ */
 static __inline void neg_Element_1w_x64(uint64_t *const c)
 {
 	Element_1w_x64 zero={0};
 	sub_Element_1w_x64(c,zero,c);
 }
 
-
+/**
+ *
+ * @param c
+ * @param a
+ * @param b
+ */
 static void mul_Element_1w_x64(argElement_1w c, argElement_1w a, argElement_1w b)
 {
 	Element_1w_Buffer_x64 buffer_1w;
@@ -724,6 +760,10 @@ static void mul_Element_1w_x64(argElement_1w c, argElement_1w a, argElement_1w b
 	red_Element_1w_x64(c,buffer_1w);
 }
 
+/**
+ *
+ * @param a
+ */
 static void sqr_Element_1w_x64(argElement_1w a)
 {
 	Element_1w_Buffer_x64 buffer_1w;
@@ -731,7 +771,11 @@ static void sqr_Element_1w_x64(argElement_1w a)
 	red_Element_1w_x64(a,buffer_1w);
 }
 
-
+/**
+ *
+ * @param c
+ * @param a
+ */
 static __inline void mul_a24_Element_1w_x64(uint64_t *const c, uint64_t *const a)
 {
 #ifdef __BMI2__
@@ -773,6 +817,11 @@ static __inline void mul_a24_Element_1w_x64(uint64_t *const c, uint64_t *const a
         sqr_Element_1w_x64(a);\
     }\
 
+/**
+ *
+ * @param pC
+ * @param pA
+ */
 static void inv_Element_1w_x64(uint64_t * const pC, uint64_t * const pA)
 {
 	Element_1w_x64 x0, x1, x2;
@@ -817,10 +866,17 @@ static void inv_Element_1w_x64(uint64_t * const pC, uint64_t * const pA)
 	mul_Element_1w_x64(T[1], T[1], T[2]);
 }
 
+/**
+ *
+ * @param A
+ * @param B
+ * @return
+ */
 static int compare_Element_1w_x64(uint64_t *A, uint64_t *B)
 {
 	return compare_bytes((uint8_t*)A,(uint8_t*)B,SIZE_FP25519);
 }
+
 /**
  * Given u,v, it computes (u/v)^(p+3)/8
  * @param uv_p38
@@ -922,11 +978,20 @@ static void invsqrt_Element_1w_x64(uint64_t *const uv_p38, uint64_t *const u, ui
 	}
 }
 
+/**
+ *
+ * @param C
+ * @param A
+ */
 static void sqrt_Element_1w_x64(uint64_t * C,uint64_t * A)
 {
 	invsqrt_Element_1w_x64(C,C,A);
 }
 
+/**
+ *
+ * @param c
+ */
 static __inline void fred_Element_1w_x64(uint64_t *const c)
 {
 	int64_t last = (((int64_t*)c)[3])>>63;
@@ -935,23 +1000,38 @@ static __inline void fred_Element_1w_x64(uint64_t *const c)
 }
 
 /** Util functions */
-
+/**
+ *
+ * @param A
+ */
 static void random_Element_1w_x64(uint64_t *A)
 {
 	random_bytes((uint8_t*)A,SIZE_FP25519);
 	A[3] &= ((uint64_t)1<<63)-1;
 }
 
-
+/**
+ *
+ * @param A
+ */
 static void print_Element_1w_x64(uint64_t *A)
 {
 	print_bytes((uint8_t*)A,SIZE_FP25519);
 }
 
+/**
+ *
+ * @return
+ */
 static uint64_t * init_Element_1w_x64()
 {
 	return (uint64_t*) allocate_bytes(NUM_DIGITS_FP25519_X64 * sizeof(uint64_t));
 }
+
+/**
+ *
+ * @return
+ */
 static uint64_t * prime_Element_1w_x64()
 {
 	uint64_t * prime = init_Element_1w_x64();

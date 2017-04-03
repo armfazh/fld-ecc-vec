@@ -69,7 +69,7 @@ static void test_vector(const EdDSA_TestData * test)
 
 static void test_ed25519()
 {
-	printf("=== RFC8032 test vectors ====\n");
+	printf("==== RFC8032 Test ====\n");
 	int i=0;
 	for(i=0; i<NUM_TEST_VECTORS_ED25519; i++)
 	{
@@ -78,7 +78,7 @@ static void test_ed25519()
 }
 static void test_ed448()
 {
-	printf("=== RFC8032 test vectors ====\n");
+	printf("==== RFC8032 Test ====\n");
 	int i=0;
 	for(i=0; i<NUM_TEST_VECTORS_ED448; i++)
 	{

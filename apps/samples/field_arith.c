@@ -38,7 +38,7 @@ void identity(const struct _struct_Fp_1way * fp)
     fp->clear(prime );
 }
 
-int main()
+int main(void)
 {
     identity(&Fp.fp25519._1way_x64);
     identity(&Fp.fp25519._1way);

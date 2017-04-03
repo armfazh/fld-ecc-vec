@@ -103,6 +103,11 @@ void _2way_fulladd(PointXYZT_2way_Fp25519 *Q, PointXYZT_2way_Fp25519 *P)
 	compress_Element_2w_h0h5(Y1);
 }
 
+/**
+ *
+ * @param enc
+ * @param P
+ */
 static void point_encoding_ed25519(uint8_t*enc, PointXYZT_2w_H0H5* P)
 {
 	Element_1w_x64 X, Y, Z, invZ;
@@ -191,10 +196,10 @@ static void recoding_signed_scalar_fold4w4_ed25519(uint64_t *list_signs, uint64_
  * @param index_table
  */
 static void query_table_fold4w4_ed25519(
-		Point_precmp_4way_Fp25519 *P,
-		uint64_t * secret_signs,
-		uint64_t * secret_digits,
-		uint64_t index_table
+	Point_precmp_4way_Fp25519 *P,
+	uint64_t * secret_signs,
+	uint64_t * secret_digits,
+	uint64_t index_table
 )
 {
 	const __m256i _P[NUM_DIGITS_FP25519] = {
@@ -441,7 +446,6 @@ static void recoding_signed_scalar_fold2w4_ed25519(uint64_t *list_signs, uint64_
 			list_signs [4*j+i+2] = (int64_t) -carry;
 		}
 	}
-//	printf("carry: %d \n", carry);
 	list_digits[64] = carry; /*This is always equal to 0 iff r < 2**252 */
 }
 
@@ -453,10 +457,10 @@ static void recoding_signed_scalar_fold2w4_ed25519(uint64_t *list_signs, uint64_
  * @param secret_digits
  */
 static void query_table_fold2w4_ed25519(
-		Point_precmp_4way_Fp25519 *P,
-		uint64_t * secret_signs,
-		uint64_t * secret_digits,
-		uint64_t index_table
+	Point_precmp_4way_Fp25519 *P,
+	uint64_t * secret_signs,
+	uint64_t * secret_digits,
+	uint64_t index_table
 )
 {
 	const __m256i _P[10] = {
@@ -799,6 +803,7 @@ static void point_decoding_ed25519(PointXYZT_2w_H0H5 *P, const uint8_t *A)
 		: "+r"(r3),"+r"(r2),"+r"(r1),"+r"(r0) \
 		: "r"(b3),"r"(b2),"r"(b1),"r"(b0)     \
         : "memory","cc")
+
 /**
  *
  * @param K
@@ -837,6 +842,7 @@ int wnaf_256bits(int8_t *K, const uint8_t *p8_r, int w)
 	}
 	return i;
 }
+
 /**
  *
  * @param table
@@ -883,6 +889,7 @@ static const uint64_t CONST_2_to_35P[2*NUM_DIGITS_FP25519] = {
         0x0ffffff800000000,0x1ffffff800000000,0x0ffffff800000000,0x1ffffff800000000,
         0x1ffffff800000000,0x0ffffff800000000,0x1ffffff800000000,0x0ffffff800000000
 };
+
 /**
  * Computes the doubling of ONE point
  * stored in P = {XY,ZT}
@@ -932,6 +939,7 @@ void _1way_doubling_2w_H0H5(PointXYZT_2w_H0H5 *P)
 #endif
 	compress2_Element_2w_h0h5(XY,TZ);
 }
+
 /**
  * Full addition from Hisil page 6.
  * @param Q
@@ -952,7 +960,6 @@ void _1way_mixadd_2w_H0H5(PointXYZT_2w_H0H5 *Q, PointXYZT_precompute_2w_H0H5 *P)
 	subadd_Element_2w_h0h5(_subYXaddYX1,XY,0); 			/* [-sub1|add1] = [ -Y1+X1 | Y1+X1 ] */
 	mul_Element_2w_h0h5(_AB,_subYXaddYX1,subYXaddYX2);	/* [-A|B] = [ (-Y1+X1)(Y2-X2) | (Y1+X1)(Y2+X2) ] */
 	mul_Element_2w_h0h5(CD,TZ,_2dT_2Z); 				/* [C|D] = [ 2dT1T2 | 2Z1Z2 ] */
-	/*[TODO: Precompute param_d to help to multiplication]*/
 
 	for(i=0;i<(NUM_DIGITS_FP25519/2);i++)
 	{
@@ -1034,6 +1041,7 @@ void _1way_fulladd_2w_H0H5(PointXYZT_2w_H0H5 *Q, PointXYZT_2w_H0H5 *P)
 #endif
 	compress2_Element_2w_h0h5(XY1,TZ1);
 }
+
 /**
  *
  * @param P
@@ -1064,6 +1072,7 @@ static void read_point_ed25519(PointXYZT_precompute_2w_H0H5 * P, int8_t index)
 	}
 	interleave_2w_h0h5(P->_2dT_2Z,_2dT,(argElement_1w)two);
 }
+
 /**
  *
  * @param sB_hA
@@ -1145,5 +1154,4 @@ static void double_point_multiplication_ed25519(uint8_t *sB_hA, const uint8_t *s
 	fred_Element_1w_x64((uint64_t*)sB_hA);
 	sB_hA[31] = (sB_hA[31]&0x7F) | ((X[0]&0x1)<<7);
 }
-
 

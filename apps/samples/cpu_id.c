@@ -15,7 +15,9 @@
 :"+r" (ra), "+r" (rb), "+r" (rc), "+r" (rd)\
 : : "%eax", "%ebx", "%ecx", "%edx")
 
-#define test_capability(REG,CAP)  printf("%-12s: [%s]\n",#CAP,( (REG & CAP) != 0 )?"Yes":"No");
+#define test_capability(REG,CAP) \
+ printf("%-12s: [%s]\n",#CAP,( (REG & CAP) != 0 )?"Yes":"No");\
+ run += (REG & CAP) != 0;
 
 #ifndef bit_BMI
 #define bit_BMI	(1 << 3)
@@ -43,8 +45,10 @@
 
 void machine_info()
 {
+	printf("=== Environment Information ====\n");
 	printf("Program compiled with: %s\n",__VERSION__);
 	unsigned int eax, ebx, ecx, edx;
+	unsigned int run=0;
 
 	eax = 1;
 	ebx = 0;
@@ -70,8 +74,10 @@ void machine_info()
 	test_capability(ebx, bit_BMI);
 	test_capability(ebx, bit_BMI2);
 	test_capability(ebx, bit_ADX);
+
+	printf("Machine supports our library: %s\n",(run==11 || run ==12)?"Yes":"No");
 }
-int main()
+int main(void)
 {
 	machine_info();
 	return 0;

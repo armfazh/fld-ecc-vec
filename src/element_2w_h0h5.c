@@ -30,6 +30,7 @@ static void interleave_2w_h0h5(argElement_2w C, argElement_1w LOW, argElement_1w
 	C[3] = _mm256_permute2f128_si256(A4,B4,0x31);
 	C[4] = _mm256_permute2f128_si256(A8,B8,0x20);
 }
+
 /**
  *
  * @param LOW
@@ -45,6 +46,7 @@ void deinterleave_2w_h0h5(argElement_1w LOW, argElement_1w HIGH, argElement_2w A
 	STORE(LOW  + 2, A[4]);
 	STORE(HIGH + 2, _mm256_castsi128_si256(_mm256_extractf128_si256(A[4], 1)));
 }
+
 /**
  *
  * @param A
@@ -178,6 +180,7 @@ static __inline void addsub_Element_2w_h0h5(argElement_2w __restrict A, argEleme
 		B[i] = C;
 	}
 }
+
 /**
  * Given:
  *      A = [A0|A1]
@@ -523,16 +526,13 @@ static void compress_Element_2w_h0h5(__m256i *  C)
 	c0 = _mm256_and_si256(c0, mask0);
 	c1 = _mm256_add_epi64(c1, h0_5);
 
-/*	h1_6 = _mm256_srlv_epi64(c1, shift1);  */
-/*	c1 = _mm256_and_si256(c1, mask1);      */
-/*	c2 = _mm256_add_epi64(c2, h1_6);       */
-
 	C[0] = c0;
 	C[1] = c1;
 	C[2] = c2;
 	C[3] = c3;
 	C[4] = c4;
 }
+
 /**
  *
  * @param C
@@ -590,6 +590,7 @@ static void compress2_Element_2w_h0h5(__m256i *__restrict  C, __m256i *__restric
 	C[3] = c3;                         D[3] = d3;
 	C[4] = c4;                         D[4] = d4;
 }
+
 /**
  *
  * @param C
@@ -628,7 +629,6 @@ static void compressfast_Element_2w_h0h5(__m256i *  C)
 	C[4] = ADD(L[4],M[3]);
 }
 
-
 /** Util functions */
 
 /**
@@ -642,6 +642,7 @@ static void random_Element_2w_h0h5(argElement_2w X_Y)
 	random_Element_1w_h0h5(Y);
 	interleave_2w_h0h5(X_Y,X,Y);
 }
+
 /**
  *
  * @param X_Y
@@ -653,6 +654,7 @@ static void print_Element_2w_h0h5(argElement_2w X_Y)
 	print_Element_1w_h0h5(X);
 	print_Element_1w_h0h5(Y);
 }
+
 /**
  *
  * @param X0_X1
@@ -668,6 +670,10 @@ static int compare_Element_2w_h0h5(argElement_2w X0_X1, argElement_2w Y0_Y1)
 	return compare_Element_1w_h0h5(X0,Y0) && compare_Element_1w_h0h5(X1,Y1);
 }
 
+/**
+ *
+ * @return
+ */
 static __m256i * init_Element_2w_h0h5()
 {
 	return (__m256i*) allocate_bytes((NUM_DIGITS_FP25519/2) * sizeof(__m256i));

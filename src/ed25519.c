@@ -1,11 +1,19 @@
 #include "ecc_ed25519.c"
 #include "sha512.c"
 
+/**
+ *
+ * @return
+ */
 static uint8_t * initEd25519_Key()
 {
 	return (uint8_t*) allocate_bytes(ED25519_KEY_SIZE_BYTES_PARAM * sizeof(uint8_t));
 }
 
+/**
+ *
+ * @return
+ */
 static uint8_t * initEd25519_Signature()
 {
 	return (uint8_t*) allocate_bytes(ED25519_SIG_SIZE_BYTES_PARAM * sizeof(uint8_t));
@@ -192,6 +200,7 @@ static __inline void reduce64bits(uint64_t *a)
 	:/* regs */ "memory", "cc","%rax","%rbx", "%rcx", "%rdx", "%r8", "%r9"
 	);
 }
+
 /**
  * This function performs a modular reduction
  * (mod \ell) where:
@@ -208,11 +217,17 @@ static __inline void modular_reduction_ed25519(uint8_t *a)
 	pA[3] &= ((uint64_t)1<<60)-1;
 	reduce64bits(pA);
 }
+
 /**
+ *
  * Calculates:
  *     s = r+k*a  (mod \ell)
- *
  * such that size of r,k and a is 32-bytes.
+ *
+ * @param s_mod_l
+ * @param r
+ * @param k
+ * @param a
  */
 static __inline void calculate_s_ed25519(uint8_t *s_mod_l, uint8_t *r, uint8_t *k, const uint8_t *a)
 {
@@ -231,7 +246,19 @@ static __inline void calculate_s_ed25519(uint8_t *s_mod_l, uint8_t *r, uint8_t *
 	}
 }
 
-
+/**
+ *
+ * @param signature
+ * @param message
+ * @param message_length
+ * @param context
+ * @param context_length
+ * @param public_key
+ * @param private_key
+ * @param pureEdDSA
+ * @param phflag
+ * @return
+ */
 static int ed25519_sign_all(
 		argEdDSA_Signature signature,
 		const uint8_t *message,
@@ -323,6 +350,15 @@ static int ed25519_sign_all(
 	return EDDSA_SIGNATURE_OK;
 }
 
+/**
+ *
+ * @param signature
+ * @param message
+ * @param message_length
+ * @param public_key
+ * @param private_key
+ * @return
+ */
 static int ed25519_sign(
 		argEdDSA_Signature signature,
 		const uint8_t *message,
@@ -334,42 +370,78 @@ static int ed25519_sign(
 	return ed25519_sign_all(signature,message,message_length,
 							EDDSA_NOCONTEXT,0,public_key,private_key,1,0);
 }
+
+/**
+ *
+ * @param signature
+ * @param message
+ * @param message_length
+ * @param context
+ * @param context_length
+ * @param public_key
+ * @param private_key
+ * @return
+ */
 static int ed25519_signctx(
-		argEdDSA_Signature signature,
-		const uint8_t *message,
-		uint64_t message_length,
-		const uint8_t * context,
-		uint64_t        context_length,
-		const argEdDSA_PublicKey public_key,
-		const argEdDSA_PrivateKey private_key
+	argEdDSA_Signature signature,
+	const uint8_t *message,
+	uint64_t message_length,
+	const uint8_t * context,
+	uint64_t        context_length,
+	const argEdDSA_PublicKey public_key,
+	const argEdDSA_PrivateKey private_key
 )
 {
 	return ed25519_sign_all(signature,message,message_length,
 							context,context_length,public_key,private_key,0,0);
 }
+
+/**
+ *
+ * @param signature
+ * @param message
+ * @param message_length
+ * @param context
+ * @param context_length
+ * @param public_key
+ * @param private_key
+ * @return
+ */
 static int ed25519ph_signctx(
-		argEdDSA_Signature signature,
-		const uint8_t *message,
-		uint64_t message_length,
-		const uint8_t * context,
-		uint64_t        context_length,
-		const argEdDSA_PublicKey public_key,
-		const argEdDSA_PrivateKey private_key
+	argEdDSA_Signature signature,
+	const uint8_t *message,
+	uint64_t message_length,
+	const uint8_t * context,
+	uint64_t        context_length,
+	const argEdDSA_PublicKey public_key,
+	const argEdDSA_PrivateKey private_key
 )
 {
 	return ed25519_sign_all(signature,message,message_length,
 							context,context_length,public_key,private_key,0,1);
 }
 
+/**
+ *
+ * @param message
+ * @param message_length
+ * @param context
+ * @param context_length
+ * @param public_key
+ * @param signature
+ * @param pureEdDSA
+ * @param phflag
+ * @return
+ */
 static int ed25519_verify_all(
-		const uint8_t *message,
-		uint64_t message_length,
-		const uint8_t * context,
-		uint64_t        context_length,
-		const argEdDSA_PublicKey public_key,
-		const argEdDSA_Signature signature,
-		const uint8_t pureEdDSA,
-		const uint8_t phflag
+	const uint8_t *message,
+	uint64_t message_length,
+	const uint8_t * context,
+	uint64_t        context_length,
+	const argEdDSA_PublicKey public_key,
+	const argEdDSA_Signature signature,
+	const uint8_t pureEdDSA,
+	const uint8_t phflag
 )
 {
 	sph_sha512_context hash_context;
@@ -422,15 +494,34 @@ static int ed25519_verify_all(
 	return (memcmp(signature,Q,ED25519_KEY_SIZE_BYTES_PARAM) == 0)? EDDSA_VERIFICATION_OK : EDDSA_INVALID_SIGNATURE;
 }
 
+/**
+ *
+ * @param message
+ * @param message_length
+ * @param public_key
+ * @param signature
+ * @return
+ */
 static int ed25519_verify(
-		const uint8_t *message,
-		uint64_t message_length,
-		const argEdDSA_PublicKey public_key,
-		const argEdDSA_Signature signature
+	const uint8_t *message,
+	uint64_t message_length,
+	const argEdDSA_PublicKey public_key,
+	const argEdDSA_Signature signature
 )
 {
 	return ed25519_verify_all(message,message_length,EDDSA_NOCONTEXT,0,public_key,signature,1,0);
 }
+
+/**
+ *
+ * @param message
+ * @param message_length
+ * @param context
+ * @param context_length
+ * @param public_key
+ * @param signature
+ * @return
+ */
 static int ed25519_verifyctx(
 		const uint8_t *message,
 		uint64_t message_length,
@@ -442,6 +533,17 @@ static int ed25519_verifyctx(
 {
 	return ed25519_verify_all(message,message_length,context,context_length,public_key,signature,0,0);
 }
+
+/**
+ *
+ * @param message
+ * @param message_length
+ * @param context
+ * @param context_length
+ * @param public_key
+ * @param signature
+ * @return
+ */
 static int ed25519ph_verifyctx(
 		const uint8_t *message,
 		uint64_t message_length,
@@ -453,7 +555,4 @@ static int ed25519ph_verifyctx(
 {
 	return ed25519_verify_all(message,message_length,context,context_length,public_key,signature,0,1);
 }
-
-
-
 

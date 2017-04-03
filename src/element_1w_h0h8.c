@@ -92,11 +92,6 @@ static void singleH0H8_To_str_bytes(uint8_t *p8C, uint64_t *puA)
 	}
 }
 
-
-
-
-
-
 /**
  *
  * @param pC
@@ -725,17 +720,31 @@ static void invsqrt_Element_1w_h0h8(uint64_t * __restrict pC, uint64_t * __restr
 	}
 }
 
+/**
+ *
+ * @param pC
+ * @param pA
+ */
 static void inv_Element_1w_h0h8(uint64_t * pC, uint64_t * pA)
 {
 	invsqrt_Element_1w_h0h8(pC,pA,1);
 }
+
+/**
+ *
+ * @param pC
+ * @param pA
+ */
 static void sqrt_Element_1w_h0h8(uint64_t * pC, uint64_t * pA)
 {
 	invsqrt_Element_1w_h0h8(pC,pA,0);
 }
 
 /*** Util functions ***/
-
+/**
+ *
+ * @param A
+ */
 static void random_Element_1w_h0h8(uint64_t *A)
 {
 	ALIGN uint8_t a[SIZE_FP448];
@@ -744,6 +753,12 @@ static void random_Element_1w_h0h8(uint64_t *A)
 	str_bytes_To_Element_1w_h0h8(A, a);
 }
 
+/**
+ *
+ * @param A
+ * @param B
+ * @return
+ */
 static int compare_Element_1w_h0h8(uint64_t *A, uint64_t *B)
 {
 	ALIGN uint8_t a[SIZE_FP448];
@@ -756,6 +771,10 @@ static int compare_Element_1w_h0h8(uint64_t *A, uint64_t *B)
 	return compare_bytes(a,b,SIZE_FP448);
 }
 
+/**
+ *
+ * @param A
+ */
 static void print_Element_1w_h0h8(uint64_t *A)
 {
 	ALIGN uint8_t a[SIZE_FP448];
@@ -763,10 +782,19 @@ static void print_Element_1w_h0h8(uint64_t *A)
 	print_bytes(a,SIZE_FP448);
 }
 
+/**
+ *
+ * @return
+ */
 static uint64_t * init_Element_1w_h0h8()
 {
 	return (uint64_t*) allocate_bytes(NUM_DIGITS_FP448 * sizeof(uint64_t));
 }
+
+/**
+ *
+ * @return
+ */
 static uint64_t * prime_Element_1w_h0h8()
 {
 	uint64_t *prime = init_Element_1w_h0h8();

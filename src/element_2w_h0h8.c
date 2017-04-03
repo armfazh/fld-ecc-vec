@@ -57,8 +57,6 @@ static void deinterleave_2w_h0h8(argElement_1w LOW, argElement_1w HIGH, argEleme
 	STORE(HIGH + 3, PERM128(A[6], A[7], 0x31));
 }
 
-
-
 /**
  *
  * @param C
@@ -122,9 +120,10 @@ static void sub_Element_2w_h0h8(argElement_2w __restrict C, argElement_2w __rest
  * @param permutation
  */
 static inline void subadd_Element_2w_h0h8(
-		argElement_2w __restrict C,
-		argElement_2w __restrict A,
-		const int permutation)
+	argElement_2w __restrict C,
+	argElement_2w __restrict A,
+	const int permutation
+)
 {
 	const __m256i mask_subadd = _mm256_set_epi64x(0,0,-1, -1);
 	argElement_2w _2P_00 = (argElement_2w)CONST_2P_00_H0H8;
@@ -266,7 +265,6 @@ do{                                                                         \
 	h6 = ADD(ref2,SUB(q2,o2));       h14 = p6;                              \
 	h7 = SUB(SUB(q3,o3),p3);                                                \
 }while(0)
-
 
 #define mul_karate_8x8(h0,h1,h2,h3,h4,h5,h6,h7,                                        \
                f0,f1,f2,f3,g0,g1,g2,g3)                                                \
@@ -460,6 +458,7 @@ static void sqr_karatsuba_2w_h0h8(__m256i *  C)
 #undef sqr_school_4x4
 #undef sqr_karat_8x8
 #undef sqr_karate_8x8
+
 /**
  *
  * @param C
@@ -714,6 +713,10 @@ static int compare_Element_2w_h0h8(argElement_2w X0_X1, argElement_2w Y0_Y1)
 	return compare_Element_1w_h0h8(X0, Y0) && compare_Element_1w_h0h8(X1, Y1);
 }
 
+/**
+ *
+ * @return
+ */
 static __m256i * init_Element_2w_h0h8()
 {
 	return (__m256i*) allocate_bytes((NUM_DIGITS_FP448/2) * sizeof(__m256i));

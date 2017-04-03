@@ -49,9 +49,12 @@ static void bench_Element_Nw(const struct _struct_Fp_Nway * fp)
 
 static void bench_fp25519()
 {
+	printf("=== Benchmarking Arith ===\n");
+	printf("======  p=2^255-19  ======\n");
+
 	printf("======  1-way AVX2  ======\n");
 	bench_Element_1w(&Fp.fp25519._1way);
-	printf("======  1-way x64  ======\n");
+	printf("======  1-way x64   ======\n");
 	bench_Element_1w(&Fp.fp25519._1way_x64);
 	printf("======  2-way AVX2  ======\n");
 	bench_Element_Nw(&Fp.fp25519._2way);

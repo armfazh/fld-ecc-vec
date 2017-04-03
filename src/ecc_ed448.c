@@ -99,6 +99,11 @@ static void div4(uint8_t * number_div_4,const uint8_t * number)
 	number_div_4[ED448_KEY_SIZE_BYTES_PARAM-1] = 0;
 }
 
+/**
+ *
+ * @param enc
+ * @param P
+ */
 static void point_encoding_ed448(uint8_t*enc, PointXYZT_2w_H0H8* P)
 {
 	/* convert to affine coordinates */
@@ -171,7 +176,6 @@ void recoding_signed_scalar_fold4w4_448(uint64_t *list_signs, uint64_t *list_dig
 			list_signs [56*i+2*j+1] = (int64_t) -carry;
 		}
 	}
-//	printf("Carry: %d\n",carry);
 	list_digits[112] = carry; /* This is always equal to 0 iff r < 2**447 */
 }
 
@@ -183,10 +187,10 @@ void recoding_signed_scalar_fold4w4_448(uint64_t *list_signs, uint64_t *list_dig
  * @param index_table
  */
 static void query_table_fold4w4_ed448(
-        Point_precmp_4way_Fp448 *P,
-        uint64_t * secret_signs,
-        uint64_t * secret_digits,
-        uint64_t index_table
+	Point_precmp_4way_Fp448 *P,
+	uint64_t * secret_signs,
+	uint64_t * secret_digits,
+	uint64_t index_table
 )
 {
 	const __m256i _P[16] = {
@@ -505,25 +509,22 @@ static void point_multiplication_fold4w4(PointXYZT_2w_H0H8 *rB, uint8_t *r)
 }
 
 /**
+ * Compute a division by 4 because the point multiplication
+ * is processed using the twisted Edwards curve, which is
+ * the isogeny_1w_H0H8 of the Edwards curve.
  * Given:
  *      STR_BYTES r
  * Computes
  *      rB = [r]B
- * Ensuring that B is the generator of Ed25519.
+ * Ensuring that B is the generator of Ed448.
  *
  * @param rB
  * @param r
  */
 static void fixed_point_multiplication_ed448(PointXYZT_2w_H0H8 *rB, uint8_t *r)
 {
-	/**
-	 * Compute a division by 4 because the point multiplication
-	 * is processed using the twisted Edwards curve, which is
-	 * the isogeny_1w_H0H8 of the Edwards curve.
-	 **/
 	Ed448_PublicKey r_div_4;
 	div4(r_div_4,r);
-//	printf("div4> ");print_bytes(r_div_4,ED448_KEY_SIZE_BYTES_PARAM);
 	point_multiplication_fold4w4(rB,r_div_4);
 }
 
@@ -680,6 +681,7 @@ static int point_decoding_ed448(PointXYZT_2w_H0H8 * P, const uint8_t * A)
 		:                                                                          \
 		: "r"(b), "r"(sign), "r"(value)                                            \
         : "cc", "memory", "%rax", "%rcx", "%rdx", "%r8", "%r9")
+
 /**
  *
  * @param K
@@ -923,7 +925,7 @@ static void read_point(PointXYZT_precompute_2w_H0H8 * P, int8_t index)
 	str_bytes_To_Element_1w_h0h8( sub,(uint8_t*)(ptr_point+7));
 	str_bytes_To_Element_1w_h0h8(_2dT,(uint8_t*)(ptr_point+14));
 
-	if(index<0)/*negative*/
+	if(index<0)
 	{
 		neg_Element_1w_h0h8(_2dT);
 		compress_Element_1w_h0h8(_2dT);

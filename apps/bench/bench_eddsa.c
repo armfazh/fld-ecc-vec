@@ -34,11 +34,13 @@ static void bench_eddsa(const SignatureSchemeCtx * eddsa)
 }
 static void bench_ed25519()
 {
+	printf("== Benchmarking EdDSA ====\n");
 	printf("====== Ed25519 AVX2 ======\n");
 	bench_eddsa(&EdDSA.Ed25519ctx);
 }
 static void bench_ed448()
 {
+	printf("== Benchmarking EdDSA ====\n");
 	printf("======  Ed448 AVX2  ======\n");
 	bench_eddsa(&EdDSA.Ed448);
 }
