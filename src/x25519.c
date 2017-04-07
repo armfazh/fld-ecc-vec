@@ -95,7 +95,7 @@ static __inline void select_cmov_x64(uint64_t bit, uint64_t *const px, uint64_t 
 		"movq     %%rax, 24(%0) \n\t"
 	:
 	: "r" (px), "r" (py), "r"  (bit)
-	: "cc", "%rax"
+	: "memory", "cc", "%rax"
 	);
 }
 
