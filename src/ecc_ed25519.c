@@ -1147,10 +1147,6 @@ static void double_point_multiplication_ed25519(uint8_t *sB_hA, const uint8_t *s
 	singleH0H5_To_str_bytes((uint8_t*)Y,YY);
 	singleH0H5_To_str_bytes((uint8_t*)Z,ZZ);
 
-    printf("pointQ:\n");
-    Fp.fp25519._2way.print(Q.XY);
-    Fp.fp25519._2way.print(Q.TZ);
-
 	inv_Element_1w_x64(invZ,Z);
 	mul_Element_1w_x64(X,X,invZ);
 	mul_Element_1w_x64((uint64_t*)sB_hA,Y,invZ);

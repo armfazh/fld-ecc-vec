@@ -20,32 +20,6 @@ static uint8_t * initEd25519_Signature()
 }
 
 /**
- *
- * @param public_key
- * @param secret_key
- * @return
- */
-static int ed25519_keygen(
-		argEdDSA_PublicKey public_key,
-		const argEdDSA_PrivateKey private_key
-)
-{
-	sph_sha512_context context;
-	Ed25519_Digest az;
-	PointXYZT_2w_H0H5 azB;
-
-	sph_sha512_init(&context);
-	sph_sha512(&context,private_key,ED25519_KEY_SIZE_BYTES_PARAM);
-	sph_sha512_close(&context,az);
-	az[0]  &= -((uint8_t)1<<ED25519_C_PARAM);
-	az[31] &= 127;
-	az[31] |= 64;
-	point_multiplication_ed25519(&azB,az);
-	point_encoding_ed25519(public_key,&azB);
-	return EDDSA_KEYGEN_OK;
-}
-
-/**
  * Given:
  * 		'a' = a_1(2^256) + a_0
  * with |a_0| = |a_1| = 256 bits
@@ -248,6 +222,38 @@ static __inline void calculate_s_ed25519(uint8_t *s_mod_l, uint8_t *r, uint8_t *
 
 /**
  *
+ * @param public_key
+ * @param secret_key
+ * @return
+ */
+static int ed25519_keygen(
+        argEdDSA_PublicKey public_key,
+        const argEdDSA_PrivateKey private_key
+)
+{
+    sph_sha512_context context;
+    Ed25519_Digest az;
+    PointXYZT_2w_H0H5 azB;
+
+    sph_sha512_init(&context);
+    sph_sha512(&context,private_key,ED25519_KEY_SIZE_BYTES_PARAM);
+    sph_sha512_close(&context,az);
+    az[0]  &= -((uint8_t)1<<ED25519_C_PARAM);
+    az[31] &= 127;
+    az[31] |= 64;
+
+    /* Reduce mod order of the curve */
+    ((uint64_t*)az)[4] = (uint64_t)(az[31]>>4);
+    az[31] &= ((uint8_t)1<<4)-1;
+    reduce64bits((uint64_t*)az);
+
+    point_multiplication_ed25519(&azB,az);
+    point_encoding_ed25519(public_key,&azB);
+    return EDDSA_KEYGEN_OK;
+}
+
+/**
+ *
  * @param signature
  * @param message
  * @param message_length
@@ -322,10 +328,6 @@ static int ed25519_sign_all(
 
 	point_multiplication_ed25519(&rB,r);
 	point_encoding_ed25519(signature,&rB);
-
-	printf("pointR:\n");
-	Fp.fp25519._2way.print(rB.XY);
-	Fp.fp25519._2way.print(rB.TZ);
 
 	sph_sha512_init(&hash_context);
 	if(pureEdDSA == 0 )
