@@ -323,6 +323,10 @@ static int ed25519_sign_all(
 	point_multiplication_ed25519(&rB,r);
 	point_encoding_ed25519(signature,&rB);
 
+	printf("pointR:\n");
+	Fp.fp25519._2way.print(rB.XY);
+	Fp.fp25519._2way.print(rB.TZ);
+
 	sph_sha512_init(&hash_context);
 	if(pureEdDSA == 0 )
 	{

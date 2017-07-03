@@ -19,7 +19,7 @@ int main(void)
 	printf("       Signature Algorithm using Vector Instructions      \n");
 	printf("==========================================================\n\n");
 
-	printf("=== Environment Information ====\n");
+	printf("=== Start of Test Driver ===\n");
 	machine_info();
 
 	test_fp25519();
