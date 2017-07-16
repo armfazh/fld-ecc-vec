@@ -6,10 +6,10 @@ Edwards Digital Signature Algorithm (EdDSA) and the Diffie-Hellman
 functions X25519 and X448. This library was specially accelerated with
 the Intel Advanced Vector eXtensions version 2 (AVX2). This library 
 belongs to the research project titled:
-> “High Performance Implementation of the Edwards Digital
-     Signature Algorithm using Vector Instructions”
+> “High Performance Implementation of Elliptic Curve
+       Cryptography using Vector Instructions”
 
-which is authored by:
+authored by:
 • Armando Faz Hernández (armfazh@ic.unicamp.br)
 • Julio López (jlopez@ic.unicamp.br)
 • Ricardo Dahab (rdahab@ic.unicamp.br)
@@ -27,6 +27,7 @@ Compilation
 
 To compile use:
 ~~~~
+    $ unzip eddsa_avx2.zip
     $ cd eddsa_avx2
     $ mkdir build; cd build
     $ cmake ..

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.4)
-set(TARGET faz_crypto_avx2)
+set(TARGET faz_ecc_avx2)
 set(CMAKE_BUILD_TYPE Release)
 project(${TARGET} C)
 enable_language(ASM-ATT)
