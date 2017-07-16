@@ -1,7 +1,7 @@
-eddsa_avx2 - Project Documentation
-==================================
+faz_ecc_avx2 - Project Documentation
+====================================
 
-eddsa_avx2 is an optimized mathematical software library for computing
+faz_ecc_avx2 is an optimized mathematical software library for computing
 Edwards Digital Signature Algorithm (EdDSA) and the Diffie-Hellman 
 functions X25519 and X448. This library was specially accelerated with
 the Intel Advanced Vector eXtensions version 2 (AVX2). This library 
@@ -10,9 +10,10 @@ belongs to the research project titled:
        Cryptography using Vector Instructions”
 
 authored by:
-• Armando Faz Hernández (armfazh@ic.unicamp.br)
-• Julio López (jlopez@ic.unicamp.br)
-• Ricardo Dahab (rdahab@ic.unicamp.br)
+• Armando Faz Hernández, University of Campinas, Brazil.
+ (armfazh@ic.unicamp.br)
+• Julio López, University of Campinas, Brazil.
+• Ricardo Dahab, University of Campinas, Brazil.
 
 This research work is part of a paper submission to the ACM Journal of
 Mathematical Software. Software will be publicly available after paper
@@ -27,8 +28,8 @@ Compilation
 
 To compile use:
 ~~~~
-    $ unzip eddsa_avx2.zip
-    $ cd eddsa_avx2
+    $ unzip faz_ecc_avx2.zip
+    $ cd faz_ecc_avx2
     $ mkdir build; cd build
     $ cmake ..
     $ make all
@@ -49,7 +50,7 @@ reported in paper, consider to use the
 GCC compiler version 4.8.5.
 then use your GCC 4.8.5 as:
 ~~~~
-    $ cd eddsa_avx2
+    $ cd faz_ecc_avx2
     $ mkdir build; cd build
     $ export CC=/path/to/gcc4.8.5
     $ cmake ..

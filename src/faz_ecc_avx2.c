@@ -84,7 +84,7 @@ This software library is released under the term provided by GNU Lesser General 
  **/
 
 #include "faz_fp_avx2.c"
-#include "faz_faz_crypto_avx2.c"
+#include "faz_eddsa_avx2.c"
 #include "faz_ecdh_avx2.c"
 
 

@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "clocks.h"
 #include "cpu_id.c"
 #include "bench_fp.c"
 #include "bench_ecc.c"
@@ -9,8 +10,8 @@
 int main(void)
 {
 	printf("==========================================================\n");
-	printf("  High Performance Implementation of the Edwards Digital  \n");
-	printf("       Signature Algorithm using Vector Instructions      \n");
+	printf("  High Performance Implementation of Elliptic Curve       \n");
+	printf("        Cryptography using Vector Instructions            \n");
 	printf("==========================================================\n\n");
 
     printf("==== Start of Benchmarking  ====\n");

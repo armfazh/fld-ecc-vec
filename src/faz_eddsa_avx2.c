@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with faz_crypto_avx2.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "faz_faz_crypto_avx2.h"
+#include "faz_eddsa_avx2.h"
 #include "ed25519.c"
 #include "ed448.c"
 

@@ -32,6 +32,9 @@ target_link_libraries(cpu_id      ${TARGET}_static)
 target_link_libraries(ecdh        ${TARGET}_static)
 target_link_libraries(eddsa       ${TARGET}_static)
 
+SET_TARGET_PROPERTIES(${TARGET}_static PROPERTIES OUTPUT_NAME ${TARGET} CLEAN_DIRECT_OUTPUT 1)
+SET_TARGET_PROPERTIES(${TARGET}_shared PROPERTIES OUTPUT_NAME ${TARGET} CLEAN_DIRECT_OUTPUT 1)
+
 INSTALL(TARGETS ${TARGET}_static ${TARGET}_shared DESTINATION "lib")
 INSTALL(FILES
 		include/faz_eddsa_avx2.h

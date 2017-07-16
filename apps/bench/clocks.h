@@ -72,7 +72,7 @@ do{\
 \
 	printf("%3lu µs, %8.1f oper/s, %6lu cycles/op\n",\
 			(unsigned long) ((end - start) / iterations),\
-			iterations*1000000. / (end - start),\
+			iterations*(double)1e6 / (end - start),\
 			(unsigned long)((end_c-start_c)/iterations) );\
 }while(0)
 

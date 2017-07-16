@@ -15,8 +15,8 @@
 int main(void)
 {
 	printf("==========================================================\n");
-	printf("  High Performance Implementation of the Edwards Digital  \n");
-	printf("       Signature Algorithm using Vector Instructions      \n");
+	printf("  High Performance Implementation of Elliptic Curve       \n");
+	printf("        Cryptography using Vector Instructions            \n");
 	printf("==========================================================\n\n");
 
 	printf("=== Start of Test Driver ===\n");
