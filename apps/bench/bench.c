@@ -1,4 +1,3 @@
-#include "clocks.h"
 #include <stdio.h>
 
 #include "cpu_id.c"

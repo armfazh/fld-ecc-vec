@@ -16,7 +16,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wall -Wextra -O3 -std=c99
 add_library(${TARGET}_shared SHARED ${SRC}/${TARGET}.c)
 add_library(${TARGET}_static STATIC ${SRC}/${TARGET}.c)
 
-add_executable(bench       apps/bench/bench.c apps/bench/clocks.c)
+add_executable(bench       apps/bench/bench.c apps/bench/clocks.c apps/bench/clocks.h)
 add_executable(tests       apps/tests/tests.c apps/tests/vectors.h)
 add_executable(hello       apps/samples/hello.c)
 add_executable(cpu_id      apps/samples/cpu_id.c)
