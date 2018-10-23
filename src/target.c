@@ -76,7 +76,7 @@ See the license file [\link ../LICENSE.txt LICENSE.txt \endlink ]
  *
  **/
 
-#define SCOPE static inline 
+#define SCOPE static inline
 
 #define BYTESTRING_C 1
 #include "bytestring.c"
