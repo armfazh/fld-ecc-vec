@@ -1,4 +1,0 @@
-title: ECC using Vector Instructions
-description: Optimized mathematical software library for computing Edwards Digital Signature Algorithm (EdDSA) and the Diffie-Hellman functions X25519 and X448.
-show_downloads: true
-theme: jekyll-theme-minimal
