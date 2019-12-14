@@ -1,6 +1,6 @@
-#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /** Random number Generator:
  * Taken from: https://github.com/relic-toolkit/relic/src/rand/relic_rand_call.c
@@ -9,8 +9,8 @@
  * @param buffer
  * @param num_bytes
  */
-#include <unistd.h>
 #include <fcntl.h>
+#include <unistd.h>
 void prgn_random_bytes(uint8_t *buffer, size_t num_bytes) {
   size_t l = 0;
   int c, fd = open("/dev/urandom", O_RDONLY);

@@ -1,5 +1,5 @@
-#include "clocks.h"
 #include <faz_eddsa_avx2.h>
+#include "clocks.h"
 #include "prng.h"
 
 static void bench_ed255pure(const SignatureSchemePure *eddsa) {
@@ -11,22 +11,18 @@ static void bench_ed255pure(const SignatureSchemePure *eddsa) {
   uint8_t message[MESSAGE_LENGTH];
   unsigned long long messageLength = MESSAGE_LENGTH;
 
-  oper_second(
-      eddsa->randKey(private_key),
-      eddsa->keygen,
-      eddsa->keygen(public_key, private_key));
+  oper_second(eddsa->randKey(private_key), eddsa->keygen,
+              eddsa->keygen(public_key, private_key));
 
   oper_second(
-      eddsa->randKey(private_key),
-      eddsa->sign,
+      eddsa->randKey(private_key), eddsa->sign,
       eddsa->sign(signature, message, messageLength, public_key, private_key));
 
   oper_second(
-      prgn_random_bytes(message, messageLength);
-      eddsa->randKey(private_key);
+      prgn_random_bytes(message, messageLength); eddsa->randKey(private_key);
       eddsa->keygen(public_key, private_key);
-      eddsa->sign(signature, message, messageLength, public_key, private_key);,
-      eddsa->verify,
+      eddsa->sign(signature, message, messageLength, public_key, private_key);
+      , eddsa->verify,
       eddsa->verify(message, messageLength, public_key, signature));
   eddsa->freeKey(public_key);
   eddsa->freeKey(private_key);
@@ -42,23 +38,21 @@ static void bench_ed448context(const SignatureSchemeCtx *eddsa) {
   uint8_t message[MESSAGE_LENGTH];
   unsigned long long messageLength = MESSAGE_LENGTH;
 
-  oper_second(
-      eddsa->randKey(private_key),
-      eddsa->keygen,
-      eddsa->keygen(public_key, private_key));
+  oper_second(eddsa->randKey(private_key), eddsa->keygen,
+              eddsa->keygen(public_key, private_key));
 
-  oper_second(
-      eddsa->randKey(private_key),
-      eddsa->sign,
-      eddsa->sign(signature, message, messageLength, EDDSA_NOCONTEXT, 0, public_key, private_key));
+  oper_second(eddsa->randKey(private_key), eddsa->sign,
+              eddsa->sign(signature, message, messageLength, EDDSA_NOCONTEXT, 0,
+                          public_key, private_key));
 
-  oper_second(
-      prgn_random_bytes(message, messageLength);
-      eddsa->randKey(private_key);
-      eddsa->keygen(public_key, private_key);
-      eddsa->sign(signature, message, messageLength, EDDSA_NOCONTEXT, 0, public_key, private_key);,
-      eddsa->verify,
-      eddsa->verify(message, messageLength, EDDSA_NOCONTEXT, 0, public_key, signature));
+  oper_second(prgn_random_bytes(message, messageLength);
+              eddsa->randKey(private_key);
+              eddsa->keygen(public_key, private_key);
+              eddsa->sign(signature, message, messageLength, EDDSA_NOCONTEXT, 0,
+                          public_key, private_key);
+              , eddsa->verify,
+              eddsa->verify(message, messageLength, EDDSA_NOCONTEXT, 0,
+                            public_key, signature));
   eddsa->freeKey(public_key);
   eddsa->freeKey(private_key);
   eddsa->freeSignature(signature);

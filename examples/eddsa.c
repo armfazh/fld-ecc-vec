@@ -1,6 +1,6 @@
-#include<faz_eddsa_avx2.h>
-#include<stdio.h>
-#include<string.h>
+#include <faz_eddsa_avx2.h>
+#include <stdio.h>
+#include <string.h>
 
 int main(void) {
   Ed25519_PublicKey pub_key;
@@ -9,8 +9,8 @@ int main(void) {
   size_t i = 0;
   int response = 0;
 
-  uint8_t *message = (uint8_t *) "Keep Calm and Carry On";
-  const size_t size_msg = strlen((const char *) message);
+  uint8_t *message = (uint8_t *)"Keep Calm and Carry On";
+  const size_t size_msg = strlen((const char *)message);
 
   printf("=== Ed25519 Example ===\n");
 
@@ -24,8 +24,9 @@ int main(void) {
 
   printf("Message in ascii: \n%s\n", message);
   printf("Message in hex: \n");
-  for (i = 0; i < size_msg; i++)
+  for (i = 0; i < size_msg; i++) {
     printf("%02x", message[i]);
+  }
   printf("\n");
 
   /* Signature generation */

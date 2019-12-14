@@ -1,5 +1,5 @@
-#include <gtest/gtest.h>
 #include <faz_ecdh_avx2.h>
+#include <gtest/gtest.h>
 
 using namespace faz::ecdh;
 
@@ -64,9 +64,9 @@ TEST_P(Vector, NACL_CRYPTO) {
                        0xe0, 0x7e, 0x21, 0xc9, 0x47, 0xd1, 0x9e, 0x33,
                        0x76, 0xf0, 0x9b, 0x3c, 0x1e, 0x16, 0x17, 0x42};
   EXPECT_EQ(memcmp(alice_shared_secret, shared, ECDH25519_KEY_SIZE_BYTES), 0)
-            << "got:  " << alice_shared_secret << "want: " << shared;
+      << "got:  " << alice_shared_secret << "want: " << shared;
   EXPECT_EQ(memcmp(bob_shared_secret, shared, ECDH25519_KEY_SIZE_BYTES), 0)
-            << "got:  " << alice_shared_secret << "want: " << shared;
+      << "got:  " << alice_shared_secret << "want: " << shared;
 }
 
 TEST_P(Vector, IETF_CFRG0) {
@@ -90,7 +90,7 @@ TEST_P(Vector, IETF_CFRG0) {
 
   x25519.shared(shared, input_coord0, key0);
   EXPECT_EQ(memcmp(shared, output_coord0, ECDH25519_KEY_SIZE_BYTES), 0)
-            << "got:  " << shared << "want: " << output_coord0;
+      << "got:  " << shared << "want: " << output_coord0;
 
   X25519_KEY key1 = {0x4b, 0x66, 0xe9, 0xd4, 0xd1, 0xb4, 0x67, 0x3c,
                      0x5a, 0xd2, 0x26, 0x91, 0x95, 0x7d, 0x6a, 0xf5,
@@ -109,7 +109,7 @@ TEST_P(Vector, IETF_CFRG0) {
 
   x25519.shared(shared, input_coord1, key1);
   EXPECT_EQ(memcmp(shared, output_coord1, ECDH25519_KEY_SIZE_BYTES), 0)
-            << "got:  " << shared << "want: " << output_coord1;
+      << "got:  " << shared << "want: " << output_coord1;
 
   X25519_KEY alice_sk = {0x77, 0x07, 0x6d, 0x0a, 0x73, 0x18, 0xa5, 0x7d,
                          0x3c, 0x16, 0xc1, 0x72, 0x51, 0xb2, 0x66, 0x45,
@@ -124,7 +124,7 @@ TEST_P(Vector, IETF_CFRG0) {
 
   x25519.keygen(alice_public, alice_sk);
   EXPECT_EQ(memcmp(alice_public, alice_pk, ECDH25519_KEY_SIZE_BYTES), 0)
-            << "got:  " << alice_public << "want: " << alice_pk;
+      << "got:  " << alice_public << "want: " << alice_pk;
 
   X25519_KEY bob_sk = {0x5d, 0xab, 0x08, 0x7e, 0x62, 0x4a, 0x8a, 0x4b,
                        0x79, 0xe1, 0x7f, 0x8b, 0x83, 0x80, 0x0e, 0xe6,
@@ -140,7 +140,7 @@ TEST_P(Vector, IETF_CFRG0) {
 
   x25519.keygen(bob_public, bob_sk);
   EXPECT_EQ(memcmp(bob_public, bob_pk, ECDH25519_KEY_SIZE_BYTES), 0)
-            << "got:  " << bob_public << "want: " << bob_pk;
+      << "got:  " << bob_public << "want: " << bob_pk;
 
   X25519_KEY shared_secret = {0x4a, 0x5d, 0x9d, 0x5b, 0xa4, 0xce, 0x2d, 0xe1,
                               0x72, 0x8e, 0x3b, 0xf4, 0x80, 0x35, 0x0f, 0x25,
@@ -152,10 +152,12 @@ TEST_P(Vector, IETF_CFRG0) {
 
   x25519.shared(bob_shared_secret, alice_public, bob_sk);
   x25519.shared(alice_shared_secret, bob_public, alice_sk);
-  EXPECT_EQ(memcmp(alice_shared_secret, shared_secret, ECDH25519_KEY_SIZE_BYTES), 0)
-            << "got:  " << alice_shared_secret << "want: " << shared_secret;
-  EXPECT_EQ(memcmp(bob_shared_secret, shared_secret, ECDH25519_KEY_SIZE_BYTES), 0)
-            << "got:  " << bob_shared_secret << "want: " << shared_secret;
+  EXPECT_EQ(
+      memcmp(alice_shared_secret, shared_secret, ECDH25519_KEY_SIZE_BYTES), 0)
+      << "got:  " << alice_shared_secret << "want: " << shared_secret;
+  EXPECT_EQ(memcmp(bob_shared_secret, shared_secret, ECDH25519_KEY_SIZE_BYTES),
+            0)
+      << "got:  " << bob_shared_secret << "want: " << shared_secret;
 }
 
 TEST_P(Vector, IETF_CFRG1) {
@@ -171,22 +173,24 @@ TEST_P(Vector, IETF_CFRG1) {
                              0x1c, 0x38, 0x87, 0xc4, 0x93, 0x60, 0xe3, 0x87,
                              0x5f, 0x2e, 0xb9, 0x4d, 0x99, 0x53, 0x2c, 0x51};
 
-//  X25519_KEY k_1000000_times = {0x7c, 0x39, 0x11, 0xe0, 0xab, 0x25, 0x86, 0xfd,
-//                                0x86, 0x44, 0x97, 0x29, 0x7e, 0x57, 0x5e, 0x6f,
-//                                0x3b, 0xc6, 0x01, 0xc0, 0x88, 0x3c, 0x30, 0xdf,
-//                                0x5f, 0x4d, 0xd2, 0xd2, 0x4f, 0x66, 0x54, 0x24};
+  //  X25519_KEY k_1000000_times = {0x7c, 0x39, 0x11, 0xe0, 0xab, 0x25, 0x86,
+  //  0xfd,
+  //                                0x86, 0x44, 0x97, 0x29, 0x7e, 0x57, 0x5e,
+  //                                0x6f, 0x3b, 0xc6, 0x01, 0xc0, 0x88, 0x3c,
+  //                                0x30, 0xdf, 0x5f, 0x4d, 0xd2, 0xd2, 0x4f,
+  //                                0x66, 0x54, 0x24};
 
   times(1, k, x25519);
   EXPECT_EQ(memcmp(k, k_1_times, ECDH25519_KEY_SIZE_BYTES), 0)
-            << "got:  " << k << "want: " << k_1_times;
+      << "got:  " << k << "want: " << k_1_times;
 
   times(1000, k, x25519);
   EXPECT_EQ(memcmp(k, k_1000_times, ECDH25519_KEY_SIZE_BYTES), 0)
-            << "got:  " << k << "want: " << k_1000_times;
+      << "got:  " << k << "want: " << k_1000_times;
 
-//  times(1000000, k, x25519);
-//  EXPECT_EQ(memcmp(k, k_1000000_times, ECDH25519_KEY_SIZE_BYTES), 0)
-//      << "got:  " << k << "want: " << k_1000000_times;
+  //  times(1000000, k, x25519);
+  //  EXPECT_EQ(memcmp(k, k_1000000_times, ECDH25519_KEY_SIZE_BYTES), 0)
+  //      << "got:  " << k << "want: " << k_1000000_times;
 }
 
 TEST_P(Vector, DIFFIE_HELLMAN) {
@@ -207,14 +211,14 @@ TEST_P(Vector, DIFFIE_HELLMAN) {
     X25519_KEY bob_shared_secret;
     x25519.shared(alice_shared_secret, bobpk, alicesk);
     x25519.shared(bob_shared_secret, alicepk, bobsk);
-    EXPECT_EQ(
-        memcmp(alice_shared_secret, bob_shared_secret, ECDH25519_KEY_SIZE_BYTES), 0)
-              << "got:  " << alice_shared_secret << "want: " << bob_shared_secret
-              << "ask:  " << alicesk << "bsk:  " << bobsk;
+    EXPECT_EQ(memcmp(alice_shared_secret, bob_shared_secret,
+                     ECDH25519_KEY_SIZE_BYTES),
+              0)
+        << "got:  " << alice_shared_secret << "want: " << bob_shared_secret
+        << "ask:  " << alicesk << "bsk:  " << bobsk;
     cnt++;
   }
   EXPECT_EQ(cnt, TIMES) << "passed: " << cnt << "/" << TIMES << std::endl;
 }
 
-INSTANTIATE_TEST_CASE_P(X25519, Vector,
-                        ::testing::Values(X25519, X25519_x64));
+INSTANTIATE_TEST_SUITE_P(X25519, Vector, ::testing::Values(X25519, X25519_x64));

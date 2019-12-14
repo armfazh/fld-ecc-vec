@@ -1,12 +1,12 @@
-#include<stdio.h>
-#include<faz_fp_avx2.h>
+#include <faz_fp_avx2.h>
+#include <stdio.h>
 
-static void identity(const Arith_1w * fp) {
+static void identity(const Arith_1w* fp) {
   argElement_1w a = fp->misc.alloc();
   argElement_1w b = fp->misc.alloc();
   argElement_1w add_ab = fp->misc.alloc();
   argElement_1w sub_ab = fp->misc.alloc();
-  argElement_1w left  = fp->misc.alloc();
+  argElement_1w left = fp->misc.alloc();
   argElement_1w right = fp->misc.alloc();
   argElement_1w prime = fp->misc.alloc();
 
@@ -15,21 +15,21 @@ static void identity(const Arith_1w * fp) {
   fp->misc.rand(b);
 
   printf("a: ");
-  fp->misc.print(stdout,a);
+  fp->misc.print(stdout, a);
   printf("b: ");
-  fp->misc.print(stdout,b);
+  fp->misc.print(stdout, b);
 
   fp->add(add_ab, a, b);
   fp->sub(sub_ab, a, b);
   fp->mul(left, add_ab, sub_ab);
   printf("left: ");
-  fp->misc.print(stdout,left);
+  fp->misc.print(stdout, left);
 
   fp->sqr(a);
   fp->sqr(b);
   fp->sub(right, a, b);
   printf("right: ");
-  fp->misc.print(stdout,right);
+  fp->misc.print(stdout, right);
 
   if (fp->misc.cmp(left, right) == 0) {
     printf("Test passed.\n\n");
@@ -49,8 +49,5 @@ static void identity(const Arith_1w * fp) {
 int main(void) {
   identity(&Fp25519._1w_full.arith);
   identity(&Fp25519._1w_red.arith);
-//  identity(&Fp448._1way);
   return 0;
 }
-
-

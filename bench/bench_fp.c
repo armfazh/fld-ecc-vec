@@ -1,5 +1,5 @@
-#include "clocks.h"
 #include <faz_fp_avx2.h>
+#include "clocks.h"
 
 static void bench_1w(const Arith_1w *fp) {
   long int BENCH = 1000;

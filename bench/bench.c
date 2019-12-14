@@ -1,11 +1,11 @@
-#include <stdio.h>
-#include <cpu_caps.h>
 #include "bench.h"
+#include <cpu_caps.h>
+#include <stdio.h>
 
 int main(void) {
   printf("==========================================================\n");
-  printf("  High Performance Implementation of Elliptic Curve       \n");
-  printf("        Cryptography using Vector Instructions            \n");
+  printf("  High-performance Implementation of Elliptic Curve       \n");
+  printf("        Cryptography Using Vector Instructions            \n");
   printf("==========================================================\n\n");
 
   printf("==== Start of Benchmarking  ====\n");

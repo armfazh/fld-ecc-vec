@@ -1,6 +1,6 @@
+#include <faz_fp_avx2.h>
 #include <gmp.h>
 #include <gtest/gtest.h>
-#include <faz_fp_avx2.h>
 
 using namespace faz::fp;
 
@@ -18,7 +18,7 @@ static std::ostream &operator<<(std::ostream &os,
 static std::ostream &operator<<(std::ostream &os,
                                 const EltFp448_1w_fullradix_buffer &number) {
   os << "0x";
-  for (int i = 2*NUM_DIGITS_FP448_X64 - 1; i >= 0; i--) {
+  for (int i = 2 * NUM_DIGITS_FP448_X64 - 1; i >= 0; i--) {
     os << std::setbase(16) << std::setfill('0') << std::setw(16) << number[i];
   }
   return os << std::endl;
@@ -28,7 +28,7 @@ static std::ostream &operator<<(std::ostream &os,
 TEST(FP448, MUL_VS_SQR) {
   int64_t i;
   int64_t cnt = 0;
-  EltFp448_1w_fullradix  a, b, c, e, f;
+  EltFp448_1w_fullradix a, b, c, e, f;
   const Arith_1w *arith = &Fp448._1w_full.arith;
 
   for (i = 0; i < TEST_TIMES; i++) {
@@ -47,14 +47,14 @@ TEST(FP448, MUL_VS_SQR) {
     cnt++;
   }
   EXPECT_EQ(cnt, TEST_TIMES)
-            << "passed: " << cnt << "/" << TEST_TIMES << std::endl;
+      << "passed: " << cnt << "/" << TEST_TIMES << std::endl;
 }
 
 /* Verifies that (a*b*a^1) == (b) */
 TEST(FP448, MUL_VS_INV) {
   int64_t i;
   int64_t cnt = 0;
-  EltFp448_1w_fullradix  a, b, d;
+  EltFp448_1w_fullradix a, b, d;
   const Arith_1w *arith = &Fp448._1w_full.arith;
 
   for (i = 0; i < TEST_TIMES; i++) {
@@ -68,16 +68,16 @@ TEST(FP448, MUL_VS_INV) {
     cnt++;
   }
   EXPECT_EQ(cnt, TEST_TIMES)
-            << "passed: " << cnt << "/" << TEST_TIMES << std::endl;
+      << "passed: " << cnt << "/" << TEST_TIMES << std::endl;
 }
 
 /* Verifies that 0 <= c=a+b < 2^448 and that c be congruent to a+b mod p */
 TEST(FP448, ADDITION) {
   int count = 0;
-  EltFp448_1w_fullradix  a, b, get_c, want_c;
+  EltFp448_1w_fullradix a, b, get_c, want_c;
   mpz_t gmp_a, gmp_b, gmp_c, prime, two_to_448;
   const Arith_1w *arith = &Fp448._1w_full.arith;
-  
+
   mpz_init(gmp_a);
   mpz_init(gmp_b);
   mpz_init(gmp_c);
@@ -111,14 +111,11 @@ TEST(FP448, ADDITION) {
     mpz_export(want_c, NULL, -1, SIZE_FP448, 0, 0, gmp_c);
 
     ASSERT_EQ(arith->misc.cmp(get_c, want_c), 0)
-                  << "a: " << a
-                  << "b: " << b
-                  << "got:  " << get_c
-                  << "want: " << want_c;
+        << "a: " << a << "b: " << b << "got:  " << get_c << "want: " << want_c;
     count++;
   }
   EXPECT_EQ(count, TEST_TIMES)
-            << "passed: " << count << "/" << TEST_TIMES << std::endl;
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
 
   mpz_clear(gmp_a);
   mpz_clear(gmp_b);
@@ -130,10 +127,10 @@ TEST(FP448, ADDITION) {
 /* Verifies that 0 <= c=a-b < 2^448 and that c be congruent to a-b mod p */
 TEST(FP448, SUBTRACTION) {
   int count = 0;
-  EltFp448_1w_fullradix  a, b, get_c, want_c;
+  EltFp448_1w_fullradix a, b, get_c, want_c;
   mpz_t gmp_a, gmp_b, gmp_c, prime, zero;
   const Arith_1w *arith = &Fp448._1w_full.arith;
-  
+
   mpz_init(gmp_a);
   mpz_init(gmp_b);
   mpz_init(gmp_c);
@@ -155,7 +152,7 @@ TEST(FP448, SUBTRACTION) {
     arith->misc.rand(a);
     arith->misc.rand(b);
     arith->sub(get_c, a, b);
-    
+
     mpz_import(gmp_a, NUM_DIGITS_FP448_X64, -1, sizeof(a[0]), 0, 0, a);
     mpz_import(gmp_b, NUM_DIGITS_FP448_X64, -1, sizeof(b[0]), 0, 0, b);
 
@@ -166,14 +163,11 @@ TEST(FP448, SUBTRACTION) {
     mpz_export(want_c, NULL, -1, SIZE_FP448, 0, 0, gmp_c);
 
     ASSERT_EQ(arith->misc.cmp(get_c, want_c), 0)
-                  << "a: " << a
-                  << "b: " << b
-                  << "got:  " << get_c
-                  << "want: " << want_c;
+        << "a: " << a << "b: " << b << "got:  " << get_c << "want: " << want_c;
     count++;
   }
   EXPECT_EQ(count, TEST_TIMES)
-            << "passed: " << count << "/" << TEST_TIMES << std::endl;
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
 
   mpz_clear(gmp_a);
   mpz_clear(gmp_b);
@@ -185,7 +179,7 @@ TEST(FP448, SUBTRACTION) {
 /* Verifies that 0 <= c=a*b < 2^896 */
 TEST(FP448, INT_MULTIPLICATION) {
   int count = 0;
-  EltFp448_1w_fullradix  a, b;
+  EltFp448_1w_fullradix a, b;
   EltFp448_1w_fullradix_buffer get_c, want_c;
   mpz_t gmp_a, gmp_b, gmp_c;
   const Arith_1w *arith = &Fp448._1w_full.arith;
@@ -210,14 +204,11 @@ TEST(FP448, INT_MULTIPLICATION) {
     mpz_export(want_c, NULL, -1, 2 * SIZE_FP448, 0, 0, gmp_c);
 
     ASSERT_EQ(memcmp(get_c, want_c, 2 * SIZE_FP448), 0)
-                  << "a: " << a
-                  << "b: " << b
-                  << "got:  " << get_c
-                  << "want: " << want_c;
+        << "a: " << a << "b: " << b << "got:  " << get_c << "want: " << want_c;
     count++;
   }
   EXPECT_EQ(count, TEST_TIMES)
-            << "passed: " << count << "/" << TEST_TIMES << std::endl;
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
 
   mpz_clear(gmp_a);
   mpz_clear(gmp_b);
@@ -227,7 +218,7 @@ TEST(FP448, INT_MULTIPLICATION) {
 /* Verifies that 0 <= c=a*a < 2^896 */
 TEST(FP448, INT_SQUARING) {
   int count = 0;
-  EltFp448_1w_fullradix  a;
+  EltFp448_1w_fullradix a;
   EltFp448_1w_fullradix_buffer get_c, want_c;
   mpz_t gmp_a, gmp_c;
   const Arith_1w *arith = &Fp448._1w_full.arith;
@@ -249,13 +240,11 @@ TEST(FP448, INT_SQUARING) {
     mpz_export(want_c, NULL, -1, 2 * SIZE_FP448, 0, 0, gmp_c);
 
     ASSERT_EQ(memcmp(get_c, want_c, 2 * SIZE_FP448), 0)
-                  << "a: " << a
-                  << "got:  " << get_c
-                  << "want: " << want_c;
+        << "a: " << a << "got:  " << get_c << "want: " << want_c;
     count++;
   }
   EXPECT_EQ(count, TEST_TIMES)
-            << "passed: " << count << "/" << TEST_TIMES << std::endl;
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
 
   mpz_clear(gmp_a);
   mpz_clear(gmp_c);
@@ -264,7 +253,7 @@ TEST(FP448, INT_SQUARING) {
 /* Verifies that 0 <= c=a^-1 < 2^448 and that c be congruent to a^-1 mod p */
 TEST(FP448, INVERSION) {
   int count = 0;
-  EltFp448_1w_fullradix  a, get_c, want_c;
+  EltFp448_1w_fullradix a, get_c, want_c;
   mpz_t gmp_a, gmp_c, prime, prime_minus_two;
   const Arith_1w *arith = &Fp448._1w_full.arith;
 
@@ -294,13 +283,11 @@ TEST(FP448, INVERSION) {
     mpz_export(want_c, NULL, -1, SIZE_FP448, 0, 0, gmp_c);
 
     ASSERT_EQ(arith->misc.cmp(get_c, want_c), 0)
-                  << "a: " << a
-                  << "got:  " << get_c
-                  << "want: " << want_c;
+        << "a: " << a << "got:  " << get_c << "want: " << want_c;
     count++;
   }
   EXPECT_EQ(count, TEST_TIMES)
-            << "passed: " << count << "/" << TEST_TIMES << std::endl;
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
 
   mpz_clear(gmp_a);
   mpz_clear(gmp_c);
@@ -349,13 +336,11 @@ TEST(FP448, REDUCTION) {
     mpz_export(want_c, NULL, -1, SIZE_FP448, 0, 0, gmp_a);
 
     ASSERT_EQ(arith->misc.cmp(get_c, want_c), 0)
-                  << "a: " << a
-                  << "got:  " << get_c
-                  << "want: " << want_c;
+        << "a: " << a << "got:  " << get_c << "want: " << want_c;
     count++;
   }
   EXPECT_EQ(count, TEST_TIMES)
-            << "passed: " << count << "/" << TEST_TIMES << std::endl;
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
 
   mpz_clear(gmp_a);
   mpz_clear(gmp_low);
@@ -368,7 +353,7 @@ TEST(FP448, REDUCTION) {
 TEST(FP448, MULA24) {
   int count = 0;
   const uint64_t a24 = 39082;
-  EltFp448_1w_fullradix  a, get_c, want_c;
+  EltFp448_1w_fullradix a, get_c, want_c;
   mpz_t gmp_a, gmp_c, gmp_low, gmp_high, two_to_448, two_to_224_plus_1;
   const Arith_1w *arith = &Fp448._1w_full.arith;
   const Arith_1w_fullradix *arithex = &Fp448._1w_full.arithex;
@@ -406,13 +391,11 @@ TEST(FP448, MULA24) {
     mpz_export(want_c, NULL, -1, SIZE_FP448, 0, 0, gmp_c);
 
     ASSERT_EQ(arith->misc.cmp(get_c, want_c), 0)
-                  << "a: " << a
-                  << "got:  " << get_c
-                  << "want: " << want_c;
+        << "a: " << a << "got:  " << get_c << "want: " << want_c;
     count++;
   }
   EXPECT_EQ(count, TEST_TIMES)
-            << "passed: " << count << "/" << TEST_TIMES << std::endl;
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
 
   mpz_clear(gmp_a);
   mpz_clear(gmp_c);
@@ -425,9 +408,9 @@ TEST(FP448, MULA24) {
 /* Verifies that 0 <= c=a mod p < 2^448-2^224-1 for a number 0 <= a < 2^448 */
 TEST(FP448, FREDUCTION) {
   int count = 0;
-  ALIGN uint8_t get_c [SIZE_FP448];
+  ALIGN uint8_t get_c[SIZE_FP448];
   ALIGN uint8_t want_c[SIZE_FP448];
-  EltFp448_1w_fullradix  a;
+  EltFp448_1w_fullradix a;
   mpz_t gmp_a, gmp_c, prime;
   const Arith_1w *arith = &Fp448._1w_full.arith;
 
@@ -442,7 +425,7 @@ TEST(FP448, FREDUCTION) {
   mpz_sub_ui(prime, prime, 1);
 
   for (int i = 0; i < TEST_TIMES; i++) {
-    memset(get_c, 0,  SIZE_FP448);
+    memset(get_c, 0, SIZE_FP448);
     memset(want_c, 0, SIZE_FP448);
 
     arith->misc.rand(a);
@@ -455,13 +438,11 @@ TEST(FP448, FREDUCTION) {
     mpz_export(want_c, NULL, -1, SIZE_FP448, 0, 0, gmp_c);
 
     ASSERT_EQ(memcmp(get_c, want_c, SIZE_FP448), 0)
-                  << "a: " << a
-                  << "got:  " << get_c
-                  << "want: " << want_c;
+        << "a: " << a << "got:  " << get_c << "want: " << want_c;
     count++;
   }
   EXPECT_EQ(count, TEST_TIMES)
-            << "passed: " << count << "/" << TEST_TIMES << std::endl;
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
 
   mpz_clear(gmp_a);
   mpz_clear(gmp_c);

@@ -20,14 +20,11 @@
 #define FAZ_FP_AVX2_H
 
 #ifdef __cplusplus
-namespace faz{
-  namespace fp{
 extern "C" {
 #endif /* __cplusplus */
 
-#include <stdlib.h>
-#include <stdint.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <immintrin.h>
 
 #define ALIGN_BYTES 32
@@ -36,6 +33,11 @@ extern "C" {
 #else
 #define ALIGN __attribute__ ((aligned (ALIGN_BYTES)))
 #endif
+
+#ifdef __cplusplus
+namespace faz{
+  namespace fp{
+#endif /* __cplusplus */
 
 #define argElement_1w uint64_t *
 #define argElement_2w __m256i *
@@ -205,9 +207,9 @@ typedef struct _struct_Fp_Arith {
 extern const PrimeField Fp25519, Fp448;
 
 #ifdef __cplusplus
-} /* extern C */
 } /* namespace fp */
 } /* namespace faz */
+} /* extern C */
 #endif /* __cplusplus */
 
 #endif /* FAZ_FP_AVX2_H */

@@ -20,8 +20,6 @@
 #define FAZ_EDDSA_AVX2_H
 
 #ifdef __cplusplus
-namespace faz{
-  namespace eddsa{
 extern "C" {
 #endif /* __cplusplus */
 
@@ -34,6 +32,11 @@ extern "C" {
 #else
 #define ALIGN __attribute__ ((aligned (ALIGN_BYTES)))
 #endif
+
+#ifdef __cplusplus
+namespace faz{
+  namespace eddsa{
+#endif /* __cplusplus */
 
 #define ZeroOperandReturnKey(X) uint8_t * (*X)()
 #define Oper1Void(NAME, TYPE) void (*NAME)(TYPE C)
@@ -179,9 +182,9 @@ enum EDDSA_FLAGS {
 };
 
 #ifdef __cplusplus
-} /* extern C */
 } /* namespace eddsa */
 } /* namespace faz */
+} /* extern C */
 #endif /* __cplusplus */
 
 #endif  /* FAZ_EDDSA_AVX2_H */

@@ -1,7 +1,6 @@
-#include <stdio.h>
 #include <faz_fp_avx2.h>
-
-#define TEST_TIMES 50000
+#include <stdio.h>
+#include "tests.h"
 
 static void test_1w(const Arith_1w *fp) {
   int64_t i;
@@ -14,9 +13,9 @@ static void test_1w(const Arith_1w *fp) {
   argElement_1w f = fp->misc.alloc();
 
   /**
-  * Test identity:
-  *    (a^2-b^2) == (a+b)(a-b)
-  */
+   * Test identity:
+   *    (a^2-b^2) == (a+b)(a-b)
+   */
   printf("Test mul/sqr:");
   cnt = 0;
   for (i = 0; i < TEST_TIMES; i++) {
@@ -33,9 +32,9 @@ static void test_1w(const Arith_1w *fp) {
 
     match = fp->misc.cmp(c, e) == 0;
     if (!match) {
-      fprintf(stderr,"A:\n");
+      fprintf(stderr, "A:\n");
       fp->misc.print(stderr, a);
-      fprintf(stderr,"B:\n");
+      fprintf(stderr, "B:\n");
       fp->misc.print(stderr, b);
       break;
     }
@@ -44,9 +43,9 @@ static void test_1w(const Arith_1w *fp) {
   printf(" %ld %s\n", cnt, cnt == TEST_TIMES ? "OK" : "FAIL");
 
   /**
-  * Test identity:
-  *    (a*b*a^1) == b
-  */
+   * Test identity:
+   *    (a*b*a^1) == b
+   */
   printf("Test mul/inv:");
   cnt = 0;
   for (i = 0; i < TEST_TIMES; i++) {
@@ -59,9 +58,9 @@ static void test_1w(const Arith_1w *fp) {
 
     match = fp->misc.cmp(a, b) == 0;
     if (!match) {
-      fprintf(stderr,"A:\n");
+      fprintf(stderr, "A:\n");
       fp->misc.print(stderr, a);
-      fprintf(stderr,"B:\n");
+      fprintf(stderr, "B:\n");
       fp->misc.print(stderr, b);
       break;
     }
@@ -88,9 +87,9 @@ static void test_2w(const Arith_2w *fp) {
   argElement_2w e = fp->misc.alloc();
 
   /**
-  * Test identity:
-  *    (a^2-b^2) == (a+b)(a-b)
-  */
+   * Test identity:
+   *    (a^2-b^2) == (a+b)(a-b)
+   */
   printf("Test mul/sqr:");
   cnt = 0;
   for (i = 0; i < TEST_TIMES; i++) {
@@ -134,9 +133,9 @@ static void test_4w(const Arith_4w *fp) {
   argElement_2w e = fp->misc.alloc();
 
   /**
-  * Test identity:
-  *    (a^2-b^2) == (a+b)(a-b)
-  */
+   * Test identity:
+   *    (a^2-b^2) == (a+b)(a-b)
+   */
   printf("Test mul/sqr:");
   cnt = 0;
   for (i = 0; i < TEST_TIMES; i++) {

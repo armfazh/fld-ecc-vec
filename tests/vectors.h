@@ -7,7 +7,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-
 enum EDDSA_SCHEME {
   EDDSA_Ed25519,
   EDDSA_Ed25519ph,

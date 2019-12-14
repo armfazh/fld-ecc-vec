@@ -1,6 +1,6 @@
+#include <faz_fp_avx2.h>
 #include <gmp.h>
 #include <gtest/gtest.h>
-#include <faz_fp_avx2.h>
 
 using namespace faz::fp;
 
@@ -9,10 +9,10 @@ using namespace faz::fp;
 static std::ostream &operator<<(std::ostream &os,
                                 const EltFp25519_1w_redradix &number) {
   os << "0x";
-  for (int i = (NUM_DIGITS_FP25519) - 1; i > 0; i -= 2) {
+  for (int i = (NUM_DIGITS_FP25519)-1; i > 0; i -= 2) {
     os << std::setbase(16) << std::setfill('0') << std::setw(16) << number[i];
   }
-  for (int i = (NUM_DIGITS_FP25519) - 2; i >= 0; i -= 2) {
+  for (int i = (NUM_DIGITS_FP25519)-2; i >= 0; i -= 2) {
     os << std::setbase(16) << std::setfill('0') << std::setw(16) << number[i];
   }
   return os << std::endl;
@@ -46,12 +46,11 @@ TEST(FP25519_1w_AVX2, MUL_VS_SQR) {
     arith->sub(c, a, b);
     arithex->compress(c);
 
-    ASSERT_EQ(arith->misc.cmp(c, e), 0) << "got:  " << c
-                                        << "want: " << e;
+    ASSERT_EQ(arith->misc.cmp(c, e), 0) << "got:  " << c << "want: " << e;
     cnt++;
   }
-  EXPECT_EQ(cnt, TEST_TIMES) << "passed: " << cnt << "/" << TEST_TIMES
-                             << std::endl;
+  EXPECT_EQ(cnt, TEST_TIMES)
+      << "passed: " << cnt << "/" << TEST_TIMES << std::endl;
 }
 
 /* Verifies that (a*b*a^1) == (b) */
@@ -69,12 +68,11 @@ TEST(FP25519_1w_AVX2, MUL_VS_INV) {
     arith->mul(a, a, b);
     arith->mul(a, a, c);
 
-    ASSERT_EQ(arith->misc.cmp(a, b), 0) << "got:  " << a
-                                        << "want: " << b;
+    ASSERT_EQ(arith->misc.cmp(a, b), 0) << "got:  " << a << "want: " << b;
     cnt++;
   }
-  EXPECT_EQ(cnt, TEST_TIMES) << "passed: " << cnt << "/" << TEST_TIMES
-                             << std::endl;
+  EXPECT_EQ(cnt, TEST_TIMES)
+      << "passed: " << cnt << "/" << TEST_TIMES << std::endl;
 }
 
 /* Verifies that 0 <= c=a+b < 2^256 and that c be congruent to a+b mod p */
@@ -113,11 +111,11 @@ TEST(FP25519_1w_AVX2, ADDITION) {
     mpz_export(want_c, NULL, -1, SIZE_FP25519, 0, 0, gmp_c);
 
     ASSERT_EQ(memcmp(get_c, want_c, SIZE_FP25519), 0)
-                  << "a: " << a << "b: " << b << "got:  " << get_c << "want: " << want_c;
+        << "a: " << a << "b: " << b << "got:  " << get_c << "want: " << want_c;
     count++;
   }
-  EXPECT_EQ(count, TEST_TIMES) << "passed: " << count << "/" << TEST_TIMES
-                               << std::endl;
+  EXPECT_EQ(count, TEST_TIMES)
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
 
   mpz_clear(gmp_a);
   mpz_clear(gmp_b);
@@ -161,11 +159,11 @@ TEST(FP25519_1w_AVX2, SUBTRACTION) {
     mpz_export(want_c, NULL, -1, SIZE_FP25519, 0, 0, gmp_c);
 
     ASSERT_EQ(memcmp(get_c, want_c, SIZE_FP25519), 0)
-                  << "a: " << a << "b: " << b << "got:  " << get_c << "want: " << want_c;
+        << "a: " << a << "b: " << b << "got:  " << get_c << "want: " << want_c;
     count++;
   }
-  EXPECT_EQ(count, TEST_TIMES) << "passed: " << count << "/" << TEST_TIMES
-                               << std::endl;
+  EXPECT_EQ(count, TEST_TIMES)
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
 
   mpz_clear(gmp_a);
   mpz_clear(gmp_b);
@@ -208,11 +206,11 @@ TEST(FP25519_1w_AVX2, MULTIPLICATION) {
     mpz_export(want_c, NULL, -1, SIZE_FP25519, 0, 0, gmp_c);
 
     ASSERT_EQ(memcmp(get_c, want_c, SIZE_FP25519), 0)
-                  << "a: " << a << "b: " << b << "got:  " << get_c << "want: " << want_c;
+        << "a: " << a << "b: " << b << "got:  " << get_c << "want: " << want_c;
     count++;
   }
-  EXPECT_EQ(count, TEST_TIMES) << "passed: " << count << "/" << TEST_TIMES
-                               << std::endl;
+  EXPECT_EQ(count, TEST_TIMES)
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
   mpz_clear(gmp_a);
   mpz_clear(gmp_b);
   mpz_clear(gmp_c);
@@ -251,11 +249,11 @@ TEST(FP25519_1w_AVX2, SQUARING) {
     mpz_export(want_c, NULL, -1, SIZE_FP25519, 0, 0, gmp_c);
 
     ASSERT_EQ(memcmp(get_c, want_c, SIZE_FP25519), 0)
-                  << "a: " << a << "got:  " << get_c << "want: " << want_c;
+        << "a: " << a << "got:  " << get_c << "want: " << want_c;
     count++;
   }
-  EXPECT_EQ(count, TEST_TIMES) << "passed: " << count << "/" << TEST_TIMES
-                               << std::endl;
+  EXPECT_EQ(count, TEST_TIMES)
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
   mpz_clear(gmp_a);
   mpz_clear(gmp_c);
   mpz_clear(prime);
@@ -297,11 +295,11 @@ TEST(FP25519_1w_AVX2, INVERSION) {
     mpz_export(want_c, NULL, -1, SIZE_FP25519, 0, 0, gmp_c);
 
     ASSERT_EQ(memcmp(get_c, want_c, SIZE_FP25519), 0)
-                  << "a: " << a << "got:  " << get_c << "want: " << want_c;
+        << "a: " << a << "got:  " << get_c << "want: " << want_c;
     count++;
   }
-  EXPECT_EQ(count, TEST_TIMES) << "passed: " << count << "/" << TEST_TIMES
-                               << std::endl;
+  EXPECT_EQ(count, TEST_TIMES)
+      << "passed: " << count << "/" << TEST_TIMES << std::endl;
   mpz_clear(gmp_a);
   mpz_clear(gmp_c);
   mpz_clear(prime);

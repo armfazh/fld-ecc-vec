@@ -1,5 +1,5 @@
-#include <gtest/gtest.h>
 #include <cpu_caps.h>
+#include <gtest/gtest.h>
 
 int main(int argc, char **argv) {
   machine_info();

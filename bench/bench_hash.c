@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <sha512.h>
 #include <sha3.h>
+#include <sha512.h>
+#include <stdio.h>
 #include "clocks.h"
 
 void bench_hash() {
@@ -13,13 +13,8 @@ void bench_hash() {
   printf("===== Hash Functions =====\n");
   printf("====== SHA512   ==========\n");
   sph_sha512_context mc;
-  CLOCKS(sha512,
-         sph_sha512_init(&mc);
-         sph_sha512(&mc, message, message_length);
-         sph_sha512_close(&mc, digest_sha512)
-  );
+  CLOCKS(sha512, sph_sha512_init(&mc); sph_sha512(&mc, message, message_length);
+         sph_sha512_close(&mc, digest_sha512));
   printf("====== SHAKE256 ==========\n");
-  CLOCKS(sha3,
-      SHAKE256(message,message_length,digest_sha3,128)
-  );
+  CLOCKS(sha3, SHAKE256(message, message_length, digest_sha3, 128));
 }

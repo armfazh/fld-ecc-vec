@@ -4,19 +4,20 @@ This is a mathematical software library for computing the Edwards Digital Signat
 
 ```bibtex
 @article{fld_ecc_avx2,
-    author    = {A. Faz-Hern\'{a}ndez and J. L\'{o}pez and 
+    doi       = {10.1145/3309759},
+    author    = {Armando Faz-Hern\'{a}ndez and
+                 Julio L\'{o}pez and
                  Ricardo Dahab},
-    title     = {High Performance Implementation of Elliptic Curve
-                 Cryptography using Vector Instructions},
+    title     = {High-performance Implementation of Elliptic Curve
+                 Cryptography Using Vector Instructions},
     year      = {2019},
     journal   = {ACM Transactions on Mathematical Software (TOMS)},
     publisher = {ACM},
     volume    = {45},
     number    = {3},
     keywords  = {Edwards Digital Signature Algorithm, Ed25519,
-                 Diffie-Hellman Protocol, AVX2 Vector Instructions, 
+                 Diffie-Hellman Protocol, AVX2 Vector Instructions,
                  Elliptic Curve Cryptography, Secure Software},
-    note      = {To appear},
 }    
 ```
 
@@ -30,7 +31,7 @@ To compile use:
     $ make all
 ```
 
-### Benchmarks 
+### Benchmarks
 
 For running the benchmark program use:
 
@@ -57,4 +58,3 @@ For running the tests program use:
 ### LICENSE
 
 BSD 3-Clause [LICENSE.txt](LICENSE.txt)
-

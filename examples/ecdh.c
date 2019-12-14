@@ -1,5 +1,5 @@
-#include<stdio.h>
-#include<faz_ecdh_avx2.h>
+#include <faz_ecdh_avx2.h>
+#include <stdio.h>
 
 int main(void) {
   X25519_KEY alice_private, alice_session, alice_shared;

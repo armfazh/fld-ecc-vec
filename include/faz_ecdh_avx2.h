@@ -20,10 +20,7 @@
 #define FAZ_ECDH_AVX2_H
 
 #ifdef __cplusplus
-namespace faz{
-namespace ecdh{
 extern "C" {
-
 #endif /* __cplusplus */
 
 #include <stdint.h>
@@ -35,6 +32,11 @@ extern "C" {
 #else
 #define ALIGN __attribute__ ((aligned (ALIGN_BYTES)))
 #endif
+
+#ifdef __cplusplus
+namespace faz{
+namespace ecdh{
+#endif /* __cplusplus */
 
 /**
 * Swap method
@@ -90,9 +92,9 @@ typedef ALIGN uint8_t X25519_KEY[ECDH25519_KEY_SIZE_BYTES];
 typedef ALIGN uint8_t X448_KEY[ECDH448_KEY_SIZE_BYTES];
 
 #ifdef __cplusplus
-} /* extern C */
 } /* namespace ecdh */
 } /* namespace faz  */
+} /* extern C */
 #endif /* __cplusplus */
 
 #endif /* FAZ_ECDH_AVX2_H */
