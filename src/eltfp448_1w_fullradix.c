@@ -64,7 +64,7 @@ DECL(void, sub)(argElement_1w c, argElement_1w a, argElement_1w b) {
   "xorl %%eax, %%eax ;"
   "movq $0x100000000, %%rdx ;"
 
-  "movq   (%1),  %%r8 ;"
+  "movq  0(%1),  %%r8 ;"
   "movq  8(%1),  %%r9 ;"
   "movq 16(%1), %%r10 ;"
   "movq 24(%1), %%r11 ;"
@@ -72,7 +72,7 @@ DECL(void, sub)(argElement_1w c, argElement_1w a, argElement_1w b) {
   "movq 40(%1), %%r13 ;"
   "movq 48(%1), %%r14 ;"
 
-  "subq   (%2),  %%r8 ;"
+  "subq  0(%2),  %%r8 ;"
   "sbbq  8(%2),  %%r9 ;"
   "sbbq 16(%2), %%r10 ;"
   "sbbq 24(%2), %%r11 ;"
@@ -100,7 +100,7 @@ DECL(void, sub)(argElement_1w c, argElement_1w a, argElement_1w b) {
   "sbbq  %%rax, %%r13 ;"
   "sbbq  %%rax, %%r14 ;"
 
-  "movq  %%r8,   (%0) ;"
+  "movq  %%r8,  0(%0) ;"
   "movq  %%r9,  8(%0) ;"
   "movq %%r10, 16(%0) ;"
   "movq %%r11, 24(%0) ;"
@@ -193,8 +193,8 @@ DECL(void, intmul_mulxadx)(argElement_1w c, argElement_1w a, argElement_1w b) {
 
 DECL(void, intmul_mulx)(argElement_1w c, argElement_1w a, argElement_1w b) {
   __asm__ __volatile__(
-  "movq   (%1), %%rdx;"
-  "mulx   (%2), %%rax,  %%r8;"  "movq %%rax,  (%0);"
+  "movq  0(%1), %%rdx;"
+  "mulx  0(%2), %%rax,  %%r8;"  "movq %%rax, 0(%0);"
   "mulx  8(%2), %%rax,  %%r9;"  "addq %%rax,  %%r8;"
   "mulx 16(%2), %%rax, %%r10;"  "adcq %%rax,  %%r9;"
   "mulx 24(%2), %%rax, %%r11;"  "adcq %%rax, %%r10;"
@@ -205,7 +205,7 @@ DECL(void, intmul_mulx)(argElement_1w c, argElement_1w a, argElement_1w b) {
 
   ".macro MULACC_mulx I, R0, R1, R2, R3, R4, R5, R6;"
   "movq \\I(%1), %%rdx;"
-  "mulx   (%2), %%rax, %%rcx;"  "addq %%rax, \\R0;"  "movq \\R0, \\I(%0);"
+  "mulx  0(%2), %%rax, %%rcx;"  "addq %%rax, \\R0;"  "movq \\R0, \\I(%0);"
   "mulx  8(%2), %%rax, %%rbx;"  "adcq %%rax, \\R1;"  "adcq $0, %%rbx;"  "addq %%rcx, \\R1;"
   "mulx 16(%2), %%rax, %%rcx;"  "adcq %%rax, \\R2;"  "adcq $0, %%rcx;"  "addq %%rbx, \\R2;"
   "mulx 24(%2), %%rax, %%rbx;"  "adcq %%rax, \\R3;"  "adcq $0, %%rbx;"  "addq %%rcx, \\R3;"
@@ -238,8 +238,8 @@ DECL(void, intmul_mulx)(argElement_1w c, argElement_1w a, argElement_1w b) {
 
 DECL(void, intmul_mulq)(argElement_1w c, argElement_1w a, argElement_1w b) {
   __asm__ __volatile__(
-    "movq   (%1), %%rcx;"
-    "movq   (%2), %%rax;"  "mulq %%rcx;"  "movq %%rax,  (%0);"  /***************/  "movq %%rdx,  %%r8;"
+    "movq  0(%1), %%rcx;"
+    "movq  0(%2), %%rax;"  "mulq %%rcx;"  "movq %%rax, 0(%0);"  /***************/  "movq %%rdx,  %%r8;"
     "movq  8(%2), %%rax;"  "mulq %%rcx;"  "addq %%rax,  %%r8;"  "adcq $0, %%rdx;"  "movq %%rdx,  %%r9;"
     "movq 16(%2), %%rax;"  "mulq %%rcx;"  "addq %%rax,  %%r9;"  "adcq $0, %%rdx;"  "movq %%rdx, %%r10;"
     "movq 24(%2), %%rax;"  "mulq %%rcx;"  "addq %%rax, %%r10;"  "adcq $0, %%rdx;"  "movq %%rdx, %%r11;"
@@ -249,7 +249,7 @@ DECL(void, intmul_mulq)(argElement_1w c, argElement_1w a, argElement_1w b) {
 
     ".macro MULACC I;"
     "movq \\I(%1), %%rcx;"
-    "movq   (%2), %%rax;"  "mulq %%rcx;"  "addq %%rax,  %%r8;"                     "movq  %%r8, \\I(%0);" "movq %%rdx,  %%r8;"  "adcq $0,  %%r8;"
+    "movq  0(%2), %%rax;"  "mulq %%rcx;"  "addq %%rax,  %%r8;"                     "movq  %%r8, \\I(%0);" "movq %%rdx,  %%r8;"  "adcq $0,  %%r8;"
     "movq  8(%2), %%rax;"  "mulq %%rcx;"  "addq %%rax,  %%r9;"  "adcq $0, %%rdx;"  "addq  %%r9,  %%r8;"   "movq %%rdx,  %%r9;"  "adcq $0,  %%r9;"
     "movq 16(%2), %%rax;"  "mulq %%rcx;"  "addq %%rax, %%r10;"  "adcq $0, %%rdx;"  "addq %%r10,  %%r9;"   "movq %%rdx, %%r10;"  "adcq $0, %%r10;"
     "movq 24(%2), %%rax;"  "mulq %%rcx;"  "addq %%rax, %%r11;"  "adcq $0, %%rdx;"  "addq %%r11, %%r10;"   "movq %%rdx, %%r11;"  "adcq $0, %%r11;"
@@ -294,11 +294,11 @@ DECL(void, intmul)(argElement_1w c, argElement_1w a, argElement_1w b) {
 
 DECL(void, intsqr_mulxadx)(argElement_1w c, argElement_1w a) {
   __asm__ __volatile__(
-  "movq   (%1), %%rdx        ;" /* A[0]   */
+  "movq  0(%1), %%rdx        ;" /* A[0]   */
   "mulx  %%rdx, %%rax, %%rbx ;" /* A[0]^2 */
   "movq  8(%1), %%rdx        ;" /* A[1]   */
   "mulx  %%rdx,  %%r8, %%r9  ;" /* A[1]^2 */
-  "movq  %%rax,   (%0) ;"
+  "movq  %%rax,  0(%0) ;"
   "movq  %%rbx,  8(%0) ;"
   "movq   %%r8, 16(%0) ;"
   "movq   %%r9, 24(%0) ;"
@@ -323,7 +323,7 @@ DECL(void, intsqr_mulxadx)(argElement_1w c, argElement_1w a) {
   "movq  %%r10, 96(%0) ;"
   "movq  %%r11,104(%0) ;"
 
-  "movq   (%1), %%rdx  ;"       /* A[0]     */
+  "movq  0(%1), %%rdx  ;"       /* A[0]     */
   "mulx  8(%1),  %%r8,  %%r9 ;" /* A[0]A[1] */  "xorl %%r10d,%%r10d;"  "adox  %%r8,  %%r8 ;"
   "mulx 16(%1), %%r10, %%r11 ;" /* A[0]A[2] */  "adcx %%r10,  %%r9 ;"  "adox  %%r9,  %%r9 ;"
   "mulx 24(%1), %%r12, %%r13 ;" /* A[0]A[3] */  "adcx %%r12, %%r11 ;"  "adox %%r11, %%r11 ;"
@@ -399,7 +399,7 @@ DECL(void, intsqr_mulxadx)(argElement_1w c, argElement_1w a) {
 
 DECL(void, intsqr_mulx)(argElement_1w c, argElement_1w a) {
   __asm__ __volatile__(
-  "movq   (%1), %%rdx ;"        /* A[0]   */
+  "movq  0(%1), %%rdx ;"        /* A[0]   */
   "mulx  %%rdx, %%rax, %%rbx ;" /* A[0]^2 */
   "movq  8(%1), %%rdx ;"        /* A[1]   */
   "mulx  %%rdx,  %%r8,  %%r9 ;" /* A[1]^2 */
@@ -522,7 +522,7 @@ DECL(void, intsqr_mulx)(argElement_1w c, argElement_1w a) {
   "adcq  96(%0), %%rdx ;"   "movq %%rdx, 96(%0) ;"
   "adcq 104(%0), %%r10 ;"   "movq %%r10,104(%0) ;"
   :
-  : "r"  (c), "r" (a)
+  : "r" (c), "r" (a)
   : "memory", "cc", "%rax", "%rbx", "%rcx", "%rdx", "%r8",
   "%r9", "%r10", "%r11", "%r12", "%r13", "%r14"
   );
@@ -652,268 +652,171 @@ DECL(void, intsqr)(argElement_1w c, argElement_1w a) {
 #endif
 }
 
-DECL(void, reduce_mulxadx)(argElement_1w c, argElement_1w a) {
-  __asm__ __volatile__ (
-  //  (2c13, 2c12, 2c11, 2c10|c10, c9, c8, c7) + (c6,...,c0)
-  "movq 80(%1), %%r10 ;"
-  "movq  %%r10, %%rax ;"
-  "movq $0xffffffff00000000, %%rcx ;"
-  "andq %%rcx, %%rax ;"
+DECL(void, reduce_adx)(argElement_1w c, argElement_1w a) {
+  __asm__ __volatile__(
+    /**
+     * (   ,2C13,2C12,2C11,2C10|C10,C9,C8, C7) + (C6,...,C0)
+     * (r14, r13, r12, r11,     r10,r9,r8,r15)
+     */
+    "movq 80(%1),%%rax; movq %%rax,%%r10;"
+    "movq $0xffffffff00000000, %%r8;"
+    "andq %%r8,%%r10;"
 
-  "movq      $0, %%r14 ;"
-  "movq 104(%1), %%r13 ;"  "shldq $1, %%r13, %%r14 ;"
-  "movq  96(%1), %%r12 ;"  "shldq $1, %%r12, %%r13 ;"
-  "movq  88(%1), %%r11 ;"  "shldq $1, %%r11, %%r12 ;"
-  /*********************/  "shldq $1, %%rax, %%r11 ;"
-  /*********************/  "shlq  $1, %%rax ;"
+    "movq $0,%%r14;"
+    "movq 104(%1),%%r13; shldq $1,%%r13,%%r14;"
+    "movq  96(%1),%%r12; shldq $1,%%r12,%%r13;"
+    "movq  88(%1),%%r11; shldq $1,%%r11,%%r12;"
+    "movq  72(%1), %%r9; shldq $1,%%r10,%%r11;"
+    "movq  64(%1), %%r8; shlq  $1,%%r10;"
+    "movq $0xffffffff,%%r15; andq %%r15,%%rax; orq %%rax,%%r10;"
+    "movq  56(%1),%%r15;"
 
-  "movq $0xffffffff, %%rcx ;"
-  "andq %%rcx, %%r10 ;"
-  "orq  %%rax, %%r10 ;"
+    "xorl  %%eax,%%eax;"
+    "adcx  0(%1),%%r15; movq %%r15, 0(%0); movq  56(%1),%%r15;"
+    "adcx  8(%1), %%r8; movq  %%r8, 8(%0); movq  64(%1), %%r8;"
+    "adcx 16(%1), %%r9; movq  %%r9,16(%0); movq  72(%1), %%r9;"
+    "adcx 24(%1),%%r10; movq %%r10,24(%0); movq  80(%1),%%r10;"
+    "adcx 32(%1),%%r11; movq %%r11,32(%0); movq  88(%1),%%r11;"
+    "adcx 40(%1),%%r12; movq %%r12,40(%0); movq  96(%1),%%r12;"
+    "adcx 48(%1),%%r13; movq %%r13,48(%0); movq 104(%1),%%r13;"
+    "adcx  %%rax,%%r14;"
 
-  "movq 56(%1), %%rcx ;"
-  "movq 64(%1),  %%r8 ;"
-  "movq 72(%1),  %%r9 ;"
+    /**
+     * (c10c9,c9c8,c8c7,c7c13,c13c12,c12c11,c11c10) + (c6,...,c0)
+     * (   r9,  r8, r15,  r13,   r12,   r11,   r10)
+     */
+    "movq %%r10, %%rax;"
+    "shrdq $32,%%r11,%%r10;"
+    "shrdq $32,%%r12,%%r11;"
+    "shrdq $32,%%r13,%%r12;"
+    "shrdq $32,%%r15,%%r13;"
+    "shrdq $32, %%r8,%%r15;"
+    "shrdq $32, %%r9, %%r8;"
+    "shrdq $32,%%rax, %%r9;"
 
-  "xorl  %%edx, %%edx ;"
-  "adcx   (%1), %%rcx ;"	"movq %%rcx,   (%0) ;"
-  "adcx  8(%1),  %%r8 ;"	"movq  %%r8,  8(%0) ;"
-  "adcx 16(%1),  %%r9 ;"	"movq  %%r9, 16(%0) ;"
-  "adcx 24(%1), %%r10 ;"	"movq %%r10, 24(%0) ;"
-  "adcx 32(%1), %%r11 ;"	"movq %%r11, 32(%0) ;"
-  "adcx 40(%1), %%r12 ;"	"movq %%r12, 40(%0) ;"
-  "adcx 48(%1), %%r13 ;"	"movq %%r13, 48(%0) ;"
-  "adcx  %%rdx, %%r14 ;"
+    "xorl  %%eax,%%eax;"
+    "adcx  0(%0),%%r10;"
+    "adcx  8(%0),%%r11;"
+    "adcx 16(%0),%%r12;"
+    "adcx 24(%0),%%r13;"
+    "adcx 32(%0),%%r15;"
+    "adcx 40(%0), %%r8;"
+    "adcx 48(%0), %%r9;"
+    "adcx  %%rax,%%r14;"
 
-  //  (c10c9, c9c8,c8c7,c7c13,c13c12,c12c11,c11c10) + (c6,...,c0)
-  "movq  80(%1), %%r10 ;"  "movq %%r10, %%rax ;"
-  "movq  88(%1), %%r11 ;"  "shrdq $32, %%r11, %%r10 ;"
-  "movq  96(%1), %%r12 ;"  "shrdq $32, %%r12, %%r11 ;"
-  "movq 104(%1), %%r13 ;"  "shrdq $32, %%r13, %%r12 ;"
-  "movq  56(%1), %%rcx ;"  "shrdq $32, %%rcx, %%r13 ;"
-  "movq  64(%1),  %%r8 ;"  "shrdq $32,  %%r8, %%rcx ;"
-  "movq  72(%1),  %%r9 ;"  "shrdq $32,  %%r9,  %%r8 ;"
-  /*********************/  "shrdq $32, %%rax,  %%r9 ;"
+    /**
+     * ( c7) + (c6,...,c0)
+     * (r14)
+     */
+    "movq %%r14,%%rax; shlq $32,%%rax;"
+    "clc;"
+    "adcx %%r14,%%r10; movq  $0,%%r14;"
+    "adcx %%r14,%%r11;"
+    "adcx %%r14,%%r12;"
+    "adcx %%rax,%%r13;"
+    "adcx %%r14,%%r15;"
+    "adcx %%r14, %%r8;"
+    "adcx %%r14, %%r9;"
+    "adcx %%r14,%%r14;"
 
-  "xorl  %%edx, %%edx ;"
-  "adcx   (%0), %%r10 ;"	"movq %%r10,   (%0) ;"
-  "adcx  8(%0), %%r11 ;"	"movq %%r11,  8(%0) ;"
-  "adcx 16(%0), %%r12 ;"	"movq %%r12, 16(%0) ;"
-  "adcx 24(%0), %%r13 ;"	"movq %%r13, 24(%0) ;"
-  "adcx 32(%0), %%rcx ;"	"movq %%rcx, 32(%0) ;"
-  "adcx 40(%0),  %%r8 ;"	"movq  %%r8, 40(%0) ;"
-  "adcx 48(%0),  %%r9 ;"	"movq  %%r9, 48(%0) ;"
-  "adcx  %%r14, %%rdx ;"
-
-  //  (c7 mod p) + (c6,...,c0)
-  "movq %%rdx, %%rcx ;"
-  "xorl %%eax, %%eax ;"
-  "movq %%rax,  %%r8 ;"
-  "movq %%rax,  %%r9 ;"
-  "movq %%rax, %%r11 ;"
-  "movq %%rax, %%r12 ;"
-  "movq %%rax, %%r13 ;"
-  "movq %%rax, %%r14 ;"
-  "movq %%rdx, %%r10 ;"
-  "shlq   $32, %%r10 ;"
-
-  "clc ;"
-  "adcx   (%0), %%rcx ;"
-  "adcx  8(%0),  %%r8 ;"   "movq  %%r8,  8(%0) ;"
-  "adcx 16(%0),  %%r9 ;"   "movq  %%r9, 16(%0) ;"
-  "adcx 24(%0), %%r10 ;"
-  "adcx 32(%0), %%r11 ;"   "movq %%r11, 32(%0) ;"
-  "adcx 40(%0), %%r12 ;"   "movq %%r12, 40(%0) ;"
-  "adcx 48(%0), %%r13 ;"   "movq %%r13, 48(%0) ;"
-  "adcx  %%r14, %%r14 ;"
-
-  "addq  %%r14, %%rcx ;"   "movq %%rcx,   (%0) ;"
-  "shlq    $32, %%r14 ;"
-  "addq  %%r14, %%r10 ;"   "movq %%r10, 24(%0) ;"
-  :
-  : "r" (c), "r" (a)
-  : "memory", "cc", "%rax", "%rcx", "%rdx", "%r8",
-  "%r9", "%r10", "%r11", "%r12", "%r13", "%r14"
-  );
+    "movq %%r14,%%rax; shlq $32,%%rax;"
+    "clc;"
+    "adcx %%r14,%%r10; movq %%r10, 0(%0); movq  $0,%%r14;"
+    "adcx %%r14,%%r11; movq %%r11, 8(%0);"
+    "adcx %%r14,%%r12; movq %%r12,16(%0);"
+    "adcx %%rax,%%r13; movq %%r13,24(%0);"
+    "adcx %%r14,%%r15; movq %%r15,32(%0);"
+    "adcx %%r14, %%r8; movq  %%r8,40(%0);"
+    "adcx %%r14, %%r9; movq  %%r9,48(%0);"
+    :
+    : "r"(c), "r"(a)
+    : "memory", "cc", "%rax", "%r8", "%r9", "%r10", "%r11", "%r12", "%r13",
+      "%r14", "%r15");
 }
 
-DECL(void, reduce_mulx)(argElement_1w c, argElement_1w a) {
-  __asm__ __volatile__ (
-  // (2c13, 2c12, 2c11, 2c10|c10, c9, c8, c7) + (c6,...,c0)
-  "movq 80(%1), %%r10 ;"
-  "movq  %%r10, %%rax ;"
-  "movq $0xffffffff00000000, %%rcx ;"
-  "andq %%rcx, %%rax ;"
+DECL(void, reduce_leg)(argElement_1w c, argElement_1w a) {
+  __asm__ __volatile__(
+     /**
+      * (   ,2C13,2C12,2C11,2C10|C10,C9,C8, C7) + (C6,...,C0)
+      * (r14, r13, r12, r11,     r10,r9,r8,r15)
+      */
+     "movq 80(%1),%%rax; movq %%rax,%%r10;"
+     "movq $0xffffffff00000000, %%r8;"
+     "andq %%r8,%%r10;"
 
-  "movq      $0, %%r14 ;"
-  "movq 104(%1), %%r13 ;"  "shldq $1, %%r13, %%r14 ;"
-  "movq  96(%1), %%r12 ;"  "shldq $1, %%r12, %%r13 ;"
-  "movq  88(%1), %%r11 ;"  "shldq $1, %%r11, %%r12 ;"
-  /*********************/  "shldq $1, %%rax, %%r11 ;"
-  /*********************/  "shlq  $1, %%rax ;"
+     "movq $0,%%r14;"
+     "movq 104(%1),%%r13; shldq $1,%%r13,%%r14;"
+     "movq  96(%1),%%r12; shldq $1,%%r12,%%r13;"
+     "movq  88(%1),%%r11; shldq $1,%%r11,%%r12;"
+     "movq  72(%1), %%r9; shldq $1,%%r10,%%r11;"
+     "movq  64(%1), %%r8; shlq  $1,%%r10;"
+     "movq $0xffffffff,%%r15; andq %%r15,%%rax; orq %%rax,%%r10;"
+     "movq  56(%1),%%r15;"
 
-  "movq $0xffffffff, %%rcx ;"
-  "andq %%rcx, %%r10 ;"
-  "orq  %%rax, %%r10 ;"
+     "addq  0(%1),%%r15; movq %%r15, 0(%0); movq  56(%1),%%r15;"
+     "adcq  8(%1), %%r8; movq  %%r8, 8(%0); movq  64(%1), %%r8;"
+     "adcq 16(%1), %%r9; movq  %%r9,16(%0); movq  72(%1), %%r9;"
+     "adcq 24(%1),%%r10; movq %%r10,24(%0); movq  80(%1),%%r10;"
+     "adcq 32(%1),%%r11; movq %%r11,32(%0); movq  88(%1),%%r11;"
+     "adcq 40(%1),%%r12; movq %%r12,40(%0); movq  96(%1),%%r12;"
+     "adcq 48(%1),%%r13; movq %%r13,48(%0); movq 104(%1),%%r13;"
+     "adcq     $0,%%r14;"
 
-  "movq 56(%1), %%rcx ;"
-  "movq 64(%1),  %%r8 ;"
-  "movq 72(%1),  %%r9 ;"
+     /**
+      * (c10c9,c9c8,c8c7,c7c13,c13c12,c12c11,c11c10) + (c6,...,c0)
+      * (   r9,  r8, r15,  r13,   r12,   r11,   r10)
+      */
+     "movq %%r10, %%rax;"
+     "shrdq $32,%%r11,%%r10;"
+     "shrdq $32,%%r12,%%r11;"
+     "shrdq $32,%%r13,%%r12;"
+     "shrdq $32,%%r15,%%r13;"
+     "shrdq $32, %%r8,%%r15;"
+     "shrdq $32, %%r9, %%r8;"
+     "shrdq $32,%%rax, %%r9;"
 
-  "xorl  %%edx, %%edx ;"
-  "addq   (%1), %%rcx ;"	"movq %%rcx,   (%0) ;"
-  "adcq  8(%1),  %%r8 ;"	"movq  %%r8,  8(%0) ;"
-  "adcq 16(%1),  %%r9 ;"	"movq  %%r9, 16(%0) ;"
-  "adcq 24(%1), %%r10 ;"	"movq %%r10, 24(%0) ;"
-  "adcq 32(%1), %%r11 ;"	"movq %%r11, 32(%0) ;"
-  "adcq 40(%1), %%r12 ;"	"movq %%r12, 40(%0) ;"
-  "adcq 48(%1), %%r13 ;"	"movq %%r13, 48(%0) ;"
-  "adcq  %%rdx, %%r14 ;"
+     "addq  0(%0),%%r10;"
+     "adcq  8(%0),%%r11;"
+     "adcq 16(%0),%%r12;"
+     "adcq 24(%0),%%r13;"
+     "adcq 32(%0),%%r15;"
+     "adcq 40(%0), %%r8;"
+     "adcq 48(%0), %%r9;"
+     "adcq     $0,%%r14;"
 
-  // (c10c9, c9c8,c8c7,c7c13,c13c12,c12c11,c11c10) + (c6,...,c0)
-  "movq  80(%1), %%r10 ;"  "movq %%r10, %%rax ;"
-  "movq  88(%1), %%r11 ;"  "shrdq $32, %%r11, %%r10 ;"
-  "movq  96(%1), %%r12 ;"  "shrdq $32, %%r12, %%r11 ;"
-  "movq 104(%1), %%r13 ;"  "shrdq $32, %%r13, %%r12 ;"
-  "movq  56(%1), %%rcx ;"  "shrdq $32, %%rcx, %%r13 ;"
-  "movq  64(%1),  %%r8 ;"  "shrdq $32,  %%r8, %%rcx ;"
-  "movq  72(%1),  %%r9 ;"  "shrdq $32,  %%r9,  %%r8 ;"
-  /*********************/  "shrdq $32, %%rax,  %%r9 ;"
+     /**
+      * ( c7) + (c6,...,c0)
+      * (r14)
+      */
+     "movq %%r14,%%rax; shlq $32,%%rax;"
+     "addq %%r14,%%r10; movq  $0,%%r14;"
+     "adcq    $0,%%r11;"
+     "adcq    $0,%%r12;"
+     "adcq %%rax,%%r13;"
+     "adcq    $0,%%r15;"
+     "adcq    $0, %%r8;"
+     "adcq    $0, %%r9;"
+     "adcq    $0,%%r14;"
 
-  "xorl  %%edx, %%edx ;"
-  "addq   (%0), %%r10 ;"	"movq %%r10,   (%0) ;"
-  "adcq  8(%0), %%r11 ;"	"movq %%r11,  8(%0) ;"
-  "adcq 16(%0), %%r12 ;"	"movq %%r12, 16(%0) ;"
-  "adcq 24(%0), %%r13 ;"	"movq %%r13, 24(%0) ;"
-  "adcq 32(%0), %%rcx ;"	"movq %%rcx, 32(%0) ;"
-  "adcq 40(%0),  %%r8 ;"	"movq  %%r8, 40(%0) ;"
-  "adcq 48(%0),  %%r9 ;"	"movq  %%r9, 48(%0) ;"
-  "adcq  %%r14, %%rdx ;"
-
-  // (c7 mod p) + (c6,...,c0)
-  "movq %%rdx, %%rcx ;"
-  "xorl %%eax, %%eax ;"
-  "movq %%rax,  %%r8 ;"
-  "movq %%rax,  %%r9 ;"
-  "movq %%rax, %%r11 ;"
-  "movq %%rax, %%r12 ;"
-  "movq %%rax, %%r13 ;"
-  "movq %%rax, %%r14 ;"
-  "movq %%rdx, %%r10 ;"
-  "shlq   $32, %%r10 ;"
-
-  "addq   (%0), %%rcx ;"
-  "adcq  8(%0),  %%r8 ;"   "movq  %%r8,  8(%0) ;"
-  "adcq 16(%0),  %%r9 ;"   "movq  %%r9, 16(%0) ;"
-  "adcq 24(%0), %%r10 ;"
-  "adcq 32(%0), %%r11 ;"   "movq %%r11, 32(%0) ;"
-  "adcq 40(%0), %%r12 ;"   "movq %%r12, 40(%0) ;"
-  "adcq 48(%0), %%r13 ;"   "movq %%r13, 48(%0) ;"
-  "adcq  %%r14, %%r14 ;"
-
-  "addq  %%r14, %%rcx ;"   "movq %%rcx,   (%0) ;"
-  "shlq    $32, %%r14 ;"
-  "addq  %%r14, %%r10 ;"   "movq %%r10, 24(%0) ;"
-  :
-  : "r" (c), "r" (a)
-  : "memory", "cc", "%rax", "%rcx", "%rdx", "%r8",
-  "%r9", "%r10", "%r11", "%r12", "%r13", "%r14"
-  );
-}
-
-DECL(void, reduce_mulq)(argElement_1w c, argElement_1w a) {
-  __asm__ __volatile__ (
-    /* (2C13, 2C12, 2C11, 2C10|C10, C9, C8, C7) + (C6,...,C0) */
-    "movq 80(%1),%%r10;"
-    "movq %%r10,%%rax;"
-    "movq $0xffffffff00000000, %%r15;"
-    "andq %%r15,%%rax;"
-
-    "xorl %%r14d,%%r14d;"
-    "movq 104(%1),%%r13;"  "shldq $1,%%r13,%%r14;"
-    "movq  96(%1),%%r12;"  "shldq $1,%%r12,%%r13;"
-    "movq  88(%1),%%r11;"  "shldq $1,%%r11,%%r12;"
-    /*******************/  "shldq $1,%%rax,%%r11;"
-    /*******************/  "shlq  $1,%%rax;"
-
-    "movq $0xffffffff,%%r15;"
-    "andq %%r15,%%r10;"
-    "orq  %%rax,%%r10;"
-
-    "movq 56(%1),%%r15;"
-    "movq 64(%1), %%r8;"
-    "movq 72(%1), %%r9;"
-
-    "xorl %%edx,%%edx;"
-    "addq  0(%1),%%r15;"  "movq %%r15, 0(%0);"
-    "adcq  8(%1), %%r8;"  "movq  %%r8, 8(%0);"
-    "adcq 16(%1), %%r9;"  "movq  %%r9,16(%0);"
-    "adcq 24(%1),%%r10;"  "movq %%r10,24(%0);"
-    "adcq 32(%1),%%r11;"  "movq %%r11,32(%0);"
-    "adcq 40(%1),%%r12;"  "movq %%r12,40(%0);"
-    "adcq 48(%1),%%r13;"  "movq %%r13,48(%0);"
-    "adcq  %%rdx,%%r14;"
-
-    /* (c10c9, c9c8,c8c7,c7c13,c13c12,c12c11,c11c10) + (c6,...,c0) */
-    "movq  80(%1),%%r10;"  "movq %%r10, %%rax;"
-    "movq  88(%1),%%r11;"  "shrdq $32,%%r11,%%r10;"
-    "movq  96(%1),%%r12;"  "shrdq $32,%%r12,%%r11;"
-    "movq 104(%1),%%r13;"  "shrdq $32,%%r13,%%r12;"
-    "movq  56(%1),%%r15;"  "shrdq $32,%%r15,%%r13;"
-    "movq  64(%1), %%r8;"  "shrdq $32, %%r8,%%r15;"
-    "movq  72(%1), %%r9;"  "shrdq $32, %%r9, %%r8;"
-    /*******************/  "shrdq $32,%%rax, %%r9;"
-
-    "xorl %%edx,%%edx;"
-    "addq  0(%0),%%r10;"	"movq %%r10, 0(%0);"
-    "adcq  8(%0),%%r11;"	"movq %%r11, 8(%0);"
-    "adcq 16(%0),%%r12;"	"movq %%r12,16(%0);"
-    "adcq 24(%0),%%r13;"	"movq %%r13,24(%0);"
-    "adcq 32(%0),%%r15;"	"movq %%r15,32(%0);"
-    "adcq 40(%0), %%r8;"	"movq  %%r8,40(%0);"
-    "adcq 48(%0), %%r9;"	"movq  %%r9,48(%0);"
-    "adcq  %%r14,%%rdx;"
-
-    /* (c7 mod p) + (c6,...,c0) */  \
-    "movq %%rdx,%%r15;"
-    "xorl %%eax,%%eax;"
-    "movq %%rax, %%r8;"
-    "movq %%rax, %%r9;"
-    "movq %%rax,%%r11;"
-    "movq %%rax,%%r12;"
-    "movq %%rax,%%r13;"
-    "movq %%rax,%%r14;"
-    "movq %%rdx,%%r10;"
-    "shlq $32,%%r10;"
-
-    "addq  0(%0),%%r15;"
-    "adcq  8(%0), %%r8;"   "movq  %%r8, 8(%0);"
-    "adcq 16(%0), %%r9;"   "movq  %%r9,16(%0);"
-    "adcq 24(%0),%%r10;"
-    "adcq 32(%0),%%r11;"   "movq %%r11,32(%0);"
-    "adcq 40(%0),%%r12;"   "movq %%r12,40(%0);"
-    "adcq 48(%0),%%r13;"   "movq %%r13,48(%0);"
-    "adcq  %%r14,%%r14;"
-
-    "addq %%r14,%%r15;" "movq %%r15, 0(%0);"
-    "shlq  $32,%%r14;"
-    "addq %%r14,%%r10;" "movq %%r10,24(%0);"
-  :
-  : "r" (c), "r" (a)
-  : "memory", "cc", "%rax", "%rdx", "%r8",
-      "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "%r15"
-  );
+     "movq %%r14,%%rax; shlq $32,%%rax;"
+     "addq %%r14,%%r10; movq %%r10, 0(%0);"
+     "adcq    $0,%%r11; movq %%r11, 8(%0);"
+     "adcq    $0,%%r12; movq %%r12,16(%0);"
+     "adcq %%rax,%%r13; movq %%r13,24(%0);"
+     "adcq    $0,%%r15; movq %%r15,32(%0);"
+     "adcq    $0, %%r8; movq  %%r8,40(%0);"
+     "adcq    $0, %%r9; movq  %%r9,48(%0);"
+     :
+     : "r"(c), "r"(a)
+     : "memory", "cc", "%rax", "%r8", "%r9", "%r10", "%r11", "%r12", "%r13",
+       "%r14", "%r15");
 }
 
 DECL(void, reduce)(argElement_1w c, argElement_1w a) {
-#ifdef __BMI2__
 #ifdef __ADX__
-  FN(reduce_mulxadx)(c,a);
+  FN(reduce_adx)(c,a);
 #else /* No __ADX__ */
-  FN(reduce_mulx)(c, a);
-#endif
-#else /* No __BMI2__ */
-  FN(reduce_mulq)(c,a);
+  FN(reduce_leg)(c,a);
 #endif
 }
 
@@ -971,30 +874,21 @@ DECL(void, intsqr2)(argElement_1w c, argElement_1w a) {
 #endif
 }
 
-DECL(void, reduce2_mulxadx)(argElement_1w c, argElement_1w a) {
-  FN(reduce_mulxadx)(c,a);
-  FN(reduce_mulxadx)(c+2*SIZE_FP448,a+SIZE_FP448);
+DECL(void, reduce2_adx)(argElement_1w c, argElement_1w a) {
+  FN(reduce_adx)(c,a);
+  FN(reduce_adx)(c+2*SIZE_FP448,a+SIZE_FP448);
 }
 
-DECL(void, reduce2_mulx)(argElement_1w c, argElement_1w a){
-  FN(reduce_mulx)(c,a);
-  FN(reduce_mulx)(c+2*SIZE_FP448,a+SIZE_FP448);
-}
-
-DECL(void, reduce2_mulq)(argElement_1w c, argElement_1w a) {
-  FN(reduce_mulq)(c,a);
-  FN(reduce_mulq)(c+2*SIZE_FP448,a+SIZE_FP448);
+DECL(void, reduce2_leg)(argElement_1w c, argElement_1w a) {
+  FN(reduce_leg)(c,a);
+  FN(reduce_leg)(c+2*SIZE_FP448,a+SIZE_FP448);
 }
 
 DECL(void, reduce2)(argElement_1w c, argElement_1w a) {
-#ifdef __BMI2__
 #ifdef __ADX__
-  FN(reduce2_mulxadx)(c,a);
+  FN(reduce2_adx)(c,a);
 #else /* No __ADX__ */
-  FN(reduce2_mulx)(c, a);
-#endif
-#else /* No __BMI2__ */
-  FN(reduce2_mulq)(c,a);
+  FN(reduce2_leg)(c,a);
 #endif
 }
 
@@ -1003,7 +897,7 @@ DECL(void, add_adx)(argElement_1w c, argElement_1w a, argElement_1w b) {
   "xorl %%eax, %%eax ;"
   "movq $0x100000000, %%rdx ;"
 
-  "movq   (%2),  %%r8 ;"
+  "movq  0(%2),  %%r8 ;"
   "movq  8(%2),  %%r9 ;"
   "movq 16(%2), %%r10 ;"
   "movq 24(%2), %%r11 ;"
@@ -1011,7 +905,7 @@ DECL(void, add_adx)(argElement_1w c, argElement_1w a, argElement_1w b) {
   "movq 40(%2), %%r13 ;"
   "movq 48(%2), %%r14 ;"
 
-  "adcx   (%1),  %%r8 ;"
+  "adcx  0(%1),  %%r8 ;"
   "adcx  8(%1),  %%r9 ;"
   "adcx 16(%1), %%r10 ;"
   "adcx 24(%1), %%r11 ;"
@@ -1039,7 +933,7 @@ DECL(void, add_adx)(argElement_1w c, argElement_1w a, argElement_1w b) {
   "adcx  %%rax, %%r13 ;"
   "adcx  %%rax, %%r14 ;"
 
-  "movq  %%r8,   (%0) ;"
+  "movq  %%r8,  0(%0) ;"
   "movq  %%r9,  8(%0) ;"
   "movq %%r10, 16(%0) ;"
   "movq %%r11, 24(%0) ;"
@@ -1202,110 +1096,103 @@ DECL(void, invsqrt)(argElement_1w c, argElement_1w a, const int only_inverse) {
   }
 }
 
-DECL(void, inv)(argElement_1w c, argElement_1w a) {
-  FN(invsqrt)(c,a,1);
-}
+DECL(void, inv)(argElement_1w c, argElement_1w a) { FN(invsqrt)(c, a, 1); }
 
-DECL(void, srt)(argElement_1w c, argElement_1w a) {
-  FN(invsqrt)(c,a,0);
-}
+DECL(void, srt)(argElement_1w c, argElement_1w a) { FN(invsqrt)(c, a, 0); }
 
 DECL(void, mula24_mulx)(argElement_1w c, argElement_1w a) {
   const uint64_t a24 = 39082;
   __asm__ __volatile__(
-    "movq %2, %%rdx;"
-    "mulxq  0(%1),  %%r8, %%r9;"
-    "mulxq  8(%1), %%rax,%%r10;"  "addq %%rax, %%r9;"
-    "mulxq 16(%1), %%rax,%%r11;"  "adcq %%rax,%%r10;"
-    "mulxq 24(%1), %%rax,%%r12;"  "adcq %%rax,%%r11;"
-    "mulxq 32(%1), %%rax,%%r13;"  "adcq %%rax,%%r12;"
-    "mulxq 40(%1), %%rax,%%r14;"  "adcq %%rax,%%r13;"
-    "mulxq 48(%1), %%rax,%%rdx;"  "adcq %%rax,%%r14;"
-    /**************************/  "adcq $0, %%rdx;"
-    "movq %%rdx, %%rax;"
-    "shlq $32, %%rax;"
-    "addq %%rdx, %%r8;"
-    "movq $0,%%rdx;"
-    "adcq $0, %%r9;"
-    "adcq $0,%%r10;"
-    "adcq %%rax,%%r11;"
-    "adcq $0,%%r12;"
-    "adcq $0,%%r13;"
-    "adcq $0,%%r14;"
-    "adcq $0,%%rdx;"
-    "movq %%rdx,%%rax;"
-    "shlq $32, %%rax;"
-    "addq %%rdx,%%r8;"
-    "adcq $0, %%r9;"
-    "adcq $0,%%r10;"
-    "adcq %%rax,%%r11;"
-    "adcq $0,%%r12;"
-    "adcq $0,%%r13;"
-    "adcq $0,%%r14;"
-    "movq  %%r8,  0(%0);"
-    "movq  %%r9,  8(%0);"
-    "movq %%r10, 16(%0);"
-    "movq %%r11, 24(%0);"
-    "movq %%r12, 32(%0);"
-    "movq %%r13, 40(%0);"
-    "movq %%r14, 48(%0);"
-  :
-  : "r" (c), "r" (a), "r" (a24)
-  : "cc", "%rax", "%rdx", "%r8", "%r9",
-    "%r10", "%r11", "%r12", "%r13", "%r14"
-  );
+      "movq %2, %%rdx;"
+      "mulx  0(%1), %%rcx,  %%r8;"
+      "mulx  8(%1), %%rax,  %%r9; addq %%rax,  %%r8;"
+      "mulx 16(%1), %%rax, %%r10; adcq %%rax,  %%r9;"
+      "mulx 24(%1), %%rax, %%r11; adcq %%rax, %%r10;"
+      "mulx 32(%1), %%rax, %%r12; adcq %%rax, %%r11;"
+      "mulx 40(%1), %%rax, %%r13; adcq %%rax, %%r12;"
+      "mulx 48(%1), %%rax, %%rdx; adcq %%rax, %%r13;"
+      "adcq     $0, %%rdx;"
+
+      /**
+       * ( c7) + (c6,...,c0)
+       * (rdx)
+       */
+      "movq %%rdx,%%rax; shlq $32,%%rax;"
+      "addq %%rdx,%%rcx; movq  $0,%%rdx;"
+      "adcq    $0, %%r8;"
+      "adcq    $0, %%r9;"
+      "adcq %%rax,%%r10;"
+      "adcq    $0,%%r11;"
+      "adcq    $0,%%r12;"
+      "adcq    $0,%%r13;"
+      "adcq    $0,%%rdx;"
+
+      "movq %%rdx,%%rax; shlq $32,%%rax;"
+      "addq %%rdx,%%rcx; movq %%rcx, 0(%0);"
+      "adcq    $0, %%r8; movq  %%r8, 8(%0);"
+      "adcq    $0, %%r9; movq  %%r9,16(%0);"
+      "adcq %%rax,%%r10; movq %%r10,24(%0);"
+      "adcq    $0,%%r11; movq %%r11,32(%0);"
+      "adcq    $0,%%r12; movq %%r12,40(%0);"
+      "adcq    $0,%%r13; movq %%r13,48(%0);"
+      :
+      : "r"(c), "r"(a), "r"(a24)
+      : "cc", "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11", "%r12",
+        "%r13", "%r15");
 }
 
 DECL(void, mula24_mulq)(argElement_1w c, argElement_1w a) {
   const uint64_t a24 = 39082;
   __asm__ __volatile__(
-    "movq %2, %%r15;"
-    "movq  0(%1), %%rax;"  "mulq %%r15;" "movq %%rax,  %%r8;" /***************/  "movq %%rdx,  %%r9;"
-    "movq  8(%1), %%rax;"  "mulq %%r15;" "addq %%rax,  %%r9;" "adcq $0, %%rdx;"  "movq %%rdx, %%r10;"
-    "movq 16(%1), %%rax;"  "mulq %%r15;" "addq %%rax, %%r10;" "adcq $0, %%rdx;"  "movq %%rdx, %%r11;"
-    "movq 24(%1), %%rax;"  "mulq %%r15;" "addq %%rax, %%r11;" "adcq $0, %%rdx;"  "movq %%rdx, %%r12;"
-    "movq 32(%1), %%rax;"  "mulq %%r15;" "addq %%rax, %%r12;" "adcq $0, %%rdx;"  "movq %%rdx, %%r13;"
-    "movq 40(%1), %%rax;"  "mulq %%r15;" "addq %%rax, %%r13;" "adcq $0, %%rdx;"  "movq %%rdx, %%r14;"
-    "movq 48(%1), %%rax;"  "mulq %%r15;" "addq %%rax, %%r14;" "adcq $0, %%rdx;"
-    "movq %%rdx,  %%rax;"
-    "shlq $32, %%rax;"
-    "addq %%rdx, %%r8;"
-    "movq $0, %%rdx;"
-    "adcq $0,  %%r9;"
-    "adcq $0, %%r10;"
-    "adcq %%rax, %%r11;"
-    "adcq $0, %%r12;"
-    "adcq $0, %%r13;"
-    "adcq $0, %%r14;"
-    "adcq $0, %%rdx;"
-    "movq %%rdx, %%rax;"
-    "shlq $32, %%rax;"
-    "addq %%rdx, %%r8;"
-    "adcq $0,  %%r9;"
-    "adcq $0, %%r10;"
-    "adcq %%rax, %%r11;"
-    "adcq $0, %%r12;"
-    "adcq $0, %%r13;"
-    "adcq $0, %%r14;"
-    "movq  %%r8,  0(%0);"
-    "movq  %%r9,  8(%0);"
-    "movq %%r10, 16(%0);"
-    "movq %%r11, 24(%0);"
-    "movq %%r12, 32(%0);"
-    "movq %%r13, 40(%0);"
-    "movq %%r14, 48(%0);"
-  :
-  : "r" (c), "r" (a), "r" (a24)
-  : "cc", "%rax", "%rdx", "%r8", "%r9",
-      "%r10", "%r11", "%r12", "%r13", "%r14", "%r15"
-  );
+      "movq %2, %%r15;"
+      "movq  0(%1),%%rax; mulq %%r15;"
+      "movq %%rax, %%rcx;                movq %%rdx,  %%r8;"
+      "movq  8(%1),%%rax; mulq %%r15;"
+      "addq %%rax,  %%r8; adcq $0,%%rdx; movq %%rdx,  %%r9;"
+      "movq 16(%1),%%rax; mulq %%r15;"
+      "addq %%rax,  %%r9; adcq $0,%%rdx; movq %%rdx, %%r10;"
+      "movq 24(%1),%%rax; mulq %%r15;"
+      "addq %%rax, %%r10; adcq $0,%%rdx; movq %%rdx, %%r11;"
+      "movq 32(%1),%%rax; mulq %%r15;"
+      "addq %%rax, %%r11; adcq $0,%%rdx; movq %%rdx, %%r12;"
+      "movq 40(%1),%%rax; mulq %%r15;"
+      "addq %%rax, %%r12; adcq $0,%%rdx; movq %%rdx, %%r13;"
+      "movq 48(%1),%%rax; mulq %%r15;"
+      "addq %%rax, %%r13; adcq $0,%%rdx;"
+
+      /**
+       * ( c7) + (c6,...,c0)
+       * (rdx)
+       */
+      "movq %%rdx,%%rax; shlq $32,%%rax;"
+      "addq %%rdx,%%rcx; movq  $0,%%rdx;"
+      "adcq    $0, %%r8;"
+      "adcq    $0, %%r9;"
+      "adcq %%rax,%%r10;"
+      "adcq    $0,%%r11;"
+      "adcq    $0,%%r12;"
+      "adcq    $0,%%r13;"
+      "adcq    $0,%%rdx;"
+
+      "movq %%rdx,%%rax; shlq $32,%%rax;"
+      "addq %%rdx,%%rcx; movq %%rcx, 0(%0);"
+      "adcq    $0, %%r8; movq  %%r8, 8(%0);"
+      "adcq    $0, %%r9; movq  %%r9,16(%0);"
+      "adcq %%rax,%%r10; movq %%r10,24(%0);"
+      "adcq    $0,%%r11; movq %%r11,32(%0);"
+      "adcq    $0,%%r12; movq %%r12,40(%0);"
+      "adcq    $0,%%r13; movq %%r13,48(%0);"
+      :
+      : "r"(c), "r"(a), "r"(a24)
+      : "cc", "%rax", "%rcx", "%rdx", "%r8", "%r9", "%r10", "%r11", "%r12",
+        "%r13", "%r15");
 }
 
 DECL(void, mula24)(argElement_1w c, argElement_1w a) {
 #ifdef __BMI2__
   FN(mula24_mulx)(c, a);
 #else /* Without BMI2 */
-  FN(mula24_mulq)(c,a);
+  FN(mula24_mulq)(c, a);
 #endif
 }
 
