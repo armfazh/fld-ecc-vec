@@ -1,0 +1,45 @@
+name: OnCICI
+
+on: [push]
+
+jobs:
+  build:
+    name: Benchmarking
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [ [gcc,g++], [clang,clang++] ]
+    steps:
+    - uses: actions/checkout@master
+    - name: Building
+      env:
+        CC: ${{ matrix.compiler[0] }}
+        CXX: ${{ matrix.compiler[1] }}
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make gbench
+    - name: Benchmarking
+      run: |
+        cd build
+        bin/bench | tee timings_${{ matrix.compiler[0] }}.txt
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Timings
+        path: build/timings_${{ matrix.compiler[0] }}.txt
+  test:
+    name: Testing
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Building
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make tests
+    - name: Testing
+      run: |
+        cd build
+        bin/tests
