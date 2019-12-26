@@ -10,7 +10,7 @@ jobs:
       matrix:
         compiler: [ [gcc,g++], [clang,clang++] ]
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
     - name: Building
       env:
         CC: ${{ matrix.compiler[0] }}
@@ -19,7 +19,7 @@ jobs:
         mkdir build
         cd build
         cmake ..
-        make gbench
+        make bench
     - name: Benchmarking
       run: |
         cd build
@@ -32,7 +32,7 @@ jobs:
     name: Testing
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
     - name: Building
       run: |
         mkdir build
