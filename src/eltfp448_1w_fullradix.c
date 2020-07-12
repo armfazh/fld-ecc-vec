@@ -114,10 +114,51 @@ DECL(void, sub)(argElement_1w c, argElement_1w a, argElement_1w b) {
   );
 }
 
+DECL(void, cmov)(int bit, argElement_1w c, argElement_1w a, argElement_1w b) {
+  __asm__ __volatile__(
+  "test       %3,     %3 ;"
+  "movq    0(%1),  %%rax ;"
+  "cmovnz  0(%2),  %%rax ;"
+  "movq    %%rax,  0(%0) ;"
+
+  "movq    8(%1),  %%rax ;"
+  "cmovnz  8(%2),  %%rax ;"
+  "movq    %%rax,  8(%0) ;"
+
+  "movq   16(%1),  %%rax ;"
+  "cmovnz 16(%2),  %%rax ;"
+  "movq    %%rax, 16(%0) ;"
+
+  "movq   24(%1),  %%rax ;"
+  "cmovnz 24(%2),  %%rax ;"
+  "movq    %%rax, 24(%0) ;"
+
+  "movq   32(%1),  %%rax ;"
+  "cmovnz 32(%2),  %%rax ;"
+  "movq    %%rax, 32(%0) ;"
+
+  "movq   40(%1),  %%rax ;"
+  "cmovnz 40(%2),  %%rax ;"
+  "movq    %%rax, 40(%0) ;"
+
+  "movq   48(%1),  %%rax ;"
+  "cmovnz 48(%2),  %%rax ;"
+  "movq    %%rax, 48(%0) ;"
+  :
+  : "r" (c), "r" (a), "r" (b), "r" (bit)
+  : "memory", "cc", "%rax"
+  );
+}
+
 DECL(void, modp)(argElement_1w c) {
   EltFp448_1w_fullradix p;
   FN(prime)(p);
   FN(sub)(c, c, p);
+}
+
+DECL(int, sgn)(argElement_1w c) {
+  FN(modp)(c);
+  return c[0]&0x1;
 }
 
 DECL(void, ser)(uint8_t *buffer, argElement_1w c) {

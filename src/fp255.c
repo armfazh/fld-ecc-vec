@@ -22,12 +22,12 @@
 #include "simd_avx2.h"
 
 #ifdef __cplusplus
-namespace faz{
-  namespace fp255{
+namespace faz {
+namespace fp255 {
 extern "C" {
 #endif /* __cplusplus */
 
-#define SUFFIX(NAME, OPER, IMPL) NAME ## _Fp ## 255 ## _ ## OPER ## w_ ## IMPL
+#define SUFFIX(NAME, OPER, IMPL) NAME##_Fp##255##_##OPER##w_##IMPL
 
 #include "eltfp25519_1w_fullradix.c"
 #include "eltfp25519_1w_redradix.c"
@@ -41,12 +41,14 @@ const PrimeField Fp25519 = {
             .inv = SUFFIX(inv, 1, fullradix),
             .mul = SUFFIX(mul, 1, fullradix),
             .neg = SUFFIX(neg, 1, fullradix),
+            .sgn = SUFFIX(sgn, 1, fullradix),
             .sqr = SUFFIX(sqr, 1, fullradix),
             .srt = SUFFIX(srt, 1, fullradix),
             .sub = SUFFIX(sub, 1, fullradix),
             .prime = SUFFIX(prime,  1, fullradix),
             .misc = {
                 .alloc = SUFFIX(alloc,  1, fullradix),
+                .cmov  = SUFFIX(cmov ,  1, fullradix),
                 .cmp   = SUFFIX(cmp  ,  1, fullradix),
                 .copy  = SUFFIX(copy ,  1, fullradix),
                 .free  = deallocate_bytes,
@@ -157,7 +159,6 @@ const PrimeField Fp25519 = {
         },
     },
 };
-
 
 #undef SUFFIX
 #undef INTERNAL
