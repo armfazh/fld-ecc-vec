@@ -1,4 +1,5 @@
 #include "bench.h"
+
 #include <cpu_caps.h>
 #include <stdio.h>
 
@@ -11,8 +12,10 @@ int main(void) {
   printf("==== Start of Benchmarking  ====\n");
   machine_info();
 
-  bench_hash();
+  bench_third_party();
+
   bench_fp25519();
+  bench_h2c25519();
   bench_x25519();
   bench_ed25519();
 

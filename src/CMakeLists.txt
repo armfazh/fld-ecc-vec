@@ -3,7 +3,6 @@ enable_language(C)
 include_directories(../include)
 include_directories(../third_party)
 
-add_definitions(-DED255)
 add_library(${TARGET}_shared SHARED
         target.c
 #        f.c
@@ -29,5 +28,6 @@ install(FILES
         ../include/faz_fp_avx2.h
         ../include/faz_ecdh_avx2.h
         ../include/faz_eddsa_avx2.h
+        ../include/faz_hash_avx2.h
         DESTINATION "include"
         )

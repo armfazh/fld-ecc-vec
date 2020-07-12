@@ -72,11 +72,13 @@ typedef ALIGN __m256i EltFp448_4w_redradix[NUM_DIGITS_FP448];
 
 #define Oper0Retr(NAME, TYPE) TYPE (*NAME)(void)
 #define Oper1Void(NAME, TYPE) void (*NAME)(TYPE C)
+#define Oper1Reti(NAME, TYPE) int  (*NAME)(TYPE C)
 #define Oper1File(NAME, TYPE) void (*NAME)(FILE* file, TYPE A)
 #define Oper1ToBy(NAME, TYPE) void (*NAME)(uint8_t * C, TYPE A)
 #define Oper1FrBy(NAME, TYPE) void (*NAME)(TYPE C, uint8_t * A)
 #define Oper2Void(NAME, TYPE) void (*NAME)(TYPE C, TYPE A)
-#define Oper2Retr(NAME, TYPE) int  (*NAME)(TYPE C, TYPE A)
+#define Oper2Reti(NAME, TYPE) int  (*NAME)(TYPE C, TYPE A)
+#define Oper2Retr(NAME, TYPE) void (*NAME)(int b, TYPE C, TYPE A, TYPE B)
 #define Oper3Void(NAME, TYPE) void (*NAME)(TYPE C, TYPE A, TYPE B)
 #define Oper3Vari(NAME, RET, TYPE0, TYPE1, TYPE2) RET (*NAME)(TYPE0 C, TYPE1 A, TYPE2 B)
 #define Oper4Void(NAME, TYPE) void (*NAME)(TYPE C, TYPE D, TYPE A, TYPE B)
@@ -85,7 +87,8 @@ typedef ALIGN __m256i EltFp448_4w_redradix[NUM_DIGITS_FP448];
 typedef struct               \
   _struct_misc ## N ## w {   \
     Oper0Retr(alloc, TYPE);  \
-    Oper2Retr(cmp  , TYPE);  \
+    Oper2Retr(cmov , TYPE);  \
+    Oper2Reti(cmp  , TYPE);  \
     Oper2Void(copy , TYPE);  \
     Oper1Void(free , void*); \
     Oper1File(print, TYPE);  \
@@ -104,6 +107,7 @@ typedef struct _struct_1w {
   Oper2Void(inv, argElement_1w);
   Oper3Void(mul, argElement_1w);
   Oper1Void(neg, argElement_1w);
+  Oper1Reti(sgn, argElement_1w);
   Oper1Void(sqr, argElement_1w);
   Oper2Void(srt, argElement_1w);
   Oper3Void(sub, argElement_1w);
@@ -194,7 +198,7 @@ typedef struct _struct_4w_redradix {
 #undef Oper1ToBy
 #undef Oper1FrBy
 #undef Oper2Void
-#undef Oper2Retr
+#undef Oper2Reti
 #undef Oper3Void
 
 typedef struct _struct_Fp_Arith {

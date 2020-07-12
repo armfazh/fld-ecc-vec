@@ -13,3 +13,7 @@ target_link_libraries(example_ecdh ${TARGET}_static)
 add_executable(example_eddsa eddsa.c)
 add_dependencies(example_eddsa ${TARGET}_static)
 target_link_libraries(example_eddsa ${TARGET}_static)
+
+add_executable(example_hash hash.c)
+add_dependencies(example_hash ${TARGET}_static)
+target_link_libraries(example_hash ${TARGET}_static)

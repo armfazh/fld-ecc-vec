@@ -7,6 +7,7 @@ add_executable(bench
         clocks.h
         clocks.c
         bench_fp.c
+        bench_third_party.c
         bench_hash.c
         bench_ecdh.c
         bench_eddsa.c

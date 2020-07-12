@@ -19,16 +19,21 @@
 /*!
  * \mainpage faz_ecc_avx2 - Project Documentation
 
-faz_ecc_avx2 is an optimized and secure software library for computing Edwards Digital Signature Algorithm (EdDSA) and the Diffie-Hellman functions X25519 and X448. This library was specially accelerated with the Intel Advanced Vector eXtensions version 2 (AVX2).
+faz_ecc_avx2 is an optimized and secure software library for computing Edwards
+Digital Signature Algorithm (EdDSA) and the Diffie-Hellman functions X25519 and
+X448. This library was specially accelerated with the Intel Advanced Vector
+eXtensions version 2 (AVX2).
 
 This library belongs to the research project titled:
-> High Performance Implementation of Elliptic Curve Cryptography using Vector Instructions
-which is authored by:
- - Armando Faz Hernández (armfazh@ic.unicamp.br), University of Campinas, Brazil.
+> High Performance Implementation of Elliptic Curve Cryptography using Vector
+Instructions which is authored by:
+ - Armando Faz Hernández (armfazh@ic.unicamp.br), University of Campinas,
+Brazil.
  - Julio López, University of Campinas, Brazil.
  - Ricardo Dahab, University of Campinas, Brazil.
 
-This research work is part of a paper submission to the ACM Journal of Mathematical Software.
+This research work is part of a paper submission to the ACM Journal of
+Mathematical Software.
 
 Compilation
 ===========
@@ -66,8 +71,10 @@ Getting started
 ===============
 
  - Prime field arithmetic [\link faz_fp_avx2.h faz_fp_avx2.h \endlink]
- - Elliptic curve Diffie-Hellman [\link faz_ecdh_avx2.h faz_ecdh_avx2.h \endlink]
- - Edwards Digital Signature Algorithm [\link faz_eddsa_avx2.h faz_eddsa_avx2.h \endlink]
+ - Elliptic curve Diffie-Hellman [\link faz_ecdh_avx2.h faz_ecdh_avx2.h
+\endlink]
+ - Edwards Digital Signature Algorithm [\link faz_eddsa_avx2.h faz_eddsa_avx2.h
+\endlink]
 
 LICENSE
 ===============
@@ -87,6 +94,8 @@ See the license file [\link ../LICENSE.txt LICENSE.txt \endlink ]
 #include "ed255.c"
 #define DH255 1
 #include "dh255.c"
+#define HASH255 1
+#include "hash255.c"
 
 #define FP448 1
 #include "fp448.c"
