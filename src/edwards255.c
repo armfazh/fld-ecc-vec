@@ -66,6 +66,56 @@ void _1way_doubling_1w_full(PointXYZT_1way_full *P){
 }
 
 /**
+ * Addition law for twisted Edwards curves
+ * Hisil Section 3.1 page 6
+ */
+void _1way_fulladd_1w_full(
+    PointXYZT_1way_full *R,
+    PointXYZT_1way_full *Q,
+    PointXYZT_1way_full *P) {
+	EltFp25519_1w_fullradix A,B,C,D,E,F,G,H;
+	uint64_t * const X1 = Q->X; uint64_t * const X2 = P->X; uint64_t * const X3 = R->X;
+	uint64_t * const Y1 = Q->Y; uint64_t * const Y2 = P->Y; uint64_t * const Y3 = R->Y;
+	uint64_t * const Z1 = Q->Z; uint64_t * const Z2 = P->Z; uint64_t * const Z3 = R->Z;
+	uint64_t * const T1 = Q->T; uint64_t * const T2 = P->T; uint64_t * const T3 = R->T;
+	uint64_t * const addY1X1 = E;
+	uint64_t * const subY1X1 = F;
+	uint64_t * const addY2X2 = G;
+	uint64_t * const subY2X2 = H;
+
+	EltFp25519_1w_fullradix param_2d = {
+			0xebd69b9426b2f159,
+			0x00e0149a8283b156,
+			0x198e80f2eef3d130,
+			0x2406d9dc56dffce7
+	};
+
+    const Arith_1w fp = Fp25519._1w_full.arith;
+
+	fp.add(addY1X1,Y1,X1);     /*  addY1X1 <- Y1+X1 */
+	fp.sub(subY1X1,Y1,X1);     /*  subY1X1 <- Y1-X1 */
+	fp.add(addY2X2,Y2,X2);     /*  addY2X2 <- Y2+X2 */
+	fp.sub(subY2X2,Y2,X2);     /*  subY2X2 <- Y2-X2 */
+
+	fp.mul(A,subY1X1,subY2X2); /*  A <- subY1X1 * subY2X2  */
+	fp.mul(B,addY1X1,addY2X2); /*  B <- addY1X1 * addY2X2  */
+	fp.mul(C,T1,T2);           /*  C <-      T1 * T2       */
+	fp.mul(C,C,param_2d);      /*  C <-      2d * C        */
+	fp.mul(D,Z1,Z2);           /*  D <-      Z1 * Z2       */
+	fp.add(D,D,D);             /*  D <-       2 * D        */
+
+	fp.sub(E,B,A);   /* E <- B - A  */
+	fp.sub(F,D,C);   /* F <- D - C  */
+	fp.add(G,D,C);   /* G <- D + C  */
+	fp.add(H,B,A);   /* H <- B + A  */
+
+	fp.mul(X3,E,F);  /* X <- E * F  */
+	fp.mul(Y3,G,H);  /* Y <- G * H  */
+	fp.mul(Z3,F,G);  /* Z <- F * G  */
+	fp.mul(T3,E,H);  /* T <- E * H  */
+}
+
+/**
  * This version is intended to compute four independent addition points
  * on four pair of points.
  * Taken from Hisil, Wong,Carter,Dawson
