@@ -33,16 +33,9 @@ namespace faz {
 namespace hash {
 #endif /* __cplusplus */
 
-typedef ALIGN struct point_extended_1way_full {
-  EltFp25519_1w_fullradix X;
-  EltFp25519_1w_fullradix Y;
-  EltFp25519_1w_fullradix Z;
-  EltFp25519_1w_fullradix T;
-} Point255;
-
-void h2c25519_x64(Point255 *P, uint8_t *msg, size_t mlen);
-void h2c25519_avx2(Point255 *P, uint8_t *msg, size_t mlen);
-void print_point(FILE *file, Point255 *P);
+void h2c25519_x64(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen);
+void h2c25519_avx2(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen);
+void print_point(FILE *file, PointXYZT_1way_full *P);
 
 #ifdef __cplusplus
 } /* namespace fp */

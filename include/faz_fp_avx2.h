@@ -156,8 +156,10 @@ typedef struct _struct_arithex_2w_redradix {
 typedef struct _struct_2w {
   Oper3Void(add, argElement_2w);
   Oper3Void(mul, argElement_2w);
+  Oper1Void(neg, argElement_2w);
   Oper2Void(ngz, argElement_2w);
   Oper1Void(sqr, argElement_2w);
+  Oper2Void(srt, argElement_2w);
   Oper3Void(sub, argElement_2w);
   const Misc_2w misc;
 } Arith_2w;

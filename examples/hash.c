@@ -5,7 +5,7 @@
 int main(void) {
   uint8_t *message = (uint8_t *)"Keep Calm and Carry On";
   const size_t size_msg = strlen((const char *)message);
-  Point255 P;
+  PointXYZT_1way_full P;
 
   Fp25519._1w_full.arith.misc.zero(P.X);
   Fp25519._1w_full.arith.misc.zero(P.Y);

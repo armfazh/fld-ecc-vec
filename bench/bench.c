@@ -14,7 +14,7 @@ int main(void) {
 
   // bench_third_party();
 
-  // bench_fp25519();
+  bench_fp25519();
   bench_h2c25519();
   // bench_x25519();
   // bench_ed25519();
