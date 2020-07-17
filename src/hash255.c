@@ -30,7 +30,7 @@
 // #include "ecc_1w.c"
 typedef ALIGN uint8_t Digest[512 / 64];
 
-static void hash_to_field(argElement_1w u, uint8_t *msg, size_t mlen) {
+static inline void hash_to_field(argElement_1w u, uint8_t *msg, size_t mlen) {
   Digest h0_msg;
   sph_sha512_context h0;
   sph_sha512_init(&h0);
@@ -39,7 +39,7 @@ static void hash_to_field(argElement_1w u, uint8_t *msg, size_t mlen) {
   Fp25519._1w_full.arith.misc.zero(u);
 }
 
-static void map_to_curve_elligator2_curve25519(argElement_1w xn,
+static inline void elligator2_curve25519(argElement_1w xn,
                                                argElement_1w xd,
                                                argElement_1w yn,
                                                argElement_1w yd,
@@ -112,7 +112,7 @@ static void map_to_curve_elligator2_curve25519(argElement_1w xn,
   fp.misc.copy(yd, one);
 }
 
-static void map_to_curve_elligator2_edwards25519(argElement_1w xn,
+static inline void elligator2_edwards25519(argElement_1w xn,
                                                  argElement_1w xd,
                                                  argElement_1w yn,
                                                  argElement_1w yd,
@@ -129,8 +129,8 @@ static void map_to_curve_elligator2_edwards25519(argElement_1w xn,
 
   EltFp25519_1w_fullradix xMn, xMd, yMn, yMd, tv1;
   int e = 0;
-  // 1.  (xMn, xMd, yMn, yMd) = map_to_curve_elligator2_curve25519(u)
-  map_to_curve_elligator2_curve25519(xMn, xMd, yMn, yMd, u);
+  elligator2_curve25519(xMn, xMd, yMn, yMd, u);
+  // 1.  (xMn, xMd, yMn, yMd) = elligator2_curve25519(u)
   fp.mul(xn, xMn, yMd);           // 2.  xn = xMn * yMd
   fp.mul(xn, xn, c1);             // 3.  xn = xn * c1
   fp.mul(xd, xMd, yMn);           // 4.  xd = xMd * yMn
@@ -144,7 +144,7 @@ static void map_to_curve_elligator2_edwards25519(argElement_1w xn,
   fp.misc.cmov(e, yd, yd, one);   // 12. yd = CMOV(yd, 1, e)
 }
 
-static void map_to_curve_elligator2_curve25519_2w(argElement_2w xn,
+static inline void elligator2_curve25519_2w(argElement_2w xn,
                                                   argElement_2w xd,
                                                   argElement_2w yn,
                                                   argElement_2w yd,
@@ -218,11 +218,11 @@ static void map_to_curve_elligator2_curve25519_2w(argElement_2w xn,
 }
 
 
-static void map_to_curve_elligator2_edwards25519_2w(argElement_2w xn,
-                                                 argElement_2w xd,
-                                                 argElement_2w yn,
-                                                 argElement_2w yd,
-                                                 argElement_2w u) {
+static inline void elligator2_edwards25519_2w(argElement_2w xn,
+                                       argElement_2w xd,
+                                       argElement_2w yn,
+                                       argElement_2w yd,
+                                       argElement_2w u) {
   const Arith_2w fp = Fp25519._2w_red.arith;
   EltFp25519_2w_redradix zero = {0};
   EltFp25519_2w_redradix one = {SET64(1,0,1,0)};
@@ -235,8 +235,8 @@ static void map_to_curve_elligator2_edwards25519_2w(argElement_2w xn,
 
   EltFp25519_2w_redradix xMn, xMd, yMn, yMd, tv1;
   int e = 0;
-  // 1.  (xMn, xMd, yMn, yMd) = map_to_curve_elligator2_curve25519(u)
-  map_to_curve_elligator2_curve25519_2w(xMn, xMd, yMn, yMd, u);
+  elligator2_curve25519_2w(xMn, xMd, yMn, yMd, u);
+  // 1.  (xMn, xMd, yMn, yMd) = elligator2_curve25519(u)
   fp.mul(xn, xMn, yMd);           // 2.  xn = xMn * yMd
   fp.mul(xn, xn, c1);             // 3.  xn = xn * c1
   fp.mul(xd, xMd, yMn);           // 4.  xd = xMd * yMn
@@ -251,47 +251,36 @@ static void map_to_curve_elligator2_edwards25519_2w(argElement_2w xn,
 }
 
 
-static void map_to_curve(PointXYZT_1way_full *P, argElement_1w u) {
+static inline void map_to_curve(PointXYZT_1way_full *P, argElement_1w u) {
   const Arith_1w fp = Fp25519._1w_full.arith;
   EltFp25519_1w_fullradix xn, xd, yn, yd;
-  map_to_curve_elligator2_edwards25519(xn, xd, yn, yd, u);
+  elligator2_edwards25519(xn, xd, yn, yd, u);
   fp.mul(P->X, xn, yd);
   fp.mul(P->Y, yn, xd);
   fp.mul(P->T, xn, yn);
   fp.mul(P->Z, xd, yd);
 }
 
-static void map_to_curve_2w(PointXYZT_2way *P, argElement_2w u0u1) {
+static inline void map_to_curve_2w(PointXYZT_2way *P, argElement_2w u0u1) {
   const Arith_2w fp = Fp25519._2w_red.arith;
   EltFp25519_2w_redradix xn, xd, yn, yd;
-  map_to_curve_elligator2_edwards25519_2w(xn, xd, yn, yd, u0u1);
+  elligator2_edwards25519_2w(xn, xd, yn, yd, u0u1);
   fp.mul(P->X, xn, yd);
   fp.mul(P->Y, yn, xd);
   fp.mul(P->T, xn, yn);
   fp.mul(P->Z, xd, yd);
 }
 
-
 static inline void clear_cofactor(PointXYZT_1way_full *P) {
-  int i = 0;
-
-  for (i = 0; i < 3; i++) {
-      _1way_doubling_1w_full(P);
-  }
+  _1way_doubling_1w_full(P);
+  _1way_doubling_1w_full(P);
+  _1way_doubling_1w_full(P);
 }
 
 static inline void clear_cofactor_2w(PointXYZT_2way *P) {
-  int i = 0;
-
-  for (i = 0; i < 3; i++) {
-    _2way_doubling(P, 1);
-  }
-}
-
-void add_montg_full(PointXYZT_1way_full *R,
-    PointXYZT_1way_full *P,
-    PointXYZT_1way_full *Q) {
-    Fp25519._1w_full.arith.add(R->X,P->X,Q->X);
+  _2way_doubling(P, 1);
+  _2way_doubling(P, 1);
+  _2way_doubling(P, 1);
 }
 
 void h2c25519_x64(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen) {
@@ -304,7 +293,7 @@ void h2c25519_x64(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen) {
   map_to_curve(&Q1, u1);
   clear_cofactor(&Q0);
   clear_cofactor(&Q1);
-  add_montg_full(P,&Q0,&Q1);
+  _1way_fulladd_1w_full(P,&Q0,&Q1);
 }
 
 
@@ -334,8 +323,7 @@ void h2c25519_avx2(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen) {
   Fp25519._1w_red.arith.misc.ser((uint8_t*)P1.Y,Q1.Y);
   Fp25519._1w_red.arith.misc.ser((uint8_t*)P1.T,Q1.T);
   Fp25519._1w_red.arith.misc.ser((uint8_t*)P1.Z,Q1.Z);
-
-  add_montg_full(P,&P0,&P1);
+  _1way_fulladd_1w_full(P,&P0,&P1);
 }
 
 void print_point(FILE *file, PointXYZT_1way_full *P) {
