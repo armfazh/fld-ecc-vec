@@ -17,5 +17,6 @@ void bench_h2c25519() {
   Fp25519._1w_full.arith.misc.zero(P.Z);
 
   long int BENCH = 100;
-  CLOCKS(hash, h2c25519(&P, (uint8_t *)message, size_msg));
+  CLOCKS(hash, h2c25519_x64(&P, (uint8_t *)message, size_msg));
+  CLOCKS(hash, h2c25519_avx2(&P, (uint8_t *)message, size_msg));
 }

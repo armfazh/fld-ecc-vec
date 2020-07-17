@@ -1,5 +1,5 @@
 #include <faz_hash_avx2.h>
-// #include <stdio.h>
+#include <stdio.h>
 #include <string.h>
 
 int main(void) {
@@ -13,8 +13,11 @@ int main(void) {
   Fp25519._1w_full.arith.misc.zero(P.Z);
   printf("m: %s\n", message);
 
-  h2c25519(&P, (uint8_t *)message, size_msg);
+  h2c25519_x64(&P, (uint8_t *)message, size_msg);
+  printf("H(m):\n");
+  print_point(stdout, &P);
 
+  h2c25519_avx2(&P, (uint8_t *)message, size_msg);
   printf("H(m):\n");
   print_point(stdout, &P);
 

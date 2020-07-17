@@ -40,7 +40,8 @@ typedef ALIGN struct point_extended_1way_full {
   EltFp25519_1w_fullradix T;
 } Point255;
 
-void h2c25519(Point255 *P, uint8_t *msg, size_t mlen);
+void h2c25519_x64(Point255 *P, uint8_t *msg, size_t mlen);
+void h2c25519_avx2(Point255 *P, uint8_t *msg, size_t mlen);
 void print_point(FILE *file, Point255 *P);
 
 #ifdef __cplusplus

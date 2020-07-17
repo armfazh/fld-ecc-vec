@@ -209,6 +209,45 @@ static inline void _2way_fulladd(PointXYZT_2way *Q, PointXYZT_2way *P) {
 	Fp25519._2w_red.arithex.compress(Y1);
 }
 
+void _2way_doubling(PointXYZT_2way *P, const int compute_T)
+{
+	__m256i * X1 = P->X;
+	__m256i * Y1 = P->Y;
+	__m256i * Z1 = P->Z;
+	__m256i * T1 = P->T;
+	Element_2w_H0H5 H,G,F,E;
+
+	add_Element_2w_h0h5(T1,X1,Y1);compressfast_Element_2w_h0h5(T1);
+	sqr_Element_2w_h0h5(T1); /*(X1+Y1)^2 */
+	sqr_Element_2w_h0h5(X1); /*A*/
+	sqr_Element_2w_h0h5(Y1); /*B*/
+	sqr_Element_2w_h0h5(Z1); /*C*/
+	add_Element_2w_h0h5(Z1,Z1,Z1);
+
+	compress_Element_2w_h0h5(T1);
+	compress_Element_2w_h0h5(X1);
+	compress_Element_2w_h0h5(Y1);
+	compress_Element_2w_h0h5(Z1);
+
+	naddsub_Element_2w_h0h5(H,G,X1,Y1);
+	add_Element_2w_h0h5(E,T1,H);
+	sub_Element_2w_h0h5(F,G,Z1);
+	compressfast_Element_2w_h0h5(F);
+	compressfast_Element_2w_h0h5(H);
+
+	mul_Element_2w_h0h5(Z1,G,F); /* GF */
+	mul_Element_2w_h0h5(X1,E,F); /* FE */
+	mul_Element_2w_h0h5(Y1,G,H); /* GH */
+	compress_Element_2w_h0h5(X1);
+	compress_Element_2w_h0h5(Y1);
+	compress_Element_2w_h0h5(Z1);
+	if(compute_T)
+	{
+		mul_Element_2w_h0h5(T1, E, H);/* EH */
+		compress_Element_2w_h0h5(T1);
+	}
+}
+
 static const ALIGN uint64_t CONST_2_to_35P_2w[2*NUM_DIGITS_FP25519] = {
     0x1fffff6800000000, 0x0ffffff800000000, 0x1fffff6800000000, 0x0ffffff800000000,
     0x0ffffff800000000, 0x1ffffff800000000, 0x0ffffff800000000, 0x1ffffff800000000,
