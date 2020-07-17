@@ -174,13 +174,30 @@ static inline void clear_cofactor(Point255 *P, Point255 *Q) {
   Fp25519._1w_red.arith.misc.ser((uint8_t *)P->Z, Z);
 }
 
-void h2c25519(Point255 *P, uint8_t *msg, size_t mlen) {
+static inline void clear_cofactor_2w(PointXYTZ_2way *Q) {
+  int i = 0;
+
+  for (i = 0; i < 3; i++) {
+    _2way_doubling(&Q);
+  }
+}
+
+void h2c25519_x64(Point255 *P, uint8_t *msg, size_t mlen) {
   EltFp25519_1w_fullradix u0;
   Point255 Q0;
 
   hash_to_field(u0, msg, mlen);
   map_to_curve(&Q0, u0);
   clear_cofactor(P, &Q0);
+}
+
+void h2c25519_avx2(Point255 *P, uint8_t *msg, size_t mlen) {
+  EltFp25519_1w_fullradix u0;
+  Point255 Q0;
+
+  hash_to_field(u0, msg, mlen);
+  map_to_curve_2w(&Q0, u0);
+  clear_cofactor_2w(&Q0);
 }
 
 void print_point(FILE *file, Point255 *P) {
