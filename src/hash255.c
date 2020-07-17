@@ -224,7 +224,7 @@ static inline void elligator2_edwards25519_2w(argElement_2w xn,
                                        argElement_2w yd,
                                        argElement_2w u) {
   const Arith_2w fp = Fp25519._2w_red.arith;
-  EltFp25519_2w_redradix zero = {0};
+  EltFp25519_2w_redradix zero = {ZERO};
   EltFp25519_2w_redradix one = {SET64(1,0,1,0)};
   EltFp25519_2w_redradix c1 = /*c1 = sqrt(-486664), st sgn(c1)==0. */ {
       SET64(0x4a0ea0b1,0xc4ee1b27,0x4a0ea0b1,0xc4ee1b27),

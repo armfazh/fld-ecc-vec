@@ -60,6 +60,8 @@ static void bench_4w(const Arith_4w *fp) {
   CLOCKS(subtraction, fp->sub(c, c, b));
   CLOCKS(multiplication, fp->mul(c, a, b));
   CLOCKS(squaring, fp->sqr(c));
+  BENCH = BENCH / 10;
+  CLOCKS(square_root, fp->srt(c, a));
 
   fp->misc.free(a);
   fp->misc.free(b);

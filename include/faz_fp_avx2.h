@@ -183,8 +183,10 @@ typedef struct _struct_arithex_4w_redradix {
 typedef struct _struct_4w {
   Oper3Void(add, argElement_4w);
   Oper3Void(mul, argElement_4w);
+  Oper1Void(neg, argElement_4w);
   Oper2Void(ngz, argElement_4w);
   Oper1Void(sqr, argElement_4w);
+  Oper2Void(srt, argElement_4w);
   Oper3Void(sub, argElement_4w);
   const Misc_4w misc;
 } Arith_4w;
