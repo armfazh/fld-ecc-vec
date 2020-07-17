@@ -169,6 +169,20 @@ DECL(void, sub)(argElement_4w  C, argElement_4w  A, argElement_4w  B) {
 	}
 }
 
+DECL(void, neg)(argElement_4w c) {
+	const __m256i _2P[NUM_DIGITS_FP25519] = {
+			SET164(0x7ffffda),	SET164(0x3fffffe),
+			SET164(0x3fffffe),	SET164(0x7fffffe),
+			SET164(0x7fffffe),	SET164(0x3fffffe),
+			SET164(0x3fffffe),	SET164(0x7fffffe),
+			SET164(0x7fffffe),	SET164(0x3fffffe)
+	};
+    int i = 0;
+    for (i = 0; i < NUM_DIGITS_FP25519; i++) {
+  	  c[i] = SUB(_2P[i], c[i]);
+    }
+}
+
 DECL(void, addsub)(argElement_4w  C,argElement_4w  D, argElement_4w  A, argElement_4w  B) {
 	const __m256i _2P[NUM_DIGITS_FP25519] = {
 			SET164(0x7ffffda),	SET164(0x3fffffe),
@@ -677,43 +691,43 @@ DECL(void, new_compressfast2)(argElement_4w C, argElement_4w D) {
 	__m256i c2 = LOAD(C+4);__m256i c7 = LOAD(C+5);             __m256i d2 = LOAD(D+4);__m256i d7 = LOAD(D+5);
 	__m256i c3 = LOAD(C+6);__m256i c8 = LOAD(C+7);             __m256i d3 = LOAD(D+6);__m256i d8 = LOAD(D+7);
 	__m256i c4 = LOAD(C+8);__m256i c9 = LOAD(C+9);             __m256i d4 = LOAD(D+8);__m256i d9 = LOAD(D+9);
-	                                                                                                         
+
 	__m256i l0,l1,l2,l3,l4,l5,l6,l7,l8,l9;                     __m256i _D_l0,_D_l1,_D_l2,_D_l3,_D_l4,_D_l5,_D_l6,_D_l7,_D_l8,_D_l9;
 	__m256i m0,m1,m2,m3,m4,m5,m6,m7,m8,m9;                     __m256i _D_m0,_D_m1,_D_m2,_D_m3,_D_m4,_D_m5,_D_m6,_D_m7,_D_m8,_D_m9;
-	                                                                                                         
-	m0 = SHR(c0, BASE0_FP25519);                                  _D_m0 = SHR(d0, BASE0_FP25519);                     
-	m1 = SHR(c1, BASE1_FP25519);                                  _D_m1 = SHR(d1, BASE1_FP25519);                     
-	m2 = SHR(c2, BASE0_FP25519);                                  _D_m2 = SHR(d2, BASE0_FP25519);                     
-	m3 = SHR(c3, BASE1_FP25519);                                  _D_m3 = SHR(d3, BASE1_FP25519);                     
-	m4 = SHR(c4, BASE0_FP25519);                                  _D_m4 = SHR(d4, BASE0_FP25519);                     
-	m5 = SHR(c5, BASE1_FP25519);                                  _D_m5 = SHR(d5, BASE1_FP25519);                     
-	m6 = SHR(c6, BASE0_FP25519);                                  _D_m6 = SHR(d6, BASE0_FP25519);                     
-	m7 = SHR(c7, BASE1_FP25519);                                  _D_m7 = SHR(d7, BASE1_FP25519);                     
-	m8 = SHR(c8, BASE0_FP25519);                                  _D_m8 = SHR(d8, BASE0_FP25519);                     
-	m9 = SHR(c9, BASE1_FP25519);                                  _D_m9 = SHR(d9, BASE1_FP25519);                     
-	                                                                                                         
-	l0 = AND(c0, mask26);                                      _D_l0 = AND(d0, mask26);                         
-	l1 = AND(c1, mask25);                                      _D_l1 = AND(d1, mask25);                         
-	l2 = AND(c2, mask26);                                      _D_l2 = AND(d2, mask26);                         
-	l3 = AND(c3, mask25);                                      _D_l3 = AND(d3, mask25);                         
-	l4 = AND(c4, mask26);                                      _D_l4 = AND(d4, mask26);                         
-	l5 = AND(c5, mask25);                                      _D_l5 = AND(d5, mask25);                         
-	l6 = AND(c6, mask26);                                      _D_l6 = AND(d6, mask26);                         
-	l7 = AND(c7, mask25);                                      _D_l7 = AND(d7, mask25);                         
-	l8 = AND(c8, mask26);                                      _D_l8 = AND(d8, mask26);                         
-	l9 = AND(c9, mask25);                                      _D_l9 = AND(d9, mask25);                         
-	                                                                                                         
-	c0 = ADD(l0,MUL(m9,times19));                              d0 = ADD(_D_l0,MUL(_D_m9,times19));                 
-	c1 = ADD(l1,m0);                                           d1 = ADD(_D_l1,_D_m0);                              
-	c2 = ADD(l2,m1);                                           d2 = ADD(_D_l2,_D_m1);                              
-	c3 = ADD(l3,m2);                                           d3 = ADD(_D_l3,_D_m2);                              
-	c4 = ADD(l4,m3);                                           d4 = ADD(_D_l4,_D_m3);                              
-	c5 = ADD(l5,m4);                                           d5 = ADD(_D_l5,_D_m4);                              
-	c6 = ADD(l6,m5);                                           d6 = ADD(_D_l6,_D_m5);                              
-	c7 = ADD(l7,m6);                                           d7 = ADD(_D_l7,_D_m6);                              
-	c8 = ADD(l8,m7);                                           d8 = ADD(_D_l8,_D_m7);                              
-	c9 = ADD(l9,m8);                                           d9 = ADD(_D_l9,_D_m8);                              
-	                                                                                                         
+
+	m0 = SHR(c0, BASE0_FP25519);                                  _D_m0 = SHR(d0, BASE0_FP25519);
+	m1 = SHR(c1, BASE1_FP25519);                                  _D_m1 = SHR(d1, BASE1_FP25519);
+	m2 = SHR(c2, BASE0_FP25519);                                  _D_m2 = SHR(d2, BASE0_FP25519);
+	m3 = SHR(c3, BASE1_FP25519);                                  _D_m3 = SHR(d3, BASE1_FP25519);
+	m4 = SHR(c4, BASE0_FP25519);                                  _D_m4 = SHR(d4, BASE0_FP25519);
+	m5 = SHR(c5, BASE1_FP25519);                                  _D_m5 = SHR(d5, BASE1_FP25519);
+	m6 = SHR(c6, BASE0_FP25519);                                  _D_m6 = SHR(d6, BASE0_FP25519);
+	m7 = SHR(c7, BASE1_FP25519);                                  _D_m7 = SHR(d7, BASE1_FP25519);
+	m8 = SHR(c8, BASE0_FP25519);                                  _D_m8 = SHR(d8, BASE0_FP25519);
+	m9 = SHR(c9, BASE1_FP25519);                                  _D_m9 = SHR(d9, BASE1_FP25519);
+
+	l0 = AND(c0, mask26);                                      _D_l0 = AND(d0, mask26);
+	l1 = AND(c1, mask25);                                      _D_l1 = AND(d1, mask25);
+	l2 = AND(c2, mask26);                                      _D_l2 = AND(d2, mask26);
+	l3 = AND(c3, mask25);                                      _D_l3 = AND(d3, mask25);
+	l4 = AND(c4, mask26);                                      _D_l4 = AND(d4, mask26);
+	l5 = AND(c5, mask25);                                      _D_l5 = AND(d5, mask25);
+	l6 = AND(c6, mask26);                                      _D_l6 = AND(d6, mask26);
+	l7 = AND(c7, mask25);                                      _D_l7 = AND(d7, mask25);
+	l8 = AND(c8, mask26);                                      _D_l8 = AND(d8, mask26);
+	l9 = AND(c9, mask25);                                      _D_l9 = AND(d9, mask25);
+
+	c0 = ADD(l0,MUL(m9,times19));                              d0 = ADD(_D_l0,MUL(_D_m9,times19));
+	c1 = ADD(l1,m0);                                           d1 = ADD(_D_l1,_D_m0);
+	c2 = ADD(l2,m1);                                           d2 = ADD(_D_l2,_D_m1);
+	c3 = ADD(l3,m2);                                           d3 = ADD(_D_l3,_D_m2);
+	c4 = ADD(l4,m3);                                           d4 = ADD(_D_l4,_D_m3);
+	c5 = ADD(l5,m4);                                           d5 = ADD(_D_l5,_D_m4);
+	c6 = ADD(l6,m5);                                           d6 = ADD(_D_l6,_D_m5);
+	c7 = ADD(l7,m6);                                           d7 = ADD(_D_l7,_D_m6);
+	c8 = ADD(l8,m7);                                           d8 = ADD(_D_l8,_D_m7);
+	c9 = ADD(l9,m8);                                           d9 = ADD(_D_l9,_D_m8);
+
 	STORE(C+0,c0);	STORE(C+1,c5);                             STORE(D+0,d0);	STORE(D+1,d5);
 	STORE(C+2,c1);	STORE(C+3,c6);                             STORE(D+2,d1);	STORE(D+3,d6);
 	STORE(C+4,c2);	STORE(C+5,c7);                             STORE(D+4,d2);	STORE(D+5,d7);
@@ -731,6 +745,14 @@ DECL(void, mul)(argElement_4w c, argElement_4w a, argElement_4w b) {
 DECL(void, sqr)(argElement_4w c) {
   FN(intsqr)(c);
   FN(compress)(c);
+}
+
+DECL(void, sqrn)(argElement_4w c, const unsigned int times) {
+	unsigned int it;
+	for(it=0;it<times;it++){
+  		FN(intsqr)(c);
+  		FN(compress)(c);
+	}
 }
 
 DECL(void, rand)(argElement_4w a) {
@@ -778,6 +800,94 @@ DECL(void, ser)(uint8_t *buf, argElement_4w a) {
   ser_Fp255_1w_redradix(buf+1*SIZE_FP25519,a1);
   ser_Fp255_1w_redradix(buf+2*SIZE_FP25519,a2);
   ser_Fp255_1w_redradix(buf+3*SIZE_FP25519,a3);
+}
+
+DECL(void, invsqrt)(argElement_4w uv_p38, argElement_4w u, argElement_4w v) {
+  EltFp25519_4w_redradix sqrt_minus_one = {
+	SET164(0x20ea0b0),SET164(0x1fbd7a7),
+	SET164(0x186c9d2),SET164(0x2804c9e),
+	SET164(0x08f189d),SET164(0x1e16569),
+	SET164(0x035697f),SET164(0x004fc1d),
+	SET164(0x0bd0c60),SET164(0x0ae0c92),
+  };
+  EltFp25519_4w_redradix v2, uv, uv3, uv7, x2, x9, sqrt;
+  argElement_4w Tab[4];
+
+  FN(mul)(uv, u, v);     /* uv */
+  FN(copy)(v2, v);
+  FN(sqr)(v2);           /* v^2 */
+  FN(mul)(uv3, uv, v2);  /* uv^3 */
+  FN(sqr)(v2);           /* v^4 */
+  FN(mul)(uv7, uv3, v2); /* uv^7 */
+
+  Tab[0] = x2;
+  Tab[1] = x9;
+  Tab[2] = sqrt;
+  Tab[3] = uv7;
+
+  FN(copy)(Tab[0], uv7);
+  FN(sqr)(Tab[0]);/* x^2 */
+  /* 0 */
+  FN(copy)(Tab[1], Tab[0]);
+  FN(sqrn)(Tab[1], 2);
+  FN(mul)(Tab[1], Tab[1], Tab[3]);
+  /* 1 */
+  FN(mul)(Tab[0], Tab[0], Tab[1]);
+  /* 2 */
+  FN(sqrn)(Tab[0], 1);
+  FN(mul)(Tab[0], Tab[0], Tab[1]);
+  /* 3 */
+  FN(copy)(Tab[1], Tab[0]);
+  FN(sqrn)(Tab[1], 5);
+  FN(mul)(Tab[1], Tab[1], Tab[0]);
+  /* 4 */
+  FN(copy)(Tab[2], Tab[1]);
+  FN(sqrn)(Tab[2], 5);
+  FN(mul)(Tab[2], Tab[2], Tab[0]);
+  /* 5 */
+  FN(copy)(Tab[1], Tab[2]);
+  FN(sqrn)(Tab[1], 15);
+  FN(mul)(Tab[1], Tab[1], Tab[2]);
+  /* 6 */
+  FN(copy)(Tab[2], Tab[1]);
+  FN(sqrn)(Tab[2], 10);
+  FN(sqrn)(Tab[2], 20);
+  FN(mul)(Tab[2], Tab[2], Tab[1]);
+  /* 7 */
+  FN(copy)(Tab[1], Tab[2]);
+  FN(sqrn)(Tab[1], 10);
+  FN(sqrn)(Tab[1], 50);
+  FN(mul)(Tab[1], Tab[1], Tab[2]);
+  /* 8 */
+  FN(sqrn)(Tab[1], 5);
+  FN(mul)(Tab[1], Tab[1], Tab[0]);
+  /* 9 */
+  FN(copy)(Tab[2], Tab[1]);
+  FN(sqrn)(Tab[2], 100);
+  FN(sqrn)(Tab[2], 20);
+  FN(sqrn)(Tab[2], 5);
+  FN(mul)(Tab[2], Tab[2], Tab[1]);
+  /* 10 */
+  FN(sqrn)(Tab[2], 2);
+  FN(mul)(Tab[2], Tab[2], Tab[3]);
+
+  FN(mul)(uv_p38, sqrt, uv3);
+  /**
+   * Checking whether
+   *      v*B^2 == -u
+   **/
+  FN(copy)(uv3, uv_p38);
+  FN(sqr)(uv3);        /*   B^2 */
+  FN(mul)(uv, uv3, v); /* v*B^2 */
+  FN(neg)(u);
+
+  if (FN(cmp)(uv, u) == 0) {
+    FN(mul)(uv_p38, uv_p38, sqrt_minus_one);/* (√-1)*B */
+  }
+}
+
+DECL(void, srt)(argElement_4w c, argElement_4w a) {
+  FN(invsqrt)(c, c, a);
 }
 
 DECL(argElement_4w,alloc)() {
