@@ -29,6 +29,42 @@
 #error Define symbol LOOKUP_TABLE_SIZE with LUT_12KB or LUT_24KB.
 #endif
 
+
+/**
+ * Doubling for signing
+ * Hisil Section 3.3 page 7
+ */
+void _1way_doubling_1w_full(PointXYZT_1way_full *P){
+    argElement_1w const X1 = P->X;
+    argElement_1w const Y1 = P->Y;
+    argElement_1w const T1 = P->T;
+    argElement_1w const Z1 = P->Z;
+
+    EltFp25519_1w_fullradix A,B,C,E,F,G,H;
+
+    Fp25519._1w_full.arith.misc.copy(A,X1);
+    Fp25519._1w_full.arith.misc.copy(B,Y1);
+    Fp25519._1w_full.arith.misc.copy(C,Z1);
+    Fp25519._1w_full.arith.sqr(A);
+    Fp25519._1w_full.arith.sqr(B);
+    Fp25519._1w_full.arith.sqr(C);
+
+    Fp25519._1w_full.arith.add(C,C,C);
+    Fp25519._1w_full.arith.add(E,X1,Y1);
+    Fp25519._1w_full.arith.sqr(E);
+    Fp25519._1w_full.arith.sub(E,E,A);
+    Fp25519._1w_full.arith.sub(E,E,B);
+
+    Fp25519._1w_full.arith.sub(G,B,A);
+    Fp25519._1w_full.arith.sub(F,G,C);
+    Fp25519._1w_full.arith.add(H,A,B);
+
+    Fp25519._1w_full.arith.mul(X1,E,F);
+    Fp25519._1w_full.arith.mul(Y1,G,H);
+    Fp25519._1w_full.arith.mul(T1,E,H);
+    Fp25519._1w_full.arith.mul(Z1,F,G);
+}
+
 /**
  * This version is intended to compute four independent addition points
  * on four pair of points.
@@ -209,42 +245,41 @@ static inline void _2way_fulladd(PointXYZT_2way *Q, PointXYZT_2way *P) {
 	Fp25519._2w_red.arithex.compress(Y1);
 }
 
-void _2way_doubling(PointXYZT_2way *P, const int compute_T)
-{
-	__m256i * X1 = P->X;
-	__m256i * Y1 = P->Y;
-	__m256i * Z1 = P->Z;
-	__m256i * T1 = P->T;
-	Element_2w_H0H5 H,G,F,E;
+static inline void _2way_doubling(PointXYZT_2way *P, const int compute_T) {
+	__m256i * const X1 = P->X;
+	__m256i * const Y1 = P->Y;
+	__m256i * const Z1 = P->Z;
+	__m256i * const T1 = P->T;
+	EltFp25519_2w_redradix H,G,F,E;
 
-	add_Element_2w_h0h5(T1,X1,Y1);compressfast_Element_2w_h0h5(T1);
-	sqr_Element_2w_h0h5(T1); /*(X1+Y1)^2 */
-	sqr_Element_2w_h0h5(X1); /*A*/
-	sqr_Element_2w_h0h5(Y1); /*B*/
-	sqr_Element_2w_h0h5(Z1); /*C*/
-	add_Element_2w_h0h5(Z1,Z1,Z1);
+	Fp25519._2w_red.arith.add(T1,X1,Y1);Fp25519._2w_red.arithex.compressfast(T1);
+	Fp25519._2w_red.arith.sqr(T1); /*(X1+Y1)^2 */
+	Fp25519._2w_red.arith.sqr(X1); /*A*/
+	Fp25519._2w_red.arith.sqr(Y1); /*B*/
+	Fp25519._2w_red.arith.sqr(Z1); /*C*/
+	Fp25519._2w_red.arith.add(Z1,Z1,Z1);
 
-	compress_Element_2w_h0h5(T1);
-	compress_Element_2w_h0h5(X1);
-	compress_Element_2w_h0h5(Y1);
-	compress_Element_2w_h0h5(Z1);
+	Fp25519._2w_red.arithex.compress(T1);
+	Fp25519._2w_red.arithex.compress(X1);
+	Fp25519._2w_red.arithex.compress(Y1);
+	Fp25519._2w_red.arithex.compress(Z1);
 
-	naddsub_Element_2w_h0h5(H,G,X1,Y1);
-	add_Element_2w_h0h5(E,T1,H);
-	sub_Element_2w_h0h5(F,G,Z1);
-	compressfast_Element_2w_h0h5(F);
-	compressfast_Element_2w_h0h5(H);
+	naddsub_Fp255_2w_redradix(H,G,X1,Y1);
+	Fp25519._2w_red.arith.add(E,T1,H);
+	Fp25519._2w_red.arith.sub(F,G,Z1);
+	Fp25519._2w_red.arithex.compressfast(F);
+	Fp25519._2w_red.arithex.compressfast(H);
 
-	mul_Element_2w_h0h5(Z1,G,F); /* GF */
-	mul_Element_2w_h0h5(X1,E,F); /* FE */
-	mul_Element_2w_h0h5(Y1,G,H); /* GH */
-	compress_Element_2w_h0h5(X1);
-	compress_Element_2w_h0h5(Y1);
-	compress_Element_2w_h0h5(Z1);
+	Fp25519._2w_red.arith.mul(Z1,G,F); /* GF */
+	Fp25519._2w_red.arith.mul(X1,E,F); /* FE */
+	Fp25519._2w_red.arith.mul(Y1,G,H); /* GH */
+	Fp25519._2w_red.arithex.compress(X1);
+	Fp25519._2w_red.arithex.compress(Y1);
+	Fp25519._2w_red.arithex.compress(Z1);
 	if(compute_T)
 	{
-		mul_Element_2w_h0h5(T1, E, H);/* EH */
-		compress_Element_2w_h0h5(T1);
+		Fp25519._2w_red.arith.mul(T1, E, H);/* EH */
+		Fp25519._2w_red.arithex.compress(T1);
 	}
 }
 

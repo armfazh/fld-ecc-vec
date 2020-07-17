@@ -29,6 +29,13 @@
 #define LUT_12KB 12
 #define LOOKUP_TABLE_SIZE LUT_24KB
 
+typedef ALIGN struct point_extended_1way_full {
+  EltFp25519_1w_fullradix X;
+  EltFp25519_1w_fullradix Y;
+  EltFp25519_1w_fullradix Z;
+  EltFp25519_1w_fullradix T;
+} PointXYZT_1way_full;
+
 typedef ALIGN struct point_extended_1way {
   EltFp25519_1w_redradix X;
   EltFp25519_1w_redradix Y;

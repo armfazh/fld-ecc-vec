@@ -431,6 +431,25 @@ DECL(int, cmp)(argElement_1w a, argElement_1w b) {
   return cmp_bytes(a_bytes, b_bytes, SIZE_FP25519);
 }
 
+DECL(void, cmov)(int bit, argElement_1w c, argElement_1w a, argElement_1w b) {
+    const __m256i mask = SET164(-(int64_t)bit);
+    __m256i a0 = LOAD(a + 0);
+    __m256i a1 = LOAD(a + 1);
+    __m256i a2 = LOAD(a + 2);
+
+    __m256i b0 = LOAD(b + 0);
+    __m256i b1 = LOAD(b + 1);
+    __m256i b2 = LOAD(b + 2);
+
+    __m256i c0 = _mm256_blendv_epi8(a0,b0,mask);
+    __m256i c1 = _mm256_blendv_epi8(a1,b1,mask);
+    __m256i c2 = _mm256_blendv_epi8(a2,b2,mask);
+
+    STORE(c + 0, c0);
+    STORE(c + 1, c1);
+    STORE(c + 2, c2);
+}
+
 DECL(void, add)(argElement_1w c, argElement_1w a, argElement_1w b) {
   __m256i a0 = LOAD(a + 0);
   __m256i a1 = LOAD(a + 1);
