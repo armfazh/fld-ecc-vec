@@ -36,6 +36,7 @@ namespace hash {
 void h2c25519_x64(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen);
 void h2c25519_avx2(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen);
 void print_point(FILE *file, PointXYZT_1way_full *P);
+int isOnCurve(PointXYZT_1way_full *P);
 
 #ifdef __cplusplus
 } /* namespace fp */

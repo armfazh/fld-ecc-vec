@@ -27,16 +27,23 @@
 #include "sha512.h"
 #include "simd_avx2.h"
 
-// #include "ecc_1w.c"
-typedef ALIGN uint8_t Digest[512 / 64];
+#if 0
+#define PP(X) (void)X;
+#else
+#define PP(X) printf("%s= ",#X);fp.misc.print(stdout,X);
+#endif
 
-static inline void hash_to_field(argElement_1w u, uint8_t *msg, size_t mlen) {
+typedef ALIGN uint8_t Digest[512 / 8];
+
+static inline void hash_to_field(argElement_1w u,uint8_t prefix, uint8_t *msg, size_t mlen) {
   Digest h0_msg;
   sph_sha512_context h0;
   sph_sha512_init(&h0);
+  sph_sha512(&h0, &prefix, 1);
   sph_sha512(&h0, msg, mlen);
   sph_sha512_close(&h0, h0_msg);
-  Fp25519._1w_full.arith.misc.zero(u);
+  modular_reduction_ed25519(h0_msg);
+  memcpy(u,h0_msg,SIZE_FP25519);
 }
 
 static inline void elligator2_curve25519(argElement_1w xn,
@@ -63,22 +70,23 @@ static inline void elligator2_curve25519(argElement_1w xn,
   EltFp25519_1w_fullradix tv1, tv2, gx1, x1n, gxd, x2n, y1, y21, y11, gx2, y22,
       y2, y3, y;
 
+      PP(u)
   fp.misc.copy(tv1, u);              //
   fp.sqr(tv1);                       // 1.  tv1 = u^2
   fp.add(tv1, tv1, tv1);             // 2.  tv1 = 2 * tv1
   fp.add(xd, tv1, one);              // 3.   xd = tv1 + 1
   fp.misc.copy(x1n, A);              //
-  fp.neg(x1n);                       // 4.  x1n = -J
+  fp.neg(x1n);             PP(x1n)          // 4.  x1n = -J
   fp.misc.copy(tv2, xd);             //
-  fp.sqr(tv2);                       // 5.  tv2 = xd^2
-  fp.mul(gxd, tv2, xd);              // 6.  gxd = tv2 * xd
+  fp.sqr(tv2);             PP(tv2)          // 5.  tv2 = xd^2
+  fp.mul(gxd, tv2, xd);    PP(gxd)          // 6.  gxd = tv2 * xd
   fp.mul(gx1, A, tv1);               // 7.  gx1 = J * tv1
   fp.mul(gx1, gx1, x1n);             // 8.  gx1 = gx1 * x1n
   fp.add(gx1, gx1, tv2);             // 9.  gx1 = gx1 + tv2
-  fp.mul(gx1, gx1, x1n);             // 10. gx1 = gx1 * x1n
-  fp.misc.copy(y1, gx1);             //
-  fp.srt(y1, gxd);                   // 11. tv3 = gxd^2
-                                     // 12. tv2 = tv3^2
+  fp.mul(gx1, gx1, x1n);   PP(gx1)          // 10. gx1 = gx1 * x1n
+  fp.misc.copy(y1, gx1);    PP(y1)         //
+ // fp.srt(y1, gxd);          PP(y1)         // 11. tv3 = gxd^2
+invsqrt_Fp255_1w_fullradix(y1,gx1,gxd);PP(y1)                                     // 12. tv2 = tv3^2
                                      // 13. tv3 = tv3 * gxd
                                      // 14. tv3 = tv3 * gx1
                                      // 15. tv2 = tv2 * tv3
@@ -97,12 +105,12 @@ static inline void elligator2_curve25519(argElement_1w xn,
   fp.misc.copy(tv2, y21);            //
   fp.sqr(tv2);                       // 28. tv2 = y21^2
   fp.mul(tv2, tv2, gxd);             // 29. tv2 = tv2 * gxd
-  e2 = fp.misc.cmp(tv2, gx2);        // 30.  e2 = tv2 == gx2
+  e2 = fp.misc.cmp(tv2, gx2)==0;     // 30.  e2 = tv2 == gx2
   fp.misc.cmov(e2, y2, y22, y21);    // 31.  y2 = CMOV(y22, y21, e2)
   fp.misc.copy(tv2, y1);             //
   fp.sqr(tv2);                       // 32. tv2 = y1^2
   fp.mul(tv2, tv2, gxd);             // 33. tv2 = tv2 * gxd
-  e3 = fp.misc.cmp(tv2, gx1);        // 34.  e3 = tv2 == gx1
+  e3 = fp.misc.cmp(tv2, gx1)==0;     // 34.  e3 = tv2 == gx1
   fp.misc.cmov(e3, xn, x2n, x1n);    // 35.  xn = CMOV(x2n, x1n, e3)
   fp.misc.cmov(e3, y, y2, y1);       // 36.   y = CMOV(y2, y1, e3)
   e4 = fp.sgn(y);                    // 37.  e4 = sgn0(y) == 1
@@ -137,7 +145,7 @@ static inline void elligator2_edwards25519(argElement_1w xn,
   fp.sub(yn, xMn, xMd);           // 5.  yn = xMn - xMd
   fp.add(yd, xMn, xMd);           // 6.  yd = xMn + xMd
   fp.mul(tv1, xd, yd);            // 7. tv1 = xd * yd
-  e = fp.misc.cmp(tv1, zero);     // 8.   e = tv1 == 0
+  e = fp.misc.cmp(tv1, zero)==0;  // 8.   e = tv1 == 0
   fp.misc.cmov(e, xn, xn, zero);  // 9.  xn = CMOV(xn, 0, e)
   fp.misc.cmov(e, xd, xd, one);   // 10. xd = CMOV(xd, 1, e)
   fp.misc.cmov(e, yn, yn, one);   // 11. yn = CMOV(yn, 1, e)
@@ -259,6 +267,7 @@ static inline void map_to_curve(PointXYZT_1way_full *P, argElement_1w u) {
   fp.mul(P->Y, yn, xd);
   fp.mul(P->T, xn, yn);
   fp.mul(P->Z, xd, yd);
+  printf("P on E: %s\n",isOnCurve(P)?"Yes":"No");
 }
 
 static inline void map_to_curve_2w(PointXYZT_2way *P, argElement_2w u0u1) {
@@ -283,17 +292,57 @@ static inline void clear_cofactor_2w(PointXYZT_2way *P) {
   _2way_doubling(P, 1);
 }
 
+static inline void toAffine(PointXYZT_1way_full *P){
+    const Arith_1w fp = Fp25519._1w_full.arith;
+    EltFp25519_1w_fullradix invZ;
+    EltFp25519_1w_fullradix one = {1};
+
+    fp.inv(invZ,P->Z);
+    fp.mul(P->X,P->X,invZ);
+    fp.mul(P->Y,P->Y,invZ);
+    fp.mul(P->T,P->X,P->Y);
+    fp.misc.copy(P->Z,one);
+}
+
+int isOnCurve(PointXYZT_1way_full *P){
+    const Arith_1w fp = Fp25519._1w_full.arith;
+    EltFp25519_1w_fullradix x2,y2,tz,dt,e0,e1;
+    EltFp25519_1w_fullradix zero = {0};
+    EltFp25519_1w_fullradix paramD = {
+        0x75eb4dca135978a3,
+        0x00700a4d4141d8ab,
+        0x8cc740797779e898,
+        0x52036cee2b6ffe73
+    };
+
+    // ax^2+y^2=z^2+dT, XY=ZT
+    fp.mul(dt,P->T,paramD);
+    fp.misc.copy(x2,P->X);
+    fp.misc.copy(y2,P->Y);
+    fp.sqr(x2);
+    fp.sqr(y2);
+    fp.sub(e0,y2,x2);
+    fp.sub(e0,e0,P->Z);
+    fp.sub(e0,e0,dt);
+
+    fp.mul(e1,P->X,P->Y);
+    fp.mul(tz,P->T,P->Z);
+    fp.sub(e1,e1,tz);
+    return fp.misc.cmp(e0,zero)==0 && fp.misc.cmp(e1,zero)==0;
+}
+
 void h2c25519_x64(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen) {
   EltFp25519_1w_fullradix u0, u1;
   PointXYZT_1way_full Q0, Q1;
 
-  hash_to_field(u0, msg, mlen);
-  hash_to_field(u1, msg, mlen);
+  hash_to_field(u0, '0', msg, mlen);
+  hash_to_field(u1, '1', msg, mlen);
   map_to_curve(&Q0, u0);
   map_to_curve(&Q1, u1);
   clear_cofactor(&Q0);
   clear_cofactor(&Q1);
   _1way_fulladd_1w_full(P,&Q0,&Q1);
+  toAffine(P);
 }
 
 
@@ -302,8 +351,8 @@ void h2c25519_avx2(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen) {
   PointXYZT_2way Q0Q1;
   EltFp25519_2w_redradix u0u1;
 
-  hash_to_field(u0, msg, mlen);
-  hash_to_field(u1, msg, mlen);
+  hash_to_field(u0, '0', msg, mlen);
+  hash_to_field(u1, '1', msg, mlen);
   Fp25519._2w_red.arithex.inter(u0u1,u0,u1);
 
   map_to_curve_2w(&Q0Q1, u0u1);
@@ -324,6 +373,7 @@ void h2c25519_avx2(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen) {
   Fp25519._1w_red.arith.misc.ser((uint8_t*)P1.T,Q1.T);
   Fp25519._1w_red.arith.misc.ser((uint8_t*)P1.Z,Q1.Z);
   _1way_fulladd_1w_full(P,&P0,&P1);
+  toAffine(P);
 }
 
 void print_point(FILE *file, PointXYZT_1way_full *P) {
