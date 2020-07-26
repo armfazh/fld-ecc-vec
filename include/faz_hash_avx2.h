@@ -38,6 +38,9 @@ void h2c25519_avx2(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen);
 void print_point(FILE *file, PointXYZT_1way_full *P);
 int isOnCurve(PointXYZT_1way_full *P);
 
+void map_to_curve(PointXYZT_1way_full *P, argElement_1w u);
+void map_to_curve_2w(PointXYZT_2way *P, argElement_2w u0u1);
+
 #ifdef __cplusplus
 } /* namespace fp */
 } /* namespace faz */

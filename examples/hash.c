@@ -17,9 +17,9 @@ int main(void) {
   printf("H(m): in E (%s)\n",isOnCurve(&P)?"Yes":"No");
   print_point(stdout, &P);
 
-  // h2c25519_avx2(&P, (uint8_t *)message, size_msg);
-  // printf("H(m):\n");
-  // print_point(stdout, &P);
+  h2c25519_avx2(&P, (uint8_t *)message, size_msg);
+  printf("H(m): in E (%s)\n",isOnCurve(&P)?"Yes":"No");
+  print_point(stdout, &P);
 
   return 0;
 }
