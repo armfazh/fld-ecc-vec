@@ -6,7 +6,7 @@ void bench_fp25519();
 void bench_ecc25519();
 void bench_x25519();
 void bench_ed25519();
-void bench_h2c25519();
+void bench_hash25519();
 
 void bench_fp448();
 void bench_ecc448();

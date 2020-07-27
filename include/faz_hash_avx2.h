@@ -19,6 +19,8 @@
 #ifndef FAZ_HASH_AVX2_H
 #define FAZ_HASH_AVX2_H
 
+#include <faz_fp_avx2.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -26,18 +28,25 @@ extern "C" {
 #include <stdint.h>
 #include <stdio.h>
 
-#include "edwards255.h"
-
 #ifdef __cplusplus
 namespace faz {
 namespace hash {
 #endif /* __cplusplus */
 
-void h2c25519_x64(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen);
-void h2c25519_avx2(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen);
-void print_point(FILE *file, PointXYZT_1way_full *P);
-int isOnCurve(PointXYZT_1way_full *P);
+#ifdef __cplusplus
+using namespace faz::fp;
+#endif
 
+typedef ALIGN struct point_affine { EltFp25519_1w_fullradix X, Y; } Point;
+
+void h2c25519_x64(Point *P, uint8_t *msg, size_t mlen);
+void h2c25519_avx2(Point *P, uint8_t *msg, size_t mlen);
+int isOnCurve(Point *P);
+int areEqual(Point *P, Point *Q);
+void print_point(FILE *file, Point *P);
+
+// tmp ->
+#include "edwards255.h"
 void map_to_curve(PointXYZT_1way_full *P, argElement_1w u);
 void map_to_curve_2w(PointXYZT_2way *P, argElement_2w u0u1);
 
