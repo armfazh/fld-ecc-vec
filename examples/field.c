@@ -31,7 +31,7 @@ static void identity(const Arith_1w* fp) {
   printf("right: ");
   fp->misc.print(stdout, right);
 
-  if (fp->misc.cmp(left, right) == 0) {
+  if (fp->cmp(left, right) == 0) {
     printf("Test passed.\n\n");
   } else {
     printf("Test failed.\n\n");

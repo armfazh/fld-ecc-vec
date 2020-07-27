@@ -773,15 +773,17 @@ DECL(void, print)(FILE*file,argElement_4w a) {
 	print_Fp255_1w_redradix(file,a3);
 }
 
-DECL(int,cmp)(argElement_4w a, argElement_4w b) {
+DECL(__m256i, cmp)(argElement_4w a, argElement_4w b) {
+	int c0, c1, c2, c3;
 	EltFp25519_1w_redradix a0,a1,a2,a3;
 	EltFp25519_1w_redradix b0,b1,b2,b3;
 	FN(unzip)(a0,a1,a2,a3,a);
 	FN(unzip)(b0,b1,b2,b3,b);
-	return  cmp_Fp255_1w_redradix(a0,b0) &&
-			cmp_Fp255_1w_redradix(a1,b1) &&
-			cmp_Fp255_1w_redradix(a2,b2) &&
-			cmp_Fp255_1w_redradix(a3,b3);
+	c0 = cmp_Fp255_1w_redradix(a0,b0);
+	c1 = cmp_Fp255_1w_redradix(a1,b1);
+	c2 = cmp_Fp255_1w_redradix(a2,b2);
+	c3 = cmp_Fp255_1w_redradix(a3,b3);
+	return SET64(c3, c2, c1, c0);
 }
 
 DECL(void, unser)(argElement_4w a, uint8_t * buf) {
@@ -881,9 +883,9 @@ DECL(void, invsqrt)(argElement_4w uv_p38, argElement_4w u, argElement_4w v) {
   FN(mul)(uv, uv3, v); /* v*B^2 */
   FN(neg)(u);
 
-  if (FN(cmp)(uv, u) == 0) {
+  // if (FN(cmp)(uv, u) == ZERO) {
     FN(mul)(uv_p38, uv_p38, sqrt_minus_one);/* (√-1)*B */
-  }
+  // }
 }
 
 DECL(void, srt)(argElement_4w c, argElement_4w a) {

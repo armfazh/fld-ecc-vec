@@ -46,7 +46,7 @@ TEST(FP25519_1w_AVX2, MUL_VS_SQR) {
     arith->sub(c, a, b);
     arithex->compress(c);
 
-    ASSERT_EQ(arith->misc.cmp(c, e), 0) << "got:  " << c << "want: " << e;
+    ASSERT_EQ(arith->cmp(c, e), 0) << "got:  " << c << "want: " << e;
     cnt++;
   }
   EXPECT_EQ(cnt, TEST_TIMES)
@@ -68,7 +68,7 @@ TEST(FP25519_1w_AVX2, MUL_VS_INV) {
     arith->mul(a, a, b);
     arith->mul(a, a, c);
 
-    ASSERT_EQ(arith->misc.cmp(a, b), 0) << "got:  " << a << "want: " << b;
+    ASSERT_EQ(arith->cmp(a, b), 0) << "got:  " << a << "want: " << b;
     cnt++;
   }
   EXPECT_EQ(cnt, TEST_TIMES)

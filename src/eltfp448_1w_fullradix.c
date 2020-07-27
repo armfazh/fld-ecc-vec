@@ -114,7 +114,7 @@ DECL(void, sub)(argElement_1w c, argElement_1w a, argElement_1w b) {
   );
 }
 
-DECL(void, cmov)(int bit, argElement_1w c, argElement_1w a, argElement_1w b) {
+DECL(void, cmv)(int bit, argElement_1w c, argElement_1w a, argElement_1w b) {
   __asm__ __volatile__(
   "test       %3,     %3 ;"
   "movq    0(%1),  %%rax ;"
