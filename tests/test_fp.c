@@ -30,7 +30,7 @@ static void test_1w(const Arith_1w *fp) {
     fp->sqr(b);
     fp->sub(c, a, b);
 
-    match = fp->misc.cmp(c, e) == 0;
+    match = fp->cmp(c, e) == 0;
     if (!match) {
       fprintf(stderr, "A:\n");
       fp->misc.print(stderr, a);
@@ -56,7 +56,7 @@ static void test_1w(const Arith_1w *fp) {
     fp->mul(a, a, b);
     fp->mul(a, a, d);
 
-    match = fp->misc.cmp(a, b) == 0;
+    match = fp->cmp(a, b) == 0;
     if (!match) {
       fprintf(stderr, "A:\n");
       fp->misc.print(stderr, a);
@@ -77,6 +77,7 @@ static void test_1w(const Arith_1w *fp) {
 }
 
 static void test_2w(const Arith_2w *fp) {
+  const __m256i ZERO = _mm256_setzero_si256();
   int64_t i;
   int64_t cnt = 0, match = 0;
 
@@ -104,7 +105,7 @@ static void test_2w(const Arith_2w *fp) {
     fp->sqr(b);
     fp->sub(c, a, b);
 
-    match = fp->misc.cmp(c, e) == 0;
+    match = _mm256_testz_si256(fp->cmp(c, e), ZERO);
     if (!match) {
       printf("A:\n");
       fp->misc.print(stderr, a);
@@ -123,6 +124,7 @@ static void test_2w(const Arith_2w *fp) {
 }
 
 static void test_4w(const Arith_4w *fp) {
+  const __m256i ZERO = _mm256_setzero_si256();
   int64_t i;
   int64_t cnt = 0, match = 0;
 
@@ -150,7 +152,7 @@ static void test_4w(const Arith_4w *fp) {
     fp->sqr(b);
     fp->sub(c, a, b);
 
-    match = fp->misc.cmp(c, e) == 0;
+    match = _mm256_testz_si256(fp->cmp(c, e), ZERO);
     if (!match) {
       printf("A:\n");
       fp->misc.print(stderr, a);

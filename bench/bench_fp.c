@@ -17,7 +17,6 @@ static void bench_1w(const Arith_1w *fp) {
   CLOCKS(squaring, fp->sqr(c));
   BENCH = BENCH / 10;
   CLOCKS(inversion, fp->inv(c, a));
-  CLOCKS(square_root, fp->srt(c, a));
 
   fp->misc.free(a);
   fp->misc.free(b);
@@ -38,8 +37,6 @@ static void bench_2w(const Arith_2w *fp) {
   CLOCKS(subtraction, fp->sub(c, c, b));
   CLOCKS(multiplication, fp->mul(c, a, b));
   CLOCKS(squaring, fp->sqr(c));
-  BENCH = BENCH / 10;
-  CLOCKS(square_root, fp->srt(c, a));
 
   fp->misc.free(a);
   fp->misc.free(b);
@@ -60,8 +57,6 @@ static void bench_4w(const Arith_4w *fp) {
   CLOCKS(subtraction, fp->sub(c, c, b));
   CLOCKS(multiplication, fp->mul(c, a, b));
   CLOCKS(squaring, fp->sqr(c));
-  BENCH = BENCH / 10;
-  CLOCKS(square_root, fp->srt(c, a));
 
   fp->misc.free(a);
   fp->misc.free(b);

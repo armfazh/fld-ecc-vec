@@ -423,6 +423,12 @@ DECL(void, ser)(uint8_t *buf, argElement_1w a) {
   ser_Fp255_1w_fullradix(buf,c);
 }
 
+DECL(int, sgn)(argElement_1w a) {
+    ALIGN uint8_t a_bytes[SIZE_FP25519];
+    FN(ser)(a_bytes, a);
+    return a_bytes[0]&0x1;
+}
+
 DECL(int, cmp)(argElement_1w a, argElement_1w b) {
   ALIGN uint8_t a_bytes[SIZE_FP25519];
   ALIGN uint8_t b_bytes[SIZE_FP25519];
@@ -431,7 +437,7 @@ DECL(int, cmp)(argElement_1w a, argElement_1w b) {
   return cmp_bytes(a_bytes, b_bytes, SIZE_FP25519);
 }
 
-DECL(void, cmov)(int bit, argElement_1w c, argElement_1w a, argElement_1w b) {
+DECL(void, cmv)(int bit, argElement_1w c, argElement_1w a, argElement_1w b) {
     const __m256i mask = SET164(-(int64_t)bit);
     __m256i a0 = LOAD(a + 0);
     __m256i a1 = LOAD(a + 1);

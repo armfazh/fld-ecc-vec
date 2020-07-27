@@ -330,7 +330,7 @@ static inline void _4way_mixadd_ed448(PointXYZT_4way_Fp448 *Q, Point_precmp_4way
   Fp448._4w_red.arithex.intmul(C, dT2, T1);
   Fp448._4w_red.arith.add(D, Z1, Z1);
   Fp448._4w_red.arithex.compress2(C,D);/* [TODO] <- review*/
-  
+
   Fp448._4w_red.arithex.addsublar(B, A);
   Fp448._4w_red.arithex.addsublar(D, C);
   Fp448._4w_red.arithex.compress2(B, A);
@@ -826,7 +826,7 @@ static int point_decoding_ed448(
   Fp448._1w_red.arith.sqr(uv);         /*   x^2 */
   Fp448._1w_red.arith.mul(uv, uv, v);  /* v*x^2 */
 
-  if (Fp448._1w_red.arith.misc.cmp(uv, u) != 0) {
+  if (Fp448._1w_red.arith.cmp(uv, u) != 0) {
     /* no square root exists */
     return -1;
   }
@@ -967,9 +967,9 @@ static inline int wnaf_448bits(int8_t *K, const uint8_t *p8_r, int w) {
 }
 
 /**
- * 
- * @param table 
- * @param P 
+ *
+ * @param table
+ * @param P
  */
 static inline void precompute_points_2w_ed448(PointXYZT_precompute_2w_H0H8 * table, PointXYZT_2w_H0H8* P) {
   const int num = (1 << (OMEGA_DYNAMIC - 2));
@@ -999,9 +999,9 @@ static inline void precompute_points_2w_ed448(PointXYZT_precompute_2w_H0H8 * tab
 }
 
 /**
- * 
- * @param P 
- * @param index 
+ *
+ * @param P
+ * @param index
  */
 static inline void read_point_2w_ed448(PointXYZT_precompute_2w_H0H8 * P, int8_t index) {
   const EltFp448_1w_redradix two = {
@@ -1031,11 +1031,11 @@ static inline void read_point_2w_ed448(PointXYZT_precompute_2w_H0H8 * P, int8_t 
 }
 
 /**
- * 
- * @param sB_hA 
- * @param s 
- * @param h 
- * @param A 
+ *
+ * @param sB_hA
+ * @param s
+ * @param h
+ * @param A
  */
 static inline void double_point_mult_2w_ed448(uint8_t *sB_hA, const uint8_t *s, uint8_t *h, PointXYZT_2w_H0H8 * A) {
   int i;

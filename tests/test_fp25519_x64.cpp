@@ -43,7 +43,7 @@ TEST(FP25519_1w_x64, MUL_VS_SQR) {
     arith->sqr(b);
     arith->sub(c, a, b);
 
-    ASSERT_EQ(arith->misc.cmp(c, e), 0) << "got:  " << c << "want: " << e;
+    ASSERT_EQ(arith->cmp(c, e), 0) << "got:  " << c << "want: " << e;
     cnt++;
   }
   EXPECT_EQ(cnt, TEST_TIMES)
@@ -64,7 +64,7 @@ TEST(FP25519_1w_x64, MUL_VS_INV) {
     arith->mul(a, a, b);
     arith->mul(a, a, d);
 
-    ASSERT_EQ(arith->misc.cmp(a, b), 0) << "got:  " << a << "want: " << b;
+    ASSERT_EQ(arith->cmp(a, b), 0) << "got:  " << a << "want: " << b;
     cnt++;
   }
   EXPECT_EQ(cnt, TEST_TIMES)
@@ -108,7 +108,7 @@ TEST(FP25519_1w_x64, ADDITION) {
     }
     mpz_export(want_c, NULL, -1, SIZE_FP25519, 0, 0, gmp_c);
 
-    ASSERT_EQ(arith->misc.cmp(get_c, want_c), 0)
+    ASSERT_EQ(arith->cmp(get_c, want_c), 0)
         << "a: " << a << "b: " << b << "got:  " << get_c << "want: " << want_c;
     count++;
   }
@@ -158,7 +158,7 @@ TEST(FP25519_1w_x64, SUBTRACTION) {
     }
     mpz_export(want_c, NULL, -1, SIZE_FP25519, 0, 0, gmp_c);
 
-    ASSERT_EQ(arith->misc.cmp(get_c, want_c), 0)
+    ASSERT_EQ(arith->cmp(get_c, want_c), 0)
         << "a: " << a << "b: " << b << "got:  " << get_c << "want: " << want_c;
     count++;
   }
@@ -276,7 +276,7 @@ TEST(FP25519_1w_x64, INVERSION) {
     mpz_powm(gmp_c, gmp_a, prime_minus_two, prime);
     mpz_export(want_c, NULL, -1, SIZE_FP25519, 0, 0, gmp_c);
 
-    ASSERT_EQ(arith->misc.cmp(get_c, want_c), 0)
+    ASSERT_EQ(arith->cmp(get_c, want_c), 0)
         << "a: " << a << "got:  " << get_c << "want: " << want_c;
     count++;
   }
@@ -324,7 +324,7 @@ TEST(FP25519_1w_x64, REDUCTION) {
     }
     mpz_export(want_c, NULL, -1, SIZE_FP25519, 0, 0, gmp_a);
 
-    ASSERT_EQ(arith->misc.cmp(get_c, want_c), 0)
+    ASSERT_EQ(arith->cmp(get_c, want_c), 0)
         << "a: " << a << "got:  " << get_c << "want: " << want_c;
     count++;
   }
@@ -373,7 +373,7 @@ TEST(FP25519_1w_x64, MULA24) {
     }
     mpz_export(want_c, NULL, -1, SIZE_FP25519, 0, 0, gmp_c);
 
-    ASSERT_EQ(arith->misc.cmp(get_c, want_c), 0)
+    ASSERT_EQ(arith->cmp(get_c, want_c), 0)
         << "a: " << a << "got:  " << get_c << "want: " << want_c;
     count++;
   }

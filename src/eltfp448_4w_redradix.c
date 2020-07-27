@@ -387,7 +387,7 @@ DECL(void, intmul_karat)(argElement_4w C, argElement_4w A, argElement_4w B) {
   C[10] = SUB(ADD(ADD(x5,y5),z13),x13);	C[11] = SUB(ADD(ADD(y13,z5),z13),x5);
   C[12] = SUB(ADD(ADD(x6,y6),z14),x14);	C[13] = SUB(ADD(ADD(y14,z6),z14),x6);
   C[14] = ADD(x7,y7);	                C[15] = SUB(z7,x7);
-} 
+}
 
 DECL(void, intmul)(argElement_4w c, argElement_4w a, argElement_4w b) {
 	FN(intmul_karat)(c,a,b);
@@ -656,15 +656,17 @@ DECL(void, print)(FILE*file,argElement_4w a) {
 	print_Fp448_1w_redradix(file,a3);
 }
 
-DECL(int,cmp)(argElement_4w a, argElement_4w b) {
+DECL(__m256i, cmp)(argElement_4w a, argElement_4w b) {
+    int c0, c1, c2, c3;
 	EltFp448_1w_redradix a0,a1,a2,a3;
 	EltFp448_1w_redradix b0,b1,b2,b3;
 	FN(unzip)(a0,a1,a2,a3,a);
 	FN(unzip)(b0,b1,b2,b3,b);
-	return  cmp_Fp448_1w_redradix(a0,b0) &&
-			cmp_Fp448_1w_redradix(a1,b1) &&
-			cmp_Fp448_1w_redradix(a2,b2) &&
-			cmp_Fp448_1w_redradix(a3,b3);
+    c0 = cmp_Fp448_1w_redradix(a0,b0);
+    c1 = cmp_Fp448_1w_redradix(a1,b1);
+    c2 = cmp_Fp448_1w_redradix(a2,b2);
+    c3 = cmp_Fp448_1w_redradix(a3,b3);
+	return SET64(c3, c2, c1, c0);
 }
 
 DECL(void, unser)(argElement_4w a, uint8_t * buf) {

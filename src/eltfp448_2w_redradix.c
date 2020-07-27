@@ -664,12 +664,14 @@ DECL(void, print)(FILE*file,argElement_2w a) {
   print_Fp448_1w_redradix(file,a1);
 }
 
-DECL(int, cmp)(argElement_2w a, argElement_2w b) {
+DECL(__m256i, cmp)(argElement_2w a, argElement_2w b) {
+  int c0, c1;
   EltFp448_1w_redradix a0, a1, b0, b1;
   FN(deinter)(a0, a1, a);
   FN(deinter)(b0, b1, b);
-  return cmp_Fp448_1w_redradix(a0, b0)
-      && cmp_Fp448_1w_redradix(a1, b1);
+  c0 = cmp_Fp448_1w_redradix(a0, b0);
+  c1 = cmp_Fp448_1w_redradix(a1, b1);
+  return SET64(0, c1, 0, c0);
 }
 
 DECL(argElement_2w, alloc)() {

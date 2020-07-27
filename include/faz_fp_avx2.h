@@ -72,13 +72,16 @@ typedef ALIGN __m256i EltFp448_4w_redradix[NUM_DIGITS_FP448];
 
 #define Oper0Retr(NAME, TYPE) TYPE (*NAME)(void)
 #define Oper1Void(NAME, TYPE) void (*NAME)(TYPE C)
+#define Oper1Vect(NAME, TYPE) __m256i (*NAME)(TYPE C)
 #define Oper1Reti(NAME, TYPE) int  (*NAME)(TYPE C)
 #define Oper1File(NAME, TYPE) void (*NAME)(FILE* file, TYPE A)
 #define Oper1ToBy(NAME, TYPE) void (*NAME)(uint8_t * C, TYPE A)
 #define Oper1FrBy(NAME, TYPE) void (*NAME)(TYPE C, uint8_t * A)
 #define Oper2Void(NAME, TYPE) void (*NAME)(TYPE C, TYPE A)
+#define Oper2Vect(NAME, TYPE) __m256i (*NAME)(TYPE C, TYPE A)
 #define Oper2Reti(NAME, TYPE) int  (*NAME)(TYPE C, TYPE A)
-#define Oper2Retr(NAME, TYPE) void (*NAME)(int b, TYPE C, TYPE A, TYPE B)
+#define Oper3Scal(NAME, TYPE) void (*NAME)(int b, TYPE C, TYPE A, TYPE B)
+#define Oper3Vect(NAME, TYPE) void (*NAME)(__m256i b, TYPE C, TYPE A, TYPE B)
 #define Oper3Void(NAME, TYPE) void (*NAME)(TYPE C, TYPE A, TYPE B)
 #define Oper3Vari(NAME, RET, TYPE0, TYPE1, TYPE2) RET (*NAME)(TYPE0 C, TYPE1 A, TYPE2 B)
 #define Oper4Void(NAME, TYPE) void (*NAME)(TYPE C, TYPE D, TYPE A, TYPE B)
@@ -87,8 +90,6 @@ typedef ALIGN __m256i EltFp448_4w_redradix[NUM_DIGITS_FP448];
 typedef struct               \
   _struct_misc ## N ## w {   \
     Oper0Retr(alloc, TYPE);  \
-    Oper2Retr(cmov , TYPE);  \
-    Oper2Reti(cmp  , TYPE);  \
     Oper2Void(copy , TYPE);  \
     Oper1Void(free , void*); \
     Oper1File(print, TYPE);  \
@@ -104,6 +105,8 @@ STRUCT_MISC(4,argElement_4w);
 
 typedef struct _struct_1w {
   Oper3Void(add, argElement_1w);
+  Oper2Reti(cmp, argElement_1w);
+  Oper3Scal(cmv, argElement_1w);
   Oper2Void(inv, argElement_1w);
   Oper3Void(mul, argElement_1w);
   Oper1Void(neg, argElement_1w);
@@ -155,11 +158,13 @@ typedef struct _struct_arithex_2w_redradix {
 
 typedef struct _struct_2w {
   Oper3Void(add, argElement_2w);
+  Oper2Vect(cmp, argElement_2w);
+  Oper3Vect(cmv, argElement_2w);
   Oper3Void(mul, argElement_2w);
   Oper1Void(neg, argElement_2w);
   Oper2Void(ngz, argElement_2w);
+  Oper1Vect(sgn, argElement_2w);
   Oper1Void(sqr, argElement_2w);
-  Oper2Void(srt, argElement_2w);
   Oper3Void(sub, argElement_2w);
   const Misc_2w misc;
 } Arith_2w;
@@ -182,6 +187,7 @@ typedef struct _struct_arithex_4w_redradix {
 
 typedef struct _struct_4w {
   Oper3Void(add, argElement_4w);
+  Oper2Vect(cmp, argElement_4w);
   Oper3Void(mul, argElement_4w);
   Oper1Void(neg, argElement_4w);
   Oper2Void(ngz, argElement_4w);
