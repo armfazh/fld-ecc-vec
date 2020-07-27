@@ -434,7 +434,7 @@ DECL(int, cmp)(argElement_1w a, argElement_1w b) {
   ALIGN uint8_t b_bytes[SIZE_FP25519];
   FN(ser)(a_bytes, a);
   FN(ser)(b_bytes, b);
-  return cmp_bytes(a_bytes, b_bytes, SIZE_FP25519);
+  return cmp_bytes(a_bytes, b_bytes, SIZE_FP25519) & 0x1;
 }
 
 DECL(void, cmv)(int bit, argElement_1w c, argElement_1w a, argElement_1w b) {

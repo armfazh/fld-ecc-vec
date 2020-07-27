@@ -73,8 +73,9 @@ DECL(void, deinter)(argElement_1w a0, argElement_1w a1, argElement_2w a) {
 
 DECL(void, cmv)(__m256i bit, argElement_2w c, argElement_2w a, argElement_2w b) {
 	int i = 0;
-	const __m256i mask = SUB(ZERO, SHUF32(bit,0xA0));
-    for (i = 0; i < (NUM_DIGITS_FP25519 / 2); i++){
+	const __m256i ONE = SET64(0, 1, 0, 1);
+	const __m256i mask = SHUF32(SUB(ZERO,AND(bit,ONE)),0x44);
+	for (i = 0; i < (NUM_DIGITS_FP25519 / 2); i++){
 	    c[i] = _mm256_blendv_epi8(a[i],b[i],mask);
     }
 }
@@ -107,14 +108,6 @@ static const ALIGN uint64_t CONST_2P_00_H0H5[2 * NUM_DIGITS_FP25519] = {
 		0x3fffffe, 0x7fffffe, 0x0000000, 0x0000000,
 		0x7fffffe, 0x3fffffe, 0x0000000, 0x0000000
 };
-
-DECL(void, neg)(argElement_2w c) {
-	argElement_2w _2P = (argElement_2w) CONST_2P_2P_H0H5;
-    int i = 0;
-    for (i = 0; i < (NUM_DIGITS_FP25519 / 2); i++) {
-  	  c[i] = SUB(_2P[i], c[i]);
-    }
-}
 
 /**
  *
@@ -632,6 +625,15 @@ DECL(void, compressfast)(argElement_2w c) {
 }
 
 #undef mul19
+
+DECL(void, neg)(argElement_2w c) {
+	argElement_2w _2P = (argElement_2w) CONST_2P_2P_H0H5;
+    int i = 0;
+    for (i = 0; i < (NUM_DIGITS_FP25519 / 2); i++) {
+  	  c[i] = SUB(_2P[i], c[i]);
+    }
+	FN(compress)(c);
+}
 
 DECL(void, mul)(argElement_2w c, argElement_2w a, argElement_2w b) {
   FN(intmul)(c,a,b);

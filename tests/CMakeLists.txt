@@ -53,10 +53,12 @@ add_executable(tests
     vectors.c
     test_x25519.cpp
     test_ed25519.cpp
+    test_hash255.cpp
 )
 add_dependencies(tests ${TARGET}_static cpu_caps googletest-download)
 target_link_libraries(tests
     $<TARGET_OBJECTS:cpu_caps>
+    $<TARGET_OBJECTS:prng>
     gtest pthread gmp
     ${TARGET}_static)
 add_test(NAME test_lib COMMAND tests)

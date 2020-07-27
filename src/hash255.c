@@ -26,14 +26,6 @@
 #include "sha512.h"
 #include "simd_avx2.h"
 
-#if 0
-#define PP(X) (void)X;
-#else
-#define PP(X)         \
-  printf("%s= ", #X); \
-  fp.misc.print(stdout, X);
-#endif
-
 typedef ALIGN uint8_t Digest[512 / 8];
 
 static inline void hash_to_field(argElement_1w u, uint8_t prefix, uint8_t *msg,
@@ -110,64 +102,64 @@ static inline void expoC4(argElement_1w x_p58, argElement_1w x) {
 #undef sqrn_Fp255_1w_fullradix
 }
 
-static inline void expoC4_2w(argElement_2w x_p58, argElement_2w x){
-    const Arith_2w fp = Fp25519._2w_red.arith;
-    EltFp25519_2w_redradix x2, x9;
-    argElement_2w Tab[4];
-    int counter;
+static inline void expoC4_2w(argElement_2w x_p58, argElement_2w x) {
+  const Arith_2w fp = Fp25519._2w_red.arith;
+  EltFp25519_2w_redradix x2, x9;
+  argElement_2w Tab[4];
+  int counter;
 
-  #define sqrn_Fp255_2w_redradix(A, times) \
-    counter = times;                        \
-    while (counter-- > 0) {                 \
-      sqr_Fp255_2w_redradix(A);             \
-    }
+#define sqrn_Fp255_2w_redradix(A, times) \
+  counter = times;                       \
+  while (counter-- > 0) {                \
+    sqr_Fp255_2w_redradix(A);            \
+  }
 
-    Tab[0] = x2;
-    Tab[1] = x9;
-    Tab[2] = x_p58;
-    Tab[3] = x;
+  Tab[0] = x2;
+  Tab[1] = x9;
+  Tab[2] = x_p58;
+  Tab[3] = x;
 
-    fp.misc.copy(Tab[0], x);
-    fp.sqr(Tab[0]); /* x^2 */
-    /* 0 */
-    fp.misc.copy(Tab[1], Tab[0]);
-    sqrn_Fp255_2w_redradix(Tab[1], 2);
-    fp.mul(Tab[1], Tab[1], Tab[3]);
-    /* 1 */
-    fp.mul(Tab[0], Tab[0], Tab[1]);
-    /* 2 */
-    sqrn_Fp255_2w_redradix(Tab[0], 1);
-    fp.mul(Tab[0], Tab[0], Tab[1]);
-    /* 3 */
-    fp.misc.copy(Tab[1], Tab[0]);
-    sqrn_Fp255_2w_redradix(Tab[1], 5);
-    fp.mul(Tab[1], Tab[1], Tab[0]);
-    /* 4 */
-    fp.misc.copy(Tab[2], Tab[1]);
-    sqrn_Fp255_2w_redradix(Tab[2], 5);
-    fp.mul(Tab[2], Tab[2], Tab[0]);
-    /* 5 */
-    fp.misc.copy(Tab[1], Tab[2]);
-    sqrn_Fp255_2w_redradix(Tab[1], 15);
-    fp.mul(Tab[1], Tab[1], Tab[2]);
-    /* 6 */
-    fp.misc.copy(Tab[2], Tab[1]);
-    sqrn_Fp255_2w_redradix(Tab[2], 30);
-    fp.mul(Tab[2], Tab[2], Tab[1]);
-    /* 7 */
-    fp.misc.copy(Tab[1], Tab[2]);
-    sqrn_Fp255_2w_redradix(Tab[1], 60);
-    fp.mul(Tab[1], Tab[1], Tab[2]);
-    /* 8 */
-    sqrn_Fp255_2w_redradix(Tab[1], 5);
-    fp.mul(Tab[1], Tab[1], Tab[0]);
-    /* 9 */
-    fp.misc.copy(Tab[2], Tab[1]);
-    sqrn_Fp255_2w_redradix(Tab[2], 125);
-    fp.mul(Tab[2], Tab[2], Tab[1]);
-    /* 10 */
-    sqrn_Fp255_2w_redradix(Tab[2], 2);
-    fp.mul(Tab[2], Tab[2], Tab[3]);
+  fp.misc.copy(Tab[0], x);
+  fp.sqr(Tab[0]); /* x^2 */
+  /* 0 */
+  fp.misc.copy(Tab[1], Tab[0]);
+  sqrn_Fp255_2w_redradix(Tab[1], 2);
+  fp.mul(Tab[1], Tab[1], Tab[3]);
+  /* 1 */
+  fp.mul(Tab[0], Tab[0], Tab[1]);
+  /* 2 */
+  sqrn_Fp255_2w_redradix(Tab[0], 1);
+  fp.mul(Tab[0], Tab[0], Tab[1]);
+  /* 3 */
+  fp.misc.copy(Tab[1], Tab[0]);
+  sqrn_Fp255_2w_redradix(Tab[1], 5);
+  fp.mul(Tab[1], Tab[1], Tab[0]);
+  /* 4 */
+  fp.misc.copy(Tab[2], Tab[1]);
+  sqrn_Fp255_2w_redradix(Tab[2], 5);
+  fp.mul(Tab[2], Tab[2], Tab[0]);
+  /* 5 */
+  fp.misc.copy(Tab[1], Tab[2]);
+  sqrn_Fp255_2w_redradix(Tab[1], 15);
+  fp.mul(Tab[1], Tab[1], Tab[2]);
+  /* 6 */
+  fp.misc.copy(Tab[2], Tab[1]);
+  sqrn_Fp255_2w_redradix(Tab[2], 30);
+  fp.mul(Tab[2], Tab[2], Tab[1]);
+  /* 7 */
+  fp.misc.copy(Tab[1], Tab[2]);
+  sqrn_Fp255_2w_redradix(Tab[1], 60);
+  fp.mul(Tab[1], Tab[1], Tab[2]);
+  /* 8 */
+  sqrn_Fp255_2w_redradix(Tab[1], 5);
+  fp.mul(Tab[1], Tab[1], Tab[0]);
+  /* 9 */
+  fp.misc.copy(Tab[2], Tab[1]);
+  sqrn_Fp255_2w_redradix(Tab[2], 125);
+  fp.mul(Tab[2], Tab[2], Tab[1]);
+  /* 10 */
+  sqrn_Fp255_2w_redradix(Tab[2], 2);
+  fp.mul(Tab[2], Tab[2], Tab[3]);
 
 #undef sqrn_Fp255_2w_redradix
 }
@@ -194,53 +186,53 @@ static inline void elligator2_curve25519(argElement_1w xn, argElement_1w xd,
   EltFp25519_1w_fullradix tv1, tv2, tv3, gx1, x1n, gxd, x2n, y1, y12, y21, y11,
       gx2, y22, y2, y3, y;
 
-  fp.misc.copy(tv1, u);              //
-  fp.sqr(tv1);                       // 1.  tv1 = u^2
-  fp.add(tv1, tv1, tv1);             // 2.  tv1 = 2 * tv1
-  fp.add(xd, tv1, one);              // 3.   xd = tv1 + 1
-  fp.misc.copy(x1n, A);              //
-  fp.neg(x1n);                       // 4.  x1n = -J
-  fp.misc.copy(tv2, xd);             //
-  fp.sqr(tv2);                       // 5.  tv2 = xd^2
-  fp.mul(gxd, tv2, xd);              // 6.  gxd = tv2 * xd
-  fp.mul(gx1, A, tv1);               // 7.  gx1 = J * tv1
-  fp.mul(gx1, gx1, x1n);             // 8.  gx1 = gx1 * x1n
-  fp.add(gx1, gx1, tv2);             // 9.  gx1 = gx1 + tv2
-  fp.mul(gx1, gx1, x1n);             // 10. gx1 = gx1 * x1n
-  fp.misc.copy(tv3, gxd);            //
-  fp.sqr(tv3);                       // 11. tv3 = gxd^2
-  fp.misc.copy(tv2, tv3);            //
-  fp.sqr(tv2);                       // 12. tv2 = tv3^2
-  fp.mul(tv3, tv3, gxd);             // 13. tv3 = tv3 * gxd
-  fp.mul(tv3, tv3, gx1);             // 14. tv3 = tv3 * gx1
-  fp.mul(tv2, tv2, tv3);             // 15. tv2 = tv2 * tv3
-  expoC4(y11, tv2);                  // 16. y11 = tv2^c4
-  fp.mul(y11, y11, tv3);             // 17. y11 = y11 * tv3
-  fp.mul(y12, y11, c3);              // 18. y12 = y11 * c3
-  fp.misc.copy(tv2, y11);            //
-  fp.sqr(tv2);                       // 19. tv2 = y11^2
-  fp.mul(tv2, tv2, gxd);             // 20. tv2 = tv2 * gxd
-  e1 = fp.cmp(tv2, gx1) == 0;   // 21.  e1 = tv2 == gx1
+  fp.misc.copy(tv1, u);        //
+  fp.sqr(tv1);                 // 1.  tv1 = u^2
+  fp.add(tv1, tv1, tv1);       // 2.  tv1 = 2 * tv1
+  fp.add(xd, tv1, one);        // 3.   xd = tv1 + 1
+  fp.misc.copy(x1n, A);        //
+  fp.neg(x1n);                 // 4.  x1n = -J
+  fp.misc.copy(tv2, xd);       //
+  fp.sqr(tv2);                 // 5.  tv2 = xd^2
+  fp.mul(gxd, tv2, xd);        // 6.  gxd = tv2 * xd
+  fp.mul(gx1, A, tv1);         // 7.  gx1 = J * tv1
+  fp.mul(gx1, gx1, x1n);       // 8.  gx1 = gx1 * x1n
+  fp.add(gx1, gx1, tv2);       // 9.  gx1 = gx1 + tv2
+  fp.mul(gx1, gx1, x1n);       // 10. gx1 = gx1 * x1n
+  fp.misc.copy(tv3, gxd);      //
+  fp.sqr(tv3);                 // 11. tv3 = gxd^2
+  fp.misc.copy(tv2, tv3);      //
+  fp.sqr(tv2);                 // 12. tv2 = tv3^2
+  fp.mul(tv3, tv3, gxd);       // 13. tv3 = tv3 * gxd
+  fp.mul(tv3, tv3, gx1);       // 14. tv3 = tv3 * gx1
+  fp.mul(tv2, tv2, tv3);       // 15. tv2 = tv2 * tv3
+  expoC4(y11, tv2);            // 16. y11 = tv2^c4
+  fp.mul(y11, y11, tv3);       // 17. y11 = y11 * tv3
+  fp.mul(y12, y11, c3);        // 18. y12 = y11 * c3
+  fp.misc.copy(tv2, y11);      //
+  fp.sqr(tv2);                 // 19. tv2 = y11^2
+  fp.mul(tv2, tv2, gxd);       // 20. tv2 = tv2 * gxd
+  e1 = fp.cmp(tv2, gx1) == 0;  // 21.  e1 = tv2 == gx1
   fp.cmv(e1, y1, y12, y11);    // 22.  y1 = CMOV(y12, y11, e1)
-  fp.mul(x2n, x1n, tv1);             // 23. x2n = x1n * tv1
-  fp.mul(y21, y11, u);               // 24. y21 = y11 * u
-  fp.mul(y21, y21, c2);              // 25. y21 = y21 * c2
-  fp.mul(y22, y21, c3);              // 26. y22 = y21 * c3
-  fp.mul(gx2, gx1, tv1);             // 27. gx2 = gx1 * tv1
-  fp.misc.copy(tv2, y21);            //
-  fp.sqr(tv2);                       // 28. tv2 = y21^2
-  fp.mul(tv2, tv2, gxd);             // 29. tv2 = tv2 * gxd
-  e2 = fp.cmp(tv2, gx2) == 0;   // 30.  e2 = tv2 == gx2
+  fp.mul(x2n, x1n, tv1);       // 23. x2n = x1n * tv1
+  fp.mul(y21, y11, u);         // 24. y21 = y11 * u
+  fp.mul(y21, y21, c2);        // 25. y21 = y21 * c2
+  fp.mul(y22, y21, c3);        // 26. y22 = y21 * c3
+  fp.mul(gx2, gx1, tv1);       // 27. gx2 = gx1 * tv1
+  fp.misc.copy(tv2, y21);      //
+  fp.sqr(tv2);                 // 28. tv2 = y21^2
+  fp.mul(tv2, tv2, gxd);       // 29. tv2 = tv2 * gxd
+  e2 = fp.cmp(tv2, gx2) == 0;  // 30.  e2 = tv2 == gx2
   fp.cmv(e2, y2, y22, y21);    // 31.  y2 = CMOV(y22, y21, e2)
-  fp.misc.copy(tv2, y1);             //
-  fp.sqr(tv2);                       // 32. tv2 = y1^2
-  fp.mul(tv2, tv2, gxd);             // 33. tv2 = tv2 * gxd
-  e3 = fp.cmp(tv2, gx1) == 0;   // 34.  e3 = tv2 == gx1
+  fp.misc.copy(tv2, y1);       //
+  fp.sqr(tv2);                 // 32. tv2 = y1^2
+  fp.mul(tv2, tv2, gxd);       // 33. tv2 = tv2 * gxd
+  e3 = fp.cmp(tv2, gx1) == 0;  // 34.  e3 = tv2 == gx1
   fp.cmv(e3, xn, x2n, x1n);    // 35.  xn = CMOV(x2n, x1n, e3)
   fp.cmv(e3, y, y2, y1);       // 36.   y = CMOV(y2, y1, e3)
-  e4 = fp.sgn(y);                    // 37.  e4 = sgn0(y) == 1
-  fp.misc.copy(y3, y);               //
-  fp.neg(y3);                        //
+  e4 = fp.sgn(y);              // 37.  e4 = sgn0(y) == 1
+  fp.misc.copy(y3, y);         //
+  fp.neg(y3);                  //
   fp.cmv(e3 ^ e4, yn, y, y3);  // 38.   y = CMOV(y, -y, e3 XOR e4)
   fp.misc.copy(yd, one);
 }
@@ -262,25 +254,26 @@ static inline void elligator2_edwards25519(argElement_1w xn, argElement_1w xd,
 
   elligator2_curve25519(xMn, xMd, yMn, yMd, u);
   // 1.  (xMn, xMd, yMn, yMd) = elligator2_curve25519(u)
-  fp.mul(xn, xMn, yMd);             // 2.  xn = xMn * yMd
-  fp.mul(xn, xn, c1);               // 3.  xn = xn * c1
-  fp.mul(xd, xMd, yMn);             // 4.  xd = xMd * yMn
-  fp.sub(yn, xMn, xMd);             // 5.  yn = xMn - xMd
-  fp.add(yd, xMn, xMd);             // 6.  yd = xMn + xMd
-  fp.mul(tv1, xd, yd);              // 7. tv1 = xd * yd
+  fp.mul(xn, xMn, yMd);        // 2.  xn = xMn * yMd
+  fp.mul(xn, xn, c1);          // 3.  xn = xn * c1
+  fp.mul(xd, xMd, yMn);        // 4.  xd = xMd * yMn
+  fp.sub(yn, xMn, xMd);        // 5.  yn = xMn - xMd
+  fp.add(yd, xMn, xMd);        // 6.  yd = xMn + xMd
+  fp.mul(tv1, xd, yd);         // 7. tv1 = xd * yd
   e = fp.cmp(tv1, zero) == 0;  // 8.   e = tv1 == 0
-  fp.cmv(e, xn, xn, zero);    // 9.  xn = CMOV(xn, 0, e)
-  fp.cmv(e, xd, xd, one);     // 10. xd = CMOV(xd, 1, e)
-  fp.cmv(e, yn, yn, one);     // 11. yn = CMOV(yn, 1, e)
-  fp.cmv(e, yd, yd, one);     // 12. yd = CMOV(yd, 1, e)
+  fp.cmv(e, xn, xn, zero);     // 9.  xn = CMOV(xn, 0, e)
+  fp.cmv(e, xd, xd, one);      // 10. xd = CMOV(xd, 1, e)
+  fp.cmv(e, yn, yn, one);      // 11. yn = CMOV(yn, 1, e)
+  fp.cmv(e, yd, yd, one);      // 12. yd = CMOV(yd, 1, e)
 }
 
 static inline void elligator2_curve25519_2w(argElement_2w xn, argElement_2w xd,
                                             argElement_2w yn, argElement_2w yd,
                                             argElement_2w u) {
   const Arith_2w fp = Fp25519._2w_red.arith;
-  __m256i e1,e2,e3,e4;
-  EltFp25519_2w_redradix one = {SET64(0, 1, 0, 1), ZERO, ZERO, ZERO, ZERO};
+  const __m256i ONE = SET64(0, 1, 0, 1);
+  __m256i e1, e2, e3, e4;
+  EltFp25519_2w_redradix one = {ONE, ZERO, ZERO, ZERO, ZERO};
   EltFp25519_2w_redradix A = {SET64(0, 486662, 0, 486662), ZERO, ZERO, ZERO,
                               ZERO};
   EltFp25519_2w_redradix c2 = /* 2^((p+3)/8) */ {
@@ -300,55 +293,59 @@ static inline void elligator2_curve25519_2w(argElement_2w xn, argElement_2w xd,
   EltFp25519_2w_redradix tv1, tv2, tv3, gx1, x1n, gxd, x2n, y1, y12, y21, y11,
       gx2, y22, y2, y3, y;
 
-  fp.misc.copy(tv1, u);              //
-  fp.sqr(tv1);                       // 1.  tv1 = u^2
-  fp.add(tv1, tv1, tv1);             // 2.  tv1 = 2 * tv1
-  fp.add(xd, tv1, one);              // 3.   xd = tv1 + 1
-  fp.misc.copy(x1n, A);              //
-  fp.neg(x1n);                       // 4.  x1n = -J
-  fp.misc.copy(tv2, xd);             //
-  fp.sqr(tv2);                       // 5.  tv2 = xd^2
-  fp.mul(gxd, tv2, xd);              // 6.  gxd = tv2 * xd
-  fp.mul(gx1, A, tv1);               // 7.  gx1 = J * tv1
-  fp.mul(gx1, gx1, x1n);             // 8.  gx1 = gx1 * x1n
-  fp.add(gx1, gx1, tv2);             // 9.  gx1 = gx1 + tv2
-  fp.mul(gx1, gx1, x1n);             // 10. gx1 = gx1 * x1n
-  fp.misc.copy(tv3, gxd);            //
-  fp.sqr(tv3);                       // 11. tv3 = gxd^2
-  fp.misc.copy(tv2, tv3);            //
-  fp.sqr(tv2);                       // 12. tv2 = tv3^2
-  fp.mul(tv3, tv3, gxd);             // 13. tv3 = tv3 * gxd
-  fp.mul(tv3, tv3, gx1);             // 14. tv3 = tv3 * gx1
-  fp.mul(tv2, tv2, tv3);             // 15. tv2 = tv2 * tv3
-  expoC4_2w(y11, tv2);                  // 16. y11 = tv2^c4
-  fp.mul(y11, y11, tv3);             // 17. y11 = y11 * tv3
-  fp.mul(y12, y11, c3);              // 18. y12 = y11 * c3
-  fp.misc.copy(tv2, y11);            //
-  fp.sqr(tv2);                       // 19. tv2 = y11^2
-  fp.mul(tv2, tv2, gxd);             // 20. tv2 = tv2 * gxd
+  fp.misc.copy(tv1, u);            //
+  fp.sqr(tv1);                     // 1.  tv1 = u^2
+  fp.add(tv1, tv1, tv1);           // 2.  tv1 = 2 * tv1
+  fp.add(xd, tv1, one);            // 3.   xd = tv1 + 1
+  fp.misc.copy(x1n, A);            //
+  fp.neg(x1n);                     // 4.  x1n = -J
+  fp.misc.copy(tv2, xd);           //
+  fp.sqr(tv2);                     // 5.  tv2 = xd^2
+  fp.mul(gxd, tv2, xd);            // 6.  gxd = tv2 * xd
+  fp.mul(gx1, A, tv1);             // 7.  gx1 = J * tv1
+  fp.mul(gx1, gx1, x1n);           // 8.  gx1 = gx1 * x1n
+  fp.add(gx1, gx1, tv2);           // 9.  gx1 = gx1 + tv2
+  fp.mul(gx1, gx1, x1n);           // 10. gx1 = gx1 * x1n
+  fp.misc.copy(tv3, gxd);          //
+  fp.sqr(tv3);                     // 11. tv3 = gxd^2
+  fp.misc.copy(tv2, tv3);          //
+  fp.sqr(tv2);                     // 12. tv2 = tv3^2
+  fp.mul(tv3, tv3, gxd);           // 13. tv3 = tv3 * gxd
+  fp.mul(tv3, tv3, gx1);           // 14. tv3 = tv3 * gx1
+  fp.mul(tv2, tv2, tv3);           // 15. tv2 = tv2 * tv3
+  expoC4_2w(y11, tv2);             // 16. y11 = tv2^c4
+  fp.mul(y11, y11, tv3);           // 17. y11 = y11 * tv3
+  fp.mul(y12, y11, c3);            // 18. y12 = y11 * c3
+  fp.misc.copy(tv2, y11);          //
+  fp.sqr(tv2);                     // 19. tv2 = y11^2
+  fp.mul(tv2, tv2, gxd);           // 20. tv2 = tv2 * gxd
   e1 = fp.cmp(tv2, gx1) == ZERO;   // 21.  e1 = tv2 == gx1
-  fp.cmv(e1, y1, y12, y11);    // 22.  y1 = CMOV(y12, y11, e1)
-  fp.mul(x2n, x1n, tv1);             // 23. x2n = x1n * tv1
-  fp.mul(y21, y11, u);               // 24. y21 = y11 * u
-  fp.mul(y21, y21, c2);              // 25. y21 = y21 * c2
-  fp.mul(y22, y21, c3);              // 26. y22 = y21 * c3
-  fp.mul(gx2, gx1, tv1);             // 27. gx2 = gx1 * tv1
-  fp.misc.copy(tv2, y21);            //
-  fp.sqr(tv2);                       // 28. tv2 = y21^2
-  fp.mul(tv2, tv2, gxd);             // 29. tv2 = tv2 * gxd
+  fp.cmv(e1, y1, y12, y11);        // 22.  y1 = CMOV(y12, y11, e1)
+  fp.mul(x2n, x1n, tv1);           // 23. x2n = x1n * tv1
+  fp.mul(y21, y11, u);             // 24. y21 = y11 * u
+  fp.mul(y21, y21, c2);            // 25. y21 = y21 * c2
+  fp.mul(y22, y21, c3);            // 26. y22 = y21 * c3
+  fp.mul(gx2, gx1, tv1);           // 27. gx2 = gx1 * tv1
+  fp.misc.copy(tv2, y21);          //
+  fp.sqr(tv2);                     // 28. tv2 = y21^2
+  fp.mul(tv2, tv2, gxd);           // 29. tv2 = tv2 * gxd
   e2 = fp.cmp(tv2, gx2) == ZERO;   // 30.  e2 = tv2 == gx2
-  fp.cmv(e2, y2, y22, y21);    // 31.  y2 = CMOV(y22, y21, e2)
-  fp.misc.copy(tv2, y1);             //
-  fp.sqr(tv2);                       // 32. tv2 = y1^2
-  fp.mul(tv2, tv2, gxd);             // 33. tv2 = tv2 * gxd
+  fp.cmv(e2, y2, y22, y21);        // 31.  y2 = CMOV(y22, y21, e2)
+  fp.misc.copy(tv2, y1);           //
+  fp.sqr(tv2);                     // 32. tv2 = y1^2
+  fp.mul(tv2, tv2, gxd);           // 33. tv2 = tv2 * gxd
   e3 = fp.cmp(tv2, gx1) == ZERO;   // 34.  e3 = tv2 == gx1
-  fp.cmv(e3, xn, x2n, x1n);    // 35.  xn = CMOV(x2n, x1n, e3)
-  fp.cmv(e3, y, y2, y1);       // 36.   y = CMOV(y2, y1, e3)
-  e4 = fp.sgn(y);                    // 37.  e4 = sgn0(y) == 1
-  fp.misc.copy(y3, y);               //
-  fp.neg(y3);                        //
-  fp.cmv(XOR(e3,e4), yn, y, y3);  // 38.   y = CMOV(y, -y, e3 XOR e4)
+  fp.cmv(e3, xn, x2n, x1n);        // 35.  xn = CMOV(x2n, x1n, e3)
+  fp.cmv(e3, y, y2, y1);           // 36.   y = CMOV(y2, y1, e3)
+  e4 = fp.sgn(y) == ONE;           // 37.  e4 = sgn0(y) == 1
+  fp.misc.copy(y3, y);             //
+  fp.neg(y3);                      //
+  fp.cmv(XOR(e3, e4), yn, y, y3);  // 38.   y = CMOV(y, -y, e3 XOR e4)
   fp.misc.copy(yd, one);
+  Fp25519._2w_red.arithex.compress(xn);
+  Fp25519._2w_red.arithex.compress(xd);
+  Fp25519._2w_red.arithex.compress(yn);
+  Fp25519._2w_red.arithex.compress(yd);
 }
 
 static inline void elligator2_edwards25519_2w(argElement_2w xn,
@@ -371,22 +368,27 @@ static inline void elligator2_edwards25519_2w(argElement_2w xn,
 
   elligator2_curve25519_2w(xMn, xMd, yMn, yMd, u);
   // 1.  (xMn, xMd, yMn, yMd) = elligator2_curve25519(u)
-  fp.mul(xn, xMn, yMd);             // 2.  xn = xMn * yMd
-  fp.mul(xn, xn, c1);               // 3.  xn = xn * c1
-  fp.mul(xd, xMd, yMn);             // 4.  xd = xMd * yMn
-  fp.sub(yn, xMn, xMd);             // 5.  yn = xMn - xMd
-  fp.add(yd, xMn, xMd);             // 6.  yd = xMn + xMd
-  fp.mul(tv1, xd, yd);              // 7. tv1 = xd * yd
-  e = fp.cmp(tv1, zero);  // 8.   e = tv1 == 0
-  fp.cmv(e, xn, xn, zero);    // 9.  xn = CMOV(xn, 0, e)
-  fp.cmv(e, xd, xd, one);     // 10. xd = CMOV(xd, 1, e)
-  fp.cmv(e, yn, yn, one);     // 11. yn = CMOV(yn, 1, e)
-  fp.cmv(e, yd, yd, one);     // 12. yd = CMOV(yd, 1, e)
+  fp.mul(xn, xMn, yMd);           // 2.  xn = xMn * yMd
+  fp.mul(xn, xn, c1);             // 3.  xn = xn * c1
+  fp.mul(xd, xMd, yMn);           // 4.  xd = xMd * yMn
+  fp.sub(yn, xMn, xMd);           // 5.  yn = xMn - xMd
+  fp.add(yd, xMn, xMd);           // 6.  yd = xMn + xMd
+  fp.mul(tv1, xd, yd);            // 7. tv1 = xd * yd
+  e = fp.cmp(tv1, zero) == ZERO;  // 8.   e = tv1 == 0
+  fp.cmv(e, xn, xn, zero);        // 9.  xn = CMOV(xn, 0, e)
+  fp.cmv(e, xd, xd, one);         // 10. xd = CMOV(xd, 1, e)
+  fp.cmv(e, yn, yn, one);         // 11. yn = CMOV(yn, 1, e)
+  fp.cmv(e, yd, yd, one);         // 12. yd = CMOV(yd, 1, e)
+  Fp25519._2w_red.arithex.compress(xn);
+  Fp25519._2w_red.arithex.compress(xd);
+  Fp25519._2w_red.arithex.compress(yn);
+  Fp25519._2w_red.arithex.compress(yd);
 }
 
 void map_to_curve(PointXYZT_1way_full *P, argElement_1w u) {
   const Arith_1w fp = Fp25519._1w_full.arith;
   EltFp25519_1w_fullradix xn, xd, yn, yd;
+
   elligator2_edwards25519(xn, xd, yn, yd, u);
   fp.mul(P->X, xn, yd);
   fp.mul(P->Y, yn, xd);
@@ -397,6 +399,7 @@ void map_to_curve(PointXYZT_1way_full *P, argElement_1w u) {
 void map_to_curve_2w(PointXYZT_2way *P, argElement_2w u0u1) {
   const Arith_2w fp = Fp25519._2w_red.arith;
   EltFp25519_2w_redradix xn, xd, yn, yd;
+
   elligator2_edwards25519_2w(xn, xd, yn, yd, u0u1);
   fp.mul(P->X, xn, yd);
   fp.mul(P->Y, yn, xd);
@@ -411,24 +414,21 @@ static inline void clear_cofactor(PointXYZT_1way_full *P) {
 }
 
 static inline void clear_cofactor_2w(PointXYZT_2way *P) {
-  _2way_doubling(P, 1);
-  _2way_doubling(P, 1);
+  _2way_doubling(P, 0);
+  _2way_doubling(P, 0);
   _2way_doubling(P, 1);
 }
 
-static inline void toAffine(PointXYZT_1way_full *P) {
+static inline void toAffine(Point *P, PointXYZT_1way_full *P_proy) {
   const Arith_1w fp = Fp25519._1w_full.arith;
   EltFp25519_1w_fullradix invZ;
-  EltFp25519_1w_fullradix one = {1};
 
-  fp.inv(invZ, P->Z);
-  fp.mul(P->X, P->X, invZ);
-  fp.mul(P->Y, P->Y, invZ);
-  fp.mul(P->T, P->X, P->Y);
-  fp.misc.copy(P->Z, one);
+  fp.inv(invZ, P_proy->Z);
+  fp.mul(P->X, P_proy->X, invZ);
+  fp.mul(P->Y, P_proy->Y, invZ);
 }
 
-int isOnCurve(PointXYZT_1way_full *P) {
+static inline int isOnCurveProy(PointXYZT_1way_full *P) {
   const Arith_1w fp = Fp25519._1w_full.arith;
   EltFp25519_1w_fullradix x2, y2, z2, t2, tz, dt2, e0, e1;
   EltFp25519_1w_fullradix zero = {0};
@@ -455,34 +455,66 @@ int isOnCurve(PointXYZT_1way_full *P) {
   return fp.cmp(e0, zero) == 0 && fp.cmp(e1, zero) == 0;
 }
 
-void h2c25519_x64(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen) {
+int isOnCurve(Point *P) {
+  const Arith_1w fp = Fp25519._1w_full.arith;
+  EltFp25519_1w_fullradix x2, y2, dx2y2, e;
+  EltFp25519_1w_fullradix zero = {0};
+  EltFp25519_1w_fullradix one = {1};
+  EltFp25519_1w_fullradix paramD = {0x75eb4dca135978a3, 0x00700a4d4141d8ab,
+                                    0x8cc740797779e898, 0x52036cee2b6ffe73};
+
+  // ax^2+y^2=z^2+dT, XY=ZT
+  fp.misc.copy(x2, P->X);
+  fp.misc.copy(y2, P->Y);
+  fp.sqr(x2);
+  fp.sqr(y2);
+  fp.mul(dx2y2, x2, y2);
+  fp.mul(dx2y2, dx2y2, paramD);
+  fp.sub(e, y2, x2);  // a = -1
+  fp.sub(e, e, one);
+  fp.sub(e, e, dx2y2);
+  return fp.cmp(e, zero) == 0;
+}
+
+int areEqual(Point *P, Point *Q) {
+  const Arith_1w fp = Fp25519._1w_full.arith;
+  return fp.cmp(P->X, Q->X) == 0 && fp.cmp(P->Y, Q->Y) == 0;
+}
+
+void h2c25519_x64(Point *P, uint8_t *msg, size_t mlen) {
   EltFp25519_1w_fullradix u0, u1;
   PointXYZT_1way_full Q0, Q1;
+  PointXYZT_1way_full Q;
 
   hash_to_field(u0, '0', msg, mlen);
   hash_to_field(u1, '1', msg, mlen);
   map_to_curve(&Q0, u0);
   map_to_curve(&Q1, u1);
+
   clear_cofactor(&Q0);
   clear_cofactor(&Q1);
-  _1way_fulladd_1w_full(P, &Q0, &Q1);
-  toAffine(P);
+  _1way_fulladd_1w_full(&Q, &Q0, &Q1);
+  toAffine(P, &Q);
 }
 
-void h2c25519_avx2(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen) {
-  EltFp25519_1w_fullradix u0, u1;
+void h2c25519_avx2(Point *P, uint8_t *msg, size_t mlen) {
+  EltFp25519_1w_fullradix uu0, uu1;
+  EltFp25519_1w_redradix u0, u1;
   PointXYZT_2way Q0Q1;
   EltFp25519_2w_redradix u0u1;
+  PointXYZT_1way Q0, Q1;
+  PointXYZT_1way_full P0, P1;
+  PointXYZT_1way_full Q;
 
-  hash_to_field(u0, '0', msg, mlen);
-  hash_to_field(u1, '1', msg, mlen);
+  hash_to_field(uu0, '0', msg, mlen);
+  hash_to_field(uu1, '1', msg, mlen);
+  Fp25519._1w_red.arith.misc.unser(u0, (uint8_t *)uu0);
+  Fp25519._1w_red.arith.misc.unser(u1, (uint8_t *)uu1);
   Fp25519._2w_red.arithex.inter(u0u1, u0, u1);
 
   map_to_curve_2w(&Q0Q1, u0u1);
   clear_cofactor_2w(&Q0Q1);
 
-  PointXYZT_1way Q0, Q1;
-  PointXYZT_1way_full P0, P1;
   Fp25519._2w_red.arithex.deinter(Q0.X, Q1.X, Q0Q1.X);
   Fp25519._2w_red.arithex.deinter(Q0.Y, Q1.Y, Q0Q1.Y);
   Fp25519._2w_red.arithex.deinter(Q0.T, Q1.T, Q0Q1.T);
@@ -495,11 +527,11 @@ void h2c25519_avx2(PointXYZT_1way_full *P, uint8_t *msg, size_t mlen) {
   Fp25519._1w_red.arith.misc.ser((uint8_t *)P1.Y, Q1.Y);
   Fp25519._1w_red.arith.misc.ser((uint8_t *)P1.T, Q1.T);
   Fp25519._1w_red.arith.misc.ser((uint8_t *)P1.Z, Q1.Z);
-  _1way_fulladd_1w_full(P, &P0, &P1);
-  toAffine(P);
+  _1way_fulladd_1w_full(&Q, &P0, &P1);
+  toAffine(P, &Q);
 }
 
-void print_point(FILE *file, PointXYZT_1way_full *P) {
+static inline void print_point_proy(FILE *file, PointXYZT_1way_full *P) {
   fprintf(file, "X: ");
   Fp25519._1w_full.arith.misc.print(file, P->X);
   fprintf(file, "Y: ");
@@ -508,6 +540,13 @@ void print_point(FILE *file, PointXYZT_1way_full *P) {
   Fp25519._1w_full.arith.misc.print(file, P->T);
   fprintf(file, "Z: ");
   Fp25519._1w_full.arith.misc.print(file, P->Z);
+}
+
+void print_point(FILE *file, Point *P) {
+  fprintf(file, "X: ");
+  Fp25519._1w_full.arith.misc.print(file, P->X);
+  fprintf(file, "Y: ");
+  Fp25519._1w_full.arith.misc.print(file, P->Y);
 }
 
 #else
