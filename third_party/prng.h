@@ -7,6 +7,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <stdlib.h>
 
 void prgn_random_bytes(uint8_t *buffer, size_t num_bytes);
 
