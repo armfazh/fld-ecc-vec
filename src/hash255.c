@@ -23,6 +23,7 @@
 #include "edwards255.h"
 #include "faz_fp_avx2.h"
 #include "faz_hash_avx2.h"
+#include "multi_hash.h"
 #include "sha512.h"
 #include "simd_avx2.h"
 
@@ -38,6 +39,31 @@ static inline void hash_to_field(argElement_1w u, uint8_t prefix, uint8_t *msg,
   sph_sha512_close(&h0, h0_msg);
   modular_reduction_ed25519(h0_msg);
   memcpy(u, h0_msg, SIZE_FP25519);
+}
+
+static inline void hash_to_field_2w(argElement_1w u0, argElement_1w u1,
+                                    uint8_t *msg, size_t mlen) {
+  uint8_t *message[2];
+  uint8_t *digest[2];
+  Digest h0_msg, h1_msg;
+  message[0] = (uint8_t *)_mm_malloc(mlen + 1, ALIGN_BYTES);
+  message[1] = (uint8_t *)_mm_malloc(mlen + 1, ALIGN_BYTES);
+  digest[0] = h0_msg;
+  digest[1] = h1_msg;
+  memcpy(message[0] + 1, msg, mlen);
+  memcpy(message[1] + 1, msg, mlen);
+  message[0][0] = 0;
+  message[1][0] = 1;
+
+  sha512_2w_avx(message, mlen, digest);
+
+  modular_reduction_ed25519(h0_msg);
+  modular_reduction_ed25519(h1_msg);
+  memcpy(u0, h0_msg, SIZE_FP25519);
+  memcpy(u1, h1_msg, SIZE_FP25519);
+
+  _mm_free(message[0]);
+  _mm_free(message[1]);
 }
 
 static inline void expoC4(argElement_1w x_p58, argElement_1w x) {
@@ -506,8 +532,7 @@ void h2c25519_avx2(Point *P, uint8_t *msg, size_t mlen) {
   PointXYZT_1way_full P0, P1;
   PointXYZT_1way_full Q;
 
-  hash_to_field(uu0, '0', msg, mlen);
-  hash_to_field(uu1, '1', msg, mlen);
+  hash_to_field_2w(uu0, uu1, msg, mlen);
   Fp25519._1w_red.arith.misc.unser(u0, (uint8_t *)uu0);
   Fp25519._1w_red.arith.misc.unser(u1, (uint8_t *)uu1);
   Fp25519._2w_red.arithex.inter(u0u1, u0, u1);
