@@ -9,13 +9,13 @@
 static void bench_sha512_2w() {
   const int BENCH = 500;
   const int NUM = 2;
-  const int MSG_LEN = 512;
+  const int MSG_LEN = 128;
   int i_multi = 0;
   uint8_t *message[NUM];
   uint8_t *digest[NUM];
   for (i_multi = 0; i_multi < NUM; i_multi++) {
     message[i_multi] = (uint8_t *)_mm_malloc((MSG_LEN) + 1, ALIGN_BYTES);
-    digest[i_multi] = (uint8_t *)_mm_malloc(32, ALIGN_BYTES);
+    digest[i_multi] = (uint8_t *)_mm_malloc(64, ALIGN_BYTES);
     prgn_random_bytes(message[i_multi], MSG_LEN);
   }
   CLOCKS(SHA512_avx, sha512_2w_avx(message, MSG_LEN, digest));
@@ -27,7 +27,7 @@ static void bench_sha512_2w() {
 
 void bench_third_party() {
   const int BENCH = 500;
-  const int message_length = 512;
+  const int message_length = 128;
   uint8_t message[message_length];
   uint8_t digest_sha512[SPH_SIZE_sha512];
   uint8_t digest_sha3[128];
