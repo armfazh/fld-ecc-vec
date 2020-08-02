@@ -25,7 +25,6 @@
 #include "faz_hash_avx2.h"
 #include "multi_hash.h"
 #include "sha512.h"
-#include "simd_avx2.h"
 
 typedef ALIGN uint8_t Digest[512 / 8];
 
@@ -55,7 +54,7 @@ static inline void hash_to_field_2w(argElement_1w u0, argElement_1w u1,
   message[0][0] = 0;
   message[1][0] = 1;
 
-  sha512_2w_avx(message, mlen, digest);
+  sha512_2w_avx(message, mlen + 1, digest);
 
   modular_reduction_ed25519(h0_msg);
   modular_reduction_ed25519(h1_msg);
@@ -512,8 +511,8 @@ void h2c25519_x64(Point *P, uint8_t *msg, size_t mlen) {
   PointXYZT_1way_full Q0, Q1;
   PointXYZT_1way_full Q;
 
-  hash_to_field(u0, '0', msg, mlen);
-  hash_to_field(u1, '1', msg, mlen);
+  hash_to_field(u0, 0, msg, mlen);
+  hash_to_field(u1, 1, msg, mlen);
   map_to_curve(&Q0, u0);
   map_to_curve(&Q1, u1);
 

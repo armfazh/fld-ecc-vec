@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "multi_hash.h"
 
 #define ZERO    ZERO_128
@@ -12,8 +11,12 @@
 #define SET1_64 SET1_64_128
 #define LOAD    LOAD_128
 #define STORE   STORE_128
-#define BROAD   BROADCAST32_128
+#define BROAD   BROADCAST64_128
 #define K       KSHA512
+
+#define TYPE __m128i
+#define NUM_MSG (2)
+#define BLOCK_SIZE_BYTES (128)
 
 /*
 static void printm128i(__m128i data)
@@ -40,6 +43,7 @@ static void print_state(__m128i state[8])
     {
         printf("block(%02d): ",i);printm128i(state[i]);
     }
+    printf("\n");
 }
 
 static void print_letters(
@@ -116,12 +120,12 @@ static inline __m128i computeT1(__m128i e,__m128i f,__m128i g,__m128i h)
 {
 	__m128i t0,t1,t2,t3,t4,t5,T1;
 
-	t0 = SHL(e, 64 - (28));
-	t1 = SHL(e, 64 - (34));
-	t2 = SHL(e, 64 - (39));
-	t3 = SHR(e, (28));
-	t4 = SHR(e, (34));
-	t5 = SHR(e, (39));
+	t0 = SHL(e, 64 - (14));
+	t1 = SHL(e, 64 - (18));
+	t2 = SHL(e, 64 - (41));
+	t3 = SHR(e, (14));
+	t4 = SHR(e, (18));
+	t5 = SHR(e, (41));
 	t3 = OR(t3,t0);
 	t0 = XOR(f,g);
 	t4 = OR(t4,t1);
@@ -141,14 +145,14 @@ static inline __m128i computeT2(__m128i a,__m128i b,__m128i c)
 	s0 = OR(b, c);
 	T2 = AND(b, c);
 	s0 = AND(a,s0);
-	s1 = SHL(a, 64 - (14));
-	s2 = SHL(a, 64 - (18));
-	s3 = SHL(a, 64 - (41));
-	s4 = SHR(a, (14));
-	s5 = SHR(a, (18));
+	s1 = SHL(a, 64 - (28));
+	s2 = SHL(a, 64 - (34));
+	s3 = SHL(a, 64 - (39));
+	s4 = SHR(a, (28));
+	s5 = SHR(a, (34));
 	s4 = OR(s4,s1);
 	s5 = OR(s5,s2);
-	s1 = SHR(a, (41));
+	s1 = SHR(a, (39));
 	s0 = OR(T2,s0);
 	s1 = OR(s1,s3);
 	s4 = XOR(s4,s5);
@@ -184,7 +188,6 @@ static inline __m128i msg_schedule(__m128i *W, uint8_t i)
 	Wi = ADD(t7,t6);
 	return Wi;
 }
-
 
 static inline void sha512_permutation(__m128i *state, __m128i *message_block)
 {
@@ -229,48 +232,48 @@ static inline void sha512_permutation(__m128i *state, __m128i *message_block)
 
 void sha512_2w_avx_256b(uint8_t *message_2x[2], uint8_t *digest_2x[2])
 {
-    const __m128i big_endian = _mm_set_epi32(0x0c0d0e0f,0x08090a0b,0x04050607,0x00010203);
+    const __m128i big_endian = _mm_set_epi64x(0x08090a0b0c0d0e0f,0x0001020304050607);
     int msg=0;
-    unsigned int b=0;
+    unsigned int i=0;
     ALIGN __m128i state[8];
     ALIGN __m128i block[80];
 
     initialize(state);
-    for (msg = 0; msg < 2; msg++)
+    for (msg = 0; msg < NUM_MSG; msg++)
     {
-        for (b = 0; b < 2; b++)
+        for (i = 0; i < 16/(NUM_MSG); i++)
         {
-            block[2*b+msg] = SHUF8(LOAD(message_2x[msg]+b),big_endian);
+            block[NUM_MSG*i+msg] = SHUF8(LOAD(message_2x[msg]+i),big_endian);
         }
     }
 	TRANSPOSE_2WAY(block[0x0],block[0x1]);
     TRANSPOSE_2WAY(block[0x2],block[0x3]);
-    block[4] = SET1_64(0x80000000);
-    for(b=5; b < 15; b++)
+    block[4] = SET1_64(0x8000000000000000);
+    for(i=5; i < 15; i++)
     {
-        block[b] = ZERO;
+        block[i] = ZERO;
     }
 	block[15] = SET1_64(256);
 	sha512_permutation(state, block);
     transpose_state_2way(state);
-    for (msg = 0; msg < 2; msg++)
+    for (msg = 0; msg < NUM_MSG; msg++)
     {
-        for (b = 0; b < 2; b++)
+        for (i = 0; i < 4; i++)
         {
-            STORE(digest_2x[msg]+b,SHUF8(state[2*b+msg],big_endian));
+            STORE(digest_2x[msg]+i,SHUF8(state[NUM_MSG*i+msg],big_endian));
         }
     }
 }
 
-void sha512_2w_avx(uint8_t *message_2x[2], unsigned int message_length, uint8_t *digest_2x[2])
+void sha512_2w_avx(uint8_t *message_2x[2], unsigned int message_length_bytes, uint8_t *digest_2x[2])
 {
-    const __m128i big_endian = _mm_set_epi32(0x0c0d0e0f,0x08090a0b,0x04050607,0x00010203);
-    const unsigned int num_blocks = message_length>>7;
-    const unsigned int remainder_bytes = message_length-(num_blocks<<7);
-    const uint64_t mlen_bits = message_length*8;
+    const __m128i big_endian = _mm_set_epi64x(0x08090a0b0c0d0e0f,0x0001020304050607);
+    const unsigned int num_blocks = message_length_bytes>>7;
+    const unsigned int remainder_bytes = message_length_bytes-(num_blocks<<7);
+    const __uint128_t mlen_bits = (__uint128_t)message_length_bytes*8;
     ALIGN __m128i state[8];
     ALIGN __m128i block[80];
-    ALIGN uint8_t buffer[80*2] = {0};
+    ALIGN uint8_t buffer[BLOCK_SIZE_BYTES*NUM_MSG] = {0};
     int i=0,msg=0;
     unsigned int b=0;
 
@@ -278,93 +281,93 @@ void sha512_2w_avx(uint8_t *message_2x[2], unsigned int message_length, uint8_t 
     for(b=0;b<num_blocks;b++)
     {
         /* Load a 1024-bit message_2x */
-        for (msg = 0; msg < 2; msg++)
+        for (msg = 0; msg < NUM_MSG; msg++)
         {
-            for (i = 0; i < 2; i++)
+            for (i = 0; i < 16/(NUM_MSG); i++)
             {
-                block[2*i+msg] = SHUF8(LOAD(message_2x[msg]+2*b+i),big_endian);
+                block[NUM_MSG*i+msg] = SHUF8(LOAD(message_2x[msg]+(16/(NUM_MSG))*b+i),big_endian);
             }
         }
 		transpose_msg_2way(block);
 		sha512_permutation(state, block);
     }
-    /* Load a remainder of the message_4x */
-	if(remainder_bytes<56)
+    /* Load a remainder of the message_2x */
+	if(remainder_bytes<112)
 	{
-		for (msg = 0; msg < 2; msg++)
+		for (msg = 0; msg < NUM_MSG; msg++)
 		{
 			for (b = 0; b < remainder_bytes; b++)
 			{
-				buffer[80*msg+b] = message_2x[msg][80*num_blocks+b];
+				buffer[BLOCK_SIZE_BYTES*msg+b] = message_2x[msg][BLOCK_SIZE_BYTES*num_blocks+b];
 			}
-			buffer[64*msg+remainder_bytes] = 0x80;
-			for (b = 0; b < 8; b++)
+			buffer[BLOCK_SIZE_BYTES*msg+remainder_bytes] = 0x80;
+			for (b = 0; b < 16; b++)
 			{
-				buffer[80*(msg+1)-b-1] = (uint8_t)((mlen_bits>>(8*b))&0xFF);
+				buffer[BLOCK_SIZE_BYTES*(msg+1)-b-1] = (uint8_t)((mlen_bits>>(8*b))&0xFF);
 			}
 		}
-		for (msg = 0; msg < 2; msg++)
+		for (msg = 0; msg < NUM_MSG; msg++)
 		{
-			for (b = 0; b < 2; b++)
+			for (i = 0; i < 16/(NUM_MSG); i++)
 			{
-				block[2*msg+b] = SHUF8(LOAD(buffer+2*b+msg),big_endian);
+				block[msg+NUM_MSG*i] = SHUF8(LOAD(buffer+(16/(NUM_MSG))*msg+i),big_endian);
 			}
 		}
 		transpose_msg_2way(block);
 		sha512_permutation(state, block);
 	}
-	else if(remainder_bytes<64)
+	else if(remainder_bytes<128)
 	{
-		/* Load a 512-bit message_2x */
-		for (msg = 0; msg < 2; msg++)
+		/* Load a 1024-bit message_2x */
+		for (msg = 0; msg < NUM_MSG; msg++)
 		{
 			for (b = 0; b < remainder_bytes; b++)
 			{
-				buffer[80*msg+b] = message_2x[msg][64*num_blocks+b];
+				buffer[BLOCK_SIZE_BYTES*msg+b] = message_2x[msg][BLOCK_SIZE_BYTES*num_blocks+b];
 			}
-			buffer[80*msg+remainder_bytes] = 0x80;
+			buffer[BLOCK_SIZE_BYTES*msg+remainder_bytes] = 0x80;
 		}
-		for (msg = 0; msg < 2; msg++)
+		for (msg = 0; msg < NUM_MSG; msg++)
 		{
-			for (b = 0; b < 4; b++)
+			for (i = 0; i < 16/(NUM_MSG); i++)
 			{
-				block[2*msg+b] = SHUF8(LOAD(buffer+4*b+msg),big_endian);
+				block[msg+NUM_MSG*i] = SHUF8(LOAD(buffer+(16/(NUM_MSG))*msg+i),big_endian);
 			}
 		}
 		transpose_msg_2way(block);
 		sha512_permutation(state, block);
-		for (msg = 0; msg < 2; msg++)
+		for (msg = 0; msg < NUM_MSG; msg++)
 		{
-			for (b = 0; b < 56; b++)
+			for (b = 0; b < 112; b++)
 			{
-				buffer[80*msg+b] = 0x00;
+				buffer[BLOCK_SIZE_BYTES*msg+b] = 0x00;
 			}
-			for (b = 0; b < 8; b++)
+			for (b = 0; b < 16; b++)
 			{
-				buffer[80*(msg+1)-b-1] = (uint8_t)((mlen_bits>>(8*b))&0xFF);
+				buffer[BLOCK_SIZE_BYTES*(msg+1)-b-1] = (uint8_t)((mlen_bits>>(8*b))&0xFF);
 			}
 		}
-		for (msg = 0; msg < 2; msg++)
+		for (msg = 0; msg < NUM_MSG; msg++)
 		{
-			for (b = 0; b < 4; b++)
+			for (i = 0; i < 16/(NUM_MSG); i++)
 			{
-				block[4*msg+b] = SHUF8(LOAD(buffer+4*b+msg),big_endian);
+				block[msg+NUM_MSG*i] = SHUF8(LOAD(buffer+(16/(NUM_MSG))*msg+i),big_endian);
 			}
 		}
 		transpose_msg_2way(block);
 		sha512_permutation(state, block);
 	}
     transpose_state_2way(state);
-    for (msg = 0; msg < 2; msg++)
+    for (msg = 0; msg < NUM_MSG; msg++)
     {
-        for (b = 0; b < 2; b++)
+		for (i = 0; i < 4; i++)
         {
-            STORE(digest_2x[msg]+b,SHUF8(state[2*b+msg],big_endian));
+            STORE(digest_2x[msg]+i,SHUF8(state[NUM_MSG*i+msg],big_endian));
         }
     }
 }
 
-#undef TRANSPOSE_4WAY
+#undef TRANSPOSE_2WAY
 #undef ZERO
 #undef ADD
 #undef OR
