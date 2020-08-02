@@ -10,6 +10,7 @@ include("GNUInstallDirs")
 set(GBENCH_VERSION "v1.5.1")
 ExternalProject_Add(benchmark-download
   URL            "https://api.github.com/repos/google/benchmark/tarball/${GBENCH_VERSION}"
+  URL_HASH       "SHA256=440ded04a56a63043d9112da1b787be550f59d0df3c13eb0f9d40e6b3e805cc6"
   CMAKE_ARGS     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}
                  -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
                  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
