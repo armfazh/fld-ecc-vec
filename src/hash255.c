@@ -18,13 +18,8 @@
 
 #if defined(HASH255)
 
-#include <string.h>
-
-#include "edwards255.h"
-#include "faz_fp_avx2.h"
 #include "faz_hash_avx2.h"
 #include "multi_hash.h"
-#include "sha512.h"
 
 typedef ALIGN uint8_t Digest[512 / 8];
 

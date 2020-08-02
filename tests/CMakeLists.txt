@@ -30,6 +30,7 @@ include("GNUInstallDirs")
 set(GTEST_VERSION "release-1.10.0")
 ExternalProject_Add(googletest-download
   URL            "https://api.github.com/repos/google/googletest/tarball/${GTEST_VERSION}"
+  URL_HASH       "SHA256=e4a7cd97c903818abe7ddb129db9c41cc9fd9e2ded654be57ced26d45c72e4c9"
   CMAKE_ARGS     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}
                  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
                  -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
