@@ -49,11 +49,9 @@ void print_point(FILE *file, Point *P);
 #include "edwards255.h"
 void map_to_curve(PointXYZT_1way_full *P, argElement_1w u);
 void map_to_curve_2w(PointXYZT_2way *P, argElement_2w u0u1);
-void _1way_fulladd_1w_full(
-    PointXYZT_1way_full *R,
-    PointXYZT_1way_full *Q,
-    PointXYZT_1way_full *P);
-    
+void _1way_fulladd_1w_full(PointXYZT_1way_full *R, PointXYZT_1way_full *Q,
+                           PointXYZT_1way_full *P);
+
 #ifdef __cplusplus
 } /* namespace fp */
 } /* namespace faz */

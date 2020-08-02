@@ -39,6 +39,12 @@
 :/* in   */ "r" (Y)\
 :/* regs */);
 
+#define BROADCAST64_128(X,Y)	__asm__ __volatile(\
+"vpbroadcastq (%1), %0       ;"\
+:/* out  */ "=x" (X)\
+:/* in   */ "r" (Y)\
+:/* regs */);
+
 #define ZERO_256            _mm256_setzero_si256()
 #define LOAD_256(X)         _mm256_loadu_si256((__m256i*) X)
 #define STORE_256(X,Y)      _mm256_storeu_si256((__m256i*) X, Y)
@@ -61,6 +67,11 @@
  */
 #define BROADCAST32_256(X,Y)	__asm__ __volatile(\
 "vpbroadcastd (%1), %0       ;"\
+:/* out  */ "=x" (X)\
+:/* in   */ "r" (Y)\
+:/* regs */);
+#define BROADCAST64_256(X,Y)	__asm__ __volatile(\
+"vpbroadcastq (%1), %0       ;"\
 :/* out  */ "=x" (X)\
 :/* in   */ "r" (Y)\
 :/* regs */);
