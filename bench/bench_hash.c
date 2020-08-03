@@ -8,7 +8,7 @@ void bench_hash25519() {
   printf("=== Benchmarking Hash ====\n");
   printf("===== Hash25519 AVX2 =====\n");
 
-  const long int BENCH = 300;
+  long int BENCH = 300;
   const int size_msg = 128;
   uint8_t message[size_msg];
   prgn_random_bytes(message, size_msg);
@@ -18,10 +18,11 @@ void bench_hash25519() {
   Fp25519._1w_full.arith.misc.zero(P.Y);
 
   EltFp25519_1w_fullradix u0, u1;
-  PointXYZT_1way_full Q,Q0, Q1;
+  PointXYZT_1way_full Q, Q0, Q1;
   PointXYZT_2way Q0Q1;
   EltFp25519_2w_redradix u0u1;
 
+  CLOCKS_RANDOM(, addPoint, _1way_fulladd_1w_full(&Q, &Q0, &Q1));
   CLOCKS_RANDOM(Fp25519._1w_full.arith.misc.rand(u0);
                 Fp25519._1w_full.arith.misc.rand(u1), map_x64,
                 map_to_curve(&Q0, u0);
@@ -32,6 +33,25 @@ void bench_hash25519() {
                 h2c25519_x64(&P, message, size_msg));
   CLOCKS_RANDOM(prgn_random_bytes(message, size_msg), hash_avx2,
                 h2c25519_avx2(&P, message, size_msg));
-  CLOCKS_RANDOM(,addPoint,
-                _1way_fulladd_1w_full(&Q,&Q0, &Q1));
+
+  uint8_t *msg = NULL;
+  int m,mlen;
+  for (m = 0; m < 18; m++) {
+    BENCH = 300 - 12*m;
+    mlen= 1<<m;
+    msg = (uint8_t *)malloc(mlen);
+    printf("mlen: %-6d ", mlen);
+    CLOCKS_RANDOM(prgn_random_bytes(msg,mlen), hash_x64,
+                  h2c25519_x64(&P, msg, mlen));
+    free(msg);
+  }
+  for (m = 0; m < 18; m++) {
+    BENCH = 300 - 12*m;
+    mlen= 1<<m;
+    msg = (uint8_t *)malloc(mlen);
+    printf("mlen: %-6d ", mlen);
+    CLOCKS_RANDOM(prgn_random_bytes(msg, mlen), hash_avx2,
+                  h2c25519_avx2(&P, msg, mlen));
+    free(msg);
+  }
 }
