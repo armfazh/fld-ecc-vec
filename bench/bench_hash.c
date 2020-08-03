@@ -9,7 +9,7 @@ void bench_hash25519() {
   printf("===== Hash25519 AVX2 =====\n");
 
   long int BENCH = 300;
-  const int size_msg = 128;
+  const int size_msg = 64;
   uint8_t message[size_msg];
   prgn_random_bytes(message, size_msg);
 
@@ -35,19 +35,19 @@ void bench_hash25519() {
                 h2c25519_avx2(&P, message, size_msg));
 
   uint8_t *msg = NULL;
-  int m,mlen;
+  int m, mlen;
   for (m = 0; m < 18; m++) {
-    BENCH = 300 - 12*m;
-    mlen= 1<<m;
+    BENCH = 300 - 12 * m;
+    mlen = 1 << m;
     msg = (uint8_t *)malloc(mlen);
     printf("mlen: %-6d ", mlen);
-    CLOCKS_RANDOM(prgn_random_bytes(msg,mlen), hash_x64,
+    CLOCKS_RANDOM(prgn_random_bytes(msg, mlen), hash_x64,
                   h2c25519_x64(&P, msg, mlen));
     free(msg);
   }
   for (m = 0; m < 18; m++) {
-    BENCH = 300 - 12*m;
-    mlen= 1<<m;
+    BENCH = 300 - 12 * m;
+    mlen = 1 << m;
     msg = (uint8_t *)malloc(mlen);
     printf("mlen: %-6d ", mlen);
     CLOCKS_RANDOM(prgn_random_bytes(msg, mlen), hash_avx2,
