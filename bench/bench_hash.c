@@ -44,7 +44,7 @@ CLOCKS_RANDOM(,h_avx2,hash_to_field_2w(uu0, uu1, message, size_msg));
 
   uint8_t *msg = NULL;
   int m, mlen;
-  for (m = 0; m < 18; m++) {
+  for (m = 0; m <= 21; m++) {
     BENCH = 300 - 12 * m;
     mlen = 1 << m;
     msg = (uint8_t *)malloc(mlen);
@@ -53,7 +53,7 @@ CLOCKS_RANDOM(,h_avx2,hash_to_field_2w(uu0, uu1, message, size_msg));
                   h2c25519_x64(&P, msg, mlen));
     free(msg);
   }
-  for (m = 0; m < 18; m++) {
+  for (m = 0; m <= 21; m++) {
     BENCH = 300 - 12 * m;
     mlen = 1 << m;
     msg = (uint8_t *)malloc(mlen);
