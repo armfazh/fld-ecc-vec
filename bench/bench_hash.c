@@ -23,12 +23,20 @@ void bench_hash25519() {
   EltFp25519_2w_redradix u0u1;
 
   CLOCKS_RANDOM(, addPoint, _1way_fulladd_1w_full(&Q, &Q0, &Q1));
+
+CLOCKS_RANDOM(,h_x64,
+    hash_to_field(u0, 0, message, size_msg);
+    hash_to_field(u1, 1, message, size_msg));
+
+EltFp25519_1w_fullradix uu0, uu1;
+CLOCKS_RANDOM(,h_avx2,hash_to_field_2w(uu0, uu1, message, size_msg));
+
   CLOCKS_RANDOM(Fp25519._1w_full.arith.misc.rand(u0);
                 Fp25519._1w_full.arith.misc.rand(u1), map_x64,
                 map_to_curve(&Q0, u0);
-                map_to_curve(&Q1, u1););
+                map_to_curve(&Q1, u1));
   CLOCKS_RANDOM(Fp25519._2w_red.arith.misc.rand(u0u1), map_avx2,
-                map_to_curve_2w(&Q0Q1, u0u1););
+                map_to_curve_2w(&Q0Q1, u0u1));
   CLOCKS_RANDOM(prgn_random_bytes(message, size_msg), hash_x64,
                 h2c25519_x64(&P, message, size_msg));
   CLOCKS_RANDOM(prgn_random_bytes(message, size_msg), hash_avx2,

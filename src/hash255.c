@@ -23,7 +23,7 @@
 
 typedef ALIGN uint8_t Digest[512 / 8];
 
-static inline void hash_to_field(argElement_1w u, uint8_t prefix, uint8_t *msg,
+void hash_to_field(argElement_1w u, uint8_t prefix, uint8_t *msg,
                                  size_t mlen) {
   Digest h0_msg;
   sph_sha512_context h0;
@@ -35,7 +35,7 @@ static inline void hash_to_field(argElement_1w u, uint8_t prefix, uint8_t *msg,
   memcpy(u, h0_msg, SIZE_FP25519);
 }
 
-static inline void hash_to_field_2w(argElement_1w u0, argElement_1w u1,
+void hash_to_field_2w(argElement_1w u0, argElement_1w u1,
                                     uint8_t *msg, size_t mlen) {
   uint8_t *message[2];
   uint8_t *digest[2];
