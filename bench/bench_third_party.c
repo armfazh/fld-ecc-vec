@@ -9,7 +9,7 @@
 static void bench_sha512_2w() {
   const int BENCH = 500;
   const int NUM = 2;
-  const int MSG_LEN = 128;
+  const int MSG_LEN = 64;
   int i_multi = 0;
   uint8_t *message[NUM];
   uint8_t *digest[NUM];
@@ -27,7 +27,7 @@ static void bench_sha512_2w() {
 
 void bench_third_party() {
   const int BENCH = 500;
-  const int message_length = 128;
+  const int message_length = 64;
   uint8_t message[message_length];
   uint8_t digest_sha512[SPH_SIZE_sha512];
   uint8_t digest_sha3[128];
