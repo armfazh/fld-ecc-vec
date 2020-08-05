@@ -9,7 +9,7 @@ add_definitions(-mavx2)
 set(CMAKE_CXX_STANDARD 11)
 
 # Some Tests
-add_executable(test_mine
+add_executable(test_mine EXCLUDE_FROM_ALL
         tests.h
         tests.c
         test_fp.c
@@ -37,6 +37,7 @@ ExternalProject_Add(googletest-download
   TEST_COMMAND   ""
   UPDATE_COMMAND ""
 )
+set_target_properties(googletest-download PROPERTIES EXCLUDE_FROM_ALL TRUE)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_INCLUDEDIR})
 link_directories(${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
@@ -45,7 +46,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 find_package(GMP QUIET)
 
 include_directories(${GTEST_INCLUDE_DIRS})
-add_executable(tests
+add_executable(tests EXCLUDE_FROM_ALL
     runTests.cpp
     test_fp25519_x64.cpp
     test_fp25519_avx2.cpp

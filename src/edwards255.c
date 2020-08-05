@@ -296,7 +296,7 @@ static inline void _2way_fulladd(PointXYZT_2way *Q, PointXYZT_2way *P) {
 	Fp25519._2w_red.arithex.compress(Y1);
 }
 
-static inline void _2way_doubling(PointXYZT_2way *P, const int compute_T) {
+void _2way_doubling(PointXYZT_2way *P, const int compute_T) {
   const Arith_2w fp = Fp25519._2w_red.arith;
   __m256i *const X1 = P->X;
   __m256i *const Y1 = P->Y;
