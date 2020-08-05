@@ -20,13 +20,14 @@ ExternalProject_Add(benchmark-download
   TEST_COMMAND   ""
   UPDATE_COMMAND ""
 )
+set_target_properties(benchmark-download PROPERTIES EXCLUDE_FROM_ALL TRUE)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_INCLUDEDIR})
 link_directories(${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
 include_directories(../include)
 include_directories(../third_party)
 
-add_executable(bench
+add_executable(bench EXCLUDE_FROM_ALL
         clocks.h
         clocks.c
         bench_fp.c
@@ -44,7 +45,7 @@ target_link_libraries(bench
         $<TARGET_OBJECTS:cpu_caps>
 )
 
-add_executable(gbench gbench.cpp)
+add_executable(gbench EXCLUDE_FROM_ALL gbench.cpp)
 add_dependencies(gbench ${TARGET}_static prng benchmark-download)
 target_link_libraries(gbench
         $<TARGET_OBJECTS:prng>

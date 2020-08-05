@@ -224,7 +224,7 @@ static inline void reduce64bits(uint64_t *a) {
  * this is a prime number which denotes the
  * size of the main subgroup of the elliptic curve.
  */
-static inline void modular_reduction_ed25519(uint8_t *a) {
+void modular_reduction_ed25519(uint8_t *a) {
   uint64_t *pA = (uint64_t *) a;
   reduce256bits(pA);
   reduce256bits(pA);
