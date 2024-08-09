@@ -26,7 +26,7 @@ jobs:
         bin/bench | tee timings_${{ matrix.compiler[0] }}.txt
     - uses: actions/upload-artifact@v4
       with:
-        name: Timings
+        name: Timings_${{ matrix.compiler[0] }}
         path: build/timings_${{ matrix.compiler[0] }}.txt
   test:
     name: Testing
