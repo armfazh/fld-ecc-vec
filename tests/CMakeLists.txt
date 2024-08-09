@@ -1,12 +1,10 @@
-cmake_minimum_required(VERSION 2.8.4)
-
 include_directories(../include)
 include_directories(../third_party)
 
 # Other Tests using GTest suite.
 enable_language(CXX)
 add_definitions(-mavx2)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 # Some Tests
 add_executable(test_mine EXCLUDE_FROM_ALL
@@ -27,10 +25,9 @@ target_link_libraries(test_mine
 # download gtest
 include(ExternalProject)
 include("GNUInstallDirs")
-set(GTEST_VERSION "release-1.10.0")
 ExternalProject_Add(googletest-download
-  URL            "https://api.github.com/repos/google/googletest/tarball/${GTEST_VERSION}"
-  URL_HASH       "SHA256=e4a7cd97c903818abe7ddb129db9c41cc9fd9e2ded654be57ced26d45c72e4c9"
+  GIT_REPOSITORY "https://github.com/google/googletest"
+  GIT_TAG        "v1.15.2"
   CMAKE_ARGS     -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}
                  -DCMAKE_POSITION_INDEPENDENT_CODE=ON
                  -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
