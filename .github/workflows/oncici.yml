@@ -10,7 +10,7 @@ jobs:
       matrix:
         compiler: [ [gcc,g++], [clang,clang++] ]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Building
       env:
         CC: ${{ matrix.compiler[0] }}
@@ -24,7 +24,7 @@ jobs:
       run: |
         cd build
         bin/bench | tee timings_${{ matrix.compiler[0] }}.txt
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       with:
         name: Timings
         path: build/timings_${{ matrix.compiler[0] }}.txt
@@ -32,7 +32,7 @@ jobs:
     name: Testing
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Building
       run: |
         mkdir build
