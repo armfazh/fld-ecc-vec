@@ -687,7 +687,7 @@ DECL(void, ser)(uint8_t *buf, argElement_4w a) {
   ser_Fp448_1w_redradix(buf+3*SIZE_FP448,a3);
 }
 
-DECL(argElement_4w,alloc)() {
+DECL(argElement_4w,alloc)(void) {
 	return (argElement_4w) allocate_bytes(NUM_DIGITS_FP448 * sizeof(__m256i));
 }
 

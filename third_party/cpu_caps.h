@@ -5,7 +5,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-void machine_info();
+void machine_info(void);
 
 #ifdef __cplusplus
 } /* extern C */

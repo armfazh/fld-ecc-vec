@@ -51,7 +51,7 @@ static inline void printEd448_Signature(FILE *file, uint8_t *sig) {
  *
  * @return
  */
-static inline uint8_t *allocEd448_Key() {
+static inline uint8_t *allocEd448_Key(void) {
   return (uint8_t *) allocate_bytes(ED448_KEY_SIZE_BYTES_PARAM * sizeof(uint8_t));
 }
 
@@ -59,7 +59,7 @@ static inline uint8_t *allocEd448_Key() {
  *
  * @return
  */
-static inline uint8_t *allocEd448_Signature() {
+static inline uint8_t *allocEd448_Signature(void) {
   return (uint8_t *) allocate_bytes(ED448_SIG_SIZE_BYTES_PARAM * sizeof(uint8_t));
 }
 

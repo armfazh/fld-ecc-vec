@@ -892,7 +892,7 @@ DECL(void, srt)(argElement_4w c, argElement_4w a) {
   FN(invsqrt)(c, c, a);
 }
 
-DECL(argElement_4w,alloc)() {
+DECL(argElement_4w,alloc)(void) {
 	return (argElement_4w) allocate_bytes(NUM_DIGITS_FP25519 * sizeof(__m256i));
 }
 
