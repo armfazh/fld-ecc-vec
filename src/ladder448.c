@@ -27,7 +27,7 @@
  *
  * @return
  */
-static inline uint8_t * allocX448_Key() {
+static inline uint8_t * allocX448_Key(void) {
   return (uint8_t*) allocate_bytes(ECDH448_KEY_SIZE_BYTES * sizeof(uint8_t));
 }
 

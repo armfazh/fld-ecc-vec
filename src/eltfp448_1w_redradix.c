@@ -750,7 +750,7 @@ DECL(void, print)(FILE *file, argElement_1w a) {
   print_hex_bytes(file, a_bytes, SIZE_FP448);
 }
 
-DECL(argElement_1w, alloc)() {
+DECL(argElement_1w, alloc)(void) {
   return (argElement_1w) allocate_bytes( (NUM_DIGITS_FP448) * sizeof(uint64_t));
 }
 

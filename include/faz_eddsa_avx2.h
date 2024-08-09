@@ -38,7 +38,7 @@ namespace faz{
   namespace eddsa{
 #endif /* __cplusplus */
 
-#define ZeroOperandReturnKey(X) uint8_t * (*X)()
+#define ZeroOperandReturnKey(X) uint8_t * (*X)(void)
 #define Oper1Void(NAME, TYPE) void (*NAME)(TYPE C)
 #define Oper1File(NAME, TYPE) void (*NAME)(FILE* file, TYPE A)
 

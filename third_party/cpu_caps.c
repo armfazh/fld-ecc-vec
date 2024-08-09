@@ -62,7 +62,7 @@ int cpu_has(enum Capabilities c) {
   return ret;
 }
 
-void machine_info() {
+void machine_info(void) {
   printf("=== Environment Information ====\n");
   printf("Program compiled with: %s\n", __VERSION__);
   unsigned int eax, ebx, ecx, edx;

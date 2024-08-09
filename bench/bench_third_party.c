@@ -6,7 +6,7 @@
 
 #include "clocks.h"
 
-static void bench_sha512_2w() {
+static void bench_sha512_2w(void) {
   const int BENCH = 500;
   const int NUM = 2;
   const int MSG_LEN = 64;
@@ -25,7 +25,7 @@ static void bench_sha512_2w() {
   }
 }
 
-void bench_third_party() {
+void bench_third_party(void) {
   const int BENCH = 500;
   const int message_length = 64;
   uint8_t message[message_length];

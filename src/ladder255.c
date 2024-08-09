@@ -23,7 +23,7 @@
 #include "edwards255.h"
 #include <string.h>
 
-static inline uint8_t *allocX25519_Key() {
+static inline uint8_t *allocX25519_Key(void) {
   return (uint8_t *) allocate_bytes(ECDH25519_KEY_SIZE_BYTES * sizeof(uint8_t));
 }
 

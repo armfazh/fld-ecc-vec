@@ -79,7 +79,7 @@
            (unsigned long)((end_c - start_c) / iterations)); \
   } while (0)
 
-uint64_t time_now();
+uint64_t time_now(void);
 uint64_t cycles_now(void);
 
 /* _CLOCKS_H_ */

@@ -19,7 +19,7 @@ static void bench_ecdh(const X_ECDH* ecdh) {
   ecdh->freeKey(shared_secret);
 }
 
-void bench_x25519() {
+void bench_x25519(void) {
   printf("===== Benchmarking DH ====\n");
   printf("======  X25519 x64  ======\n");
   bench_ecdh(&X25519_x64);
@@ -27,7 +27,7 @@ void bench_x25519() {
   bench_ecdh(&X25519);
 }
 
-void bench_x448() {
+void bench_x448(void) {
   printf("===== Benchmarking DH ====\n");
   printf("======   X448 AVX2  ======\n");
   bench_ecdh(&X448);

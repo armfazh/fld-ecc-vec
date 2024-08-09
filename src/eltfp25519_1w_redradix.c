@@ -816,7 +816,7 @@ DECL(void, print)(FILE *file, argElement_1w a) {
   print_hex_bytes(file, a_bytes, SIZE_FP25519);
 }
 
-DECL(argElement_1w, alloc)() {
+DECL(argElement_1w, alloc)(void) {
   return (argElement_1w) allocate_bytes((4 * ((NUM_DIGITS_FP25519 + 3) / 4)) * sizeof(uint64_t));
 }
 

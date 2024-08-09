@@ -4,7 +4,7 @@
 
 #include "clocks.h"
 
-void bench_hash25519() {
+void bench_hash25519(void) {
   printf("=== Benchmarking Hash ====\n");
   printf("===== Hash25519 AVX2 =====\n");
 

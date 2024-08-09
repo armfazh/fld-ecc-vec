@@ -58,13 +58,13 @@ static void bench_ed448context(const SignatureSchemeCtx *eddsa) {
   eddsa->freeSignature(signature);
 }
 
-void bench_ed25519() {
+void bench_ed25519(void) {
   printf("== Benchmarking EdDSA ====\n");
   printf("====== Ed25519 AVX2 ======\n");
   bench_ed255pure(&Ed25519.Pure);
 }
 
-void bench_ed448() {
+void bench_ed448(void) {
   printf("== Benchmarking EdDSA ====\n");
   printf("======  Ed448 AVX2  ======\n");
   bench_ed448context(&Ed448.PureContext);

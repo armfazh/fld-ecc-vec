@@ -51,7 +51,7 @@ static inline void printEd25519_Signature(FILE * file,uint8_t *sig) {
  *
  * @return
  */
-static inline uint8_t *allocEd25519_Key() {
+static inline uint8_t *allocEd25519_Key(void) {
   return (uint8_t *) allocate_bytes(ED25519_KEY_SIZE_BYTES_PARAM * sizeof(uint8_t));
 }
 
@@ -59,7 +59,7 @@ static inline uint8_t *allocEd25519_Key() {
  *
  * @return
  */
-static inline uint8_t *allocEd25519_Signature() {
+static inline uint8_t *allocEd25519_Signature(void) {
   return (uint8_t *) allocate_bytes(ED25519_SIG_SIZE_BYTES_PARAM * sizeof(uint8_t));
 }
 

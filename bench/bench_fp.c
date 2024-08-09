@@ -63,7 +63,7 @@ static void bench_4w(const Arith_4w *fp) {
   fp->misc.free(c);
 }
 
-void bench_fp25519() {
+void bench_fp25519(void) {
   printf("=== Benchmarking Arith ===\n");
   printf("======  p=2^255-19  ======\n");
   printf("====== 1-way (full) ======\n");
@@ -76,7 +76,7 @@ void bench_fp25519() {
   bench_4w(&Fp25519._4w_red.arith);
 }
 
-void bench_fp448() {
+void bench_fp448(void) {
   printf("=== Benchmarking Arith ===\n");
   printf("==== p=2^448-2^224-1 =====\n");
   printf("====== 1-way (full) ======\n");

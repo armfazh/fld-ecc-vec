@@ -674,7 +674,7 @@ DECL(__m256i, cmp)(argElement_2w a, argElement_2w b) {
   return SET64(0, c1, 0, c0);
 }
 
-DECL(argElement_2w, alloc)() {
+DECL(argElement_2w, alloc)(void) {
   return (argElement_2w) allocate_bytes((NUM_DIGITS_FP448 / 2) * sizeof(__m256i));
 }
 

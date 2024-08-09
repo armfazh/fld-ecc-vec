@@ -2,7 +2,7 @@
 #include <sys/time.h>
 #include <time.h>
 
-uint64_t time_now() {
+uint64_t time_now(void) {
   struct timeval tv;
   uint64_t ret;
 
