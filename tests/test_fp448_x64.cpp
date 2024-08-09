@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <faz_fp_avx2.h>
 #include <gmp.h>
 #include <gtest/gtest.h>

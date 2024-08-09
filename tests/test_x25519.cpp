@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <faz_ecdh_avx2.h>
 #include <gtest/gtest.h>
 
