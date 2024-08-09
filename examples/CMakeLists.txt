@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.8.4)
-
 include_directories(../include)
 
 add_executable(example_field field.c)
