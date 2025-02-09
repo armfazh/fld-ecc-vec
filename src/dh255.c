@@ -28,7 +28,7 @@ extern "C" {
 
 #include "ladder255.c"
 
-const X_ECDH X25519 = {
+const X_ECDH X25519_AVX2 = {
     .keygen = x25519_keygen_avx2,
     .shared = x25519_shared_avx2,
     .key_size = ECDH25519_KEY_SIZE_BYTES,

@@ -28,7 +28,7 @@ extern "C" {
 
 #include "ladder448.c"
 
-const X_ECDH X448 = {
+const X_ECDH X448_AVX2 = {
     .keygen = x448_keygen_avx2,
     .shared = x448_shared_avx2,
     .key_size = ECDH448_KEY_SIZE_BYTES,

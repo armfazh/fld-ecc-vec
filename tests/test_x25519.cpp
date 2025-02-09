@@ -222,4 +222,4 @@ TEST_P(Vector, DIFFIE_HELLMAN) {
   EXPECT_EQ(cnt, TIMES) << "passed: " << cnt << "/" << TIMES << std::endl;
 }
 
-INSTANTIATE_TEST_SUITE_P(X25519, Vector, ::testing::Values(X25519, X25519_x64));
+INSTANTIATE_TEST_SUITE_P(X25519, Vector, ::testing::Values(X25519_AVX2, X25519_x64));

@@ -79,9 +79,9 @@ typedef struct _struct_DiffieHellmanXFunction {
   Oper1Void(randKey, uint8_t*);
 } X_ECDH;
 
-extern const X_ECDH X25519;
+extern const X_ECDH X25519_AVX2;
 extern const X_ECDH X25519_x64;
-extern const X_ECDH X448;
+extern const X_ECDH X448_AVX2;
 
 /** X25519 */
 #define ECDH25519_KEY_SIZE_BYTES 32

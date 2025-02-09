@@ -24,11 +24,11 @@ void bench_x25519(void) {
   printf("======  X25519 x64  ======\n");
   bench_ecdh(&X25519_x64);
   printf("======  X25519 AVX2 ======\n");
-  bench_ecdh(&X25519);
+  bench_ecdh(&X25519_AVX2);
 }
 
 void bench_x448(void) {
   printf("===== Benchmarking DH ====\n");
   printf("======   X448 AVX2  ======\n");
-  bench_ecdh(&X448);
+  bench_ecdh(&X448_AVX2);
 }

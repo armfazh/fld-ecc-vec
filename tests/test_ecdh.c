@@ -317,9 +317,9 @@ void test_x25519() {
   printf("=== Testing X25519 ===\n");
 
   printf("===== X25519 AVX2 ====\n");
-  test_dh(&X25519);
-  test0_rfc7748_x25519(&X25519);
-  test1_rfc7748_x25519(&X25519);
+  test_dh(&X25519_AVX2);
+  test0_rfc7748_x25519(&X25519_AVX2);
+  test1_rfc7748_x25519(&X25519_AVX2);
 
   printf("===== X25519 x64 =====\n");
   test_dh(&X25519_x64);
@@ -329,8 +329,8 @@ void test_x25519() {
 
 void test_x448() {
   printf("==== Testing X448 ====\n");
-  test_dh(&X448);
+  test_dh(&X448_AVX2);
   printf("==== RFC7748 Test ====\n");
-  test0_rfc7748_x448(&X448);
-  test1_rfc7748_x448(&X448);
+  test0_rfc7748_x448(&X448_AVX2);
+  test1_rfc7748_x448(&X448_AVX2);
 }
