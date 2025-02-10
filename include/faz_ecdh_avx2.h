@@ -26,7 +26,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdio.h>
 
-#define ALIGN_BYTES 32
+#define ALIGN_BYTES 64
 #ifdef __INTEL_COMPILER
 #define ALIGN __declspec(align(ALIGN_BYTES))
 #else
@@ -90,6 +90,34 @@ typedef ALIGN uint8_t X25519_KEY[ECDH25519_KEY_SIZE_BYTES];
 /** X448 */
 #define ECDH448_KEY_SIZE_BYTES 56
 typedef ALIGN uint8_t X448_KEY[ECDH448_KEY_SIZE_BYTES];
+
+typedef int (*XKeyGen_2way)(
+  X25519_KEY session_key_0,
+  X25519_KEY session_key_1,
+  X25519_KEY private_key_0,
+  X25519_KEY private_key_1
+);
+
+typedef int (*XSharedSecret_2way)(
+  X25519_KEY shared_secret_0,
+  X25519_KEY shared_secret_1,
+  X25519_KEY session_key_0,
+  X25519_KEY session_key_1,
+  X25519_KEY private_key_0,
+  X25519_KEY private_key_1
+);
+
+typedef struct _struct_DiffieHellmanXFunction_2way {
+  XKeyGen_2way keygen;
+  XSharedSecret_2way shared;
+  uint64_t key_size;
+  Oper0Retr(allocKey, uint8_t*);
+  Oper1Void(freeKey, void*);
+  Oper1File(printKey, uint8_t*);
+  Oper1Void(randKey, uint8_t*);
+} X_ECDH_2way;
+
+extern const X_ECDH_2way X25519_AVX512;
 
 #ifdef __cplusplus
 } /* namespace ecdh */

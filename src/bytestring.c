@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <immintrin.h>
 
-#define ALIGN_BYTES 32
+#define ALIGN_BYTES 64
 
 extern void prgn_random_bytes(uint8_t *buffer, size_t num_bytes);
 

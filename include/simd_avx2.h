@@ -98,16 +98,41 @@
 //#define INSR(X,Y,Z)        _mm256_insertf128_si256(X,Y,Z)
 #define CAST256TO128(X)  _mm256_castsi256_si128(X)
 #define CAST128TO256(X)  _mm256_castsi128_si256(X)
+#define CAST256TO512(X)  _mm512_castsi256_si512(X)
+
 /**
  * This construction calls broadcast instruction
  * explicitly specifying a memory location Y, which
  * could or could not be aligned.
  */
-#define BROADCASTQ(X, Y)     \
-  __asm__ __volatile(        \
-    "vpbroadcastq (%1), %0;" \
-  :/* out  */ "=x" (X)       \
-  :/* in   */ "r" (Y)        \
-  :/* regs */);
+#define BROADCASTQ(X, Y)       \
+  __asm__ __volatile(          \
+      "vpbroadcastq (%1), %0;" \
+      : /* out  */ "=x"(X)     \
+      : /* in   */ "r"(Y)      \
+      : /* regs */);
+
+#define ZERO_x2             _mm512_setzero_si512()
+#define LOAD_x2(X)          _mm512_load_si512((__m512i*) X)
+#define STORE_x2(X, Y)      _mm512_store_si512((__m512i*) X, Y)
+#define ALIGNR_x2(X,Y)      _mm512_alignr_epi8(X,Y,8)
+#define ADD_x2(X, Y)        _mm512_add_epi64(X,Y)
+#define SUB_x2(X, Y)        _mm512_sub_epi64(X,Y)
+#define AND_x2(X, Y)        _mm512_and_si512(X,Y)
+#define XOR_x2(X, Y)        _mm512_xor_si512(X,Y)
+#define OR_x2(X, Y)         _mm512_or_si512(X,Y)
+#define MUL_x2(X, Y)        _mm512_mul_epu32(X,Y)
+#define SHR_x2(X, Y)        _mm512_srli_epi64(X,Y)
+#define SHL_x2(X, Y)        _mm512_slli_epi64(X,Y)
+#define SHLV_x2(X, Y)       _mm512_sllv_epi64(X,Y)
+#define SHRV_x2(X, Y)       _mm512_srlv_epi64(X,Y)
+#define PERM64_x2(X, Y)     _mm512_permutex_epi64(X,Y)
+#define PERM128_x2(X, Y, Z) _mm512_permutex_epi64(X,Z) // must fix
+#define PERMV128_x2(X, Y)   _mm512_permutexvar_epi32(X,Y)
+#define BLEND32_x2(X, Y, Z) _mm512_mask_blend_epi32(Z,X,Y)
+#define SHUF32_x2(X, Y)     _mm512_shuffle_epi32(X,Y)
+#define SET164_x2(X)        _mm512_set1_epi64(X)
+#define SET64_x2(W0, X0, Y0, Z0, W1, X1, Y1, Z1) _mm512_set_epi64(W0, X0, Y0, Z0, W1, X1, Y1, Z1)
+#define EXTR_x2(X,Y)        _mm512_extracti64x4_epi64(X,Y)
 
 #endif /* SIMD_AVX2_H */

@@ -33,6 +33,7 @@ extern "C" {
 #include "eltfp25519_1w_redradix.c"
 #include "eltfp25519_2w_redradix.c"
 #include "eltfp25519_4w_redradix.c"
+#include "eltfp25519_2w_redradix_2way.c"
 
 const PrimeField Fp25519 = {
     ._1w_full = {
@@ -131,6 +132,39 @@ const PrimeField Fp25519 = {
             .compress  = SUFFIX(compress ,2,redradix),
             .compress2 = SUFFIX(compress2,2,redradix),
             .compressfast = SUFFIX(compressfast,2,redradix),
+        },
+    },
+    ._2w_red_x2 = {
+        .arith = {
+            .add = SUFFIX(add,2,redradix_x2),
+            .cmp = SUFFIX(cmp,2,redradix_x2),
+            .cmv = SUFFIX(cmv,2,redradix_x2),
+            .mul = SUFFIX(mul,2,redradix_x2),
+            .neg = SUFFIX(neg,2,redradix_x2),
+            .ngz = SUFFIX(ngz,2,redradix_x2),
+            .sgn = SUFFIX(sgn,2,redradix_x2),
+            .sqr = SUFFIX(sqr,2,redradix_x2),
+            .sub = SUFFIX(sub,2,redradix_x2),
+            .misc = {
+                .alloc = SUFFIX(alloc,  2, redradix_x2),
+                .copy  = SUFFIX(copy ,  2, redradix_x2),
+                .free  = deallocate_bytes,
+                .print = SUFFIX(print, 2, redradix_x2),
+                .rand  = SUFFIX(rand , 2, redradix_x2),
+                .ser   = SUFFIX(ser  , 2, redradix_x2),
+                .unser = SUFFIX(unser, 2, redradix_x2),
+                .zero  = SUFFIX(zero , 2, redradix_x2),
+            },
+        },
+        .arithex = {
+            .addsub    = SUFFIX(addsub   ,2,redradix_x2),
+            .deinter   = SUFFIX(deinter  ,2,redradix_x2),
+            .inter     = SUFFIX(inter    ,2,redradix_x2),
+            .intmul    = SUFFIX(intmul   ,2,redradix_x2),
+            .intsqr    = SUFFIX(intsqr   ,2,redradix_x2),
+            .compress  = SUFFIX(compress ,2,redradix_x2),
+            .compress2 = SUFFIX(compress2,2,redradix_x2),
+            .compressfast = SUFFIX(compressfast,2,redradix_x2),
         },
     },
     ._4w_red = {

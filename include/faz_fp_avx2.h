@@ -27,7 +27,7 @@ extern "C" {
 #include <stdint.h>
 #include <immintrin.h>
 
-#define ALIGN_BYTES 32
+#define ALIGN_BYTES 64
 #ifdef __INTEL_COMPILER
 #define ALIGN __declspec(align(ALIGN_BYTES))
 #else
@@ -43,6 +43,7 @@ namespace faz{
 #define argElement_2w __m256i *
 #define argElement_4w __m256i *
 #define argElement_Nw __m256i *
+#define argElement_2w_x2 __m512i *
 
 /** Definitions for Fp, p = 2^255-19 */
 #define SIZE_FP25519 32
@@ -58,6 +59,7 @@ typedef ALIGN uint64_t EltFp25519_2w_fullradix_buffer[4 * NUM_DIGITS_FP25519_X64
 typedef ALIGN uint64_t EltFp25519_1w_redradix[4 * ((NUM_DIGITS_FP25519 + 3) / 4)];
 typedef ALIGN __m256i EltFp25519_2w_redradix[(NUM_DIGITS_FP25519 / 2)];
 typedef ALIGN __m256i EltFp25519_4w_redradix[NUM_DIGITS_FP25519];
+typedef ALIGN __m512i EltFp25519_2w_redradix_x2[(NUM_DIGITS_FP25519 / 2)];
 
 /** Definitions for Fp, p = 2^448-2^224-1 */
 #define SIZE_FP448 56
@@ -72,23 +74,23 @@ typedef ALIGN __m256i EltFp448_4w_redradix[NUM_DIGITS_FP448];
 
 #define Oper0Retr(NAME, TYPE) TYPE (*NAME)(void)
 #define Oper1Void(NAME, TYPE) void (*NAME)(TYPE C)
-#define Oper1Vect(NAME, TYPE) __m256i (*NAME)(TYPE C)
+#define Oper1Vect(NAME, RET, TYPE) RET (*NAME)(TYPE C)
 #define Oper1Reti(NAME, TYPE) int  (*NAME)(TYPE C)
 #define Oper1File(NAME, TYPE) void (*NAME)(FILE* file, TYPE A)
 #define Oper1ToBy(NAME, TYPE) void (*NAME)(uint8_t * C, TYPE A)
 #define Oper1FrBy(NAME, TYPE) void (*NAME)(TYPE C, uint8_t * A)
 #define Oper2Void(NAME, TYPE) void (*NAME)(TYPE C, TYPE A)
-#define Oper2Vect(NAME, TYPE) __m256i (*NAME)(TYPE C, TYPE A)
+#define Oper2Vect(NAME, RET, TYPE) RET (*NAME)(TYPE C, TYPE A)
 #define Oper2Reti(NAME, TYPE) int  (*NAME)(TYPE C, TYPE A)
 #define Oper3Scal(NAME, TYPE) void (*NAME)(int b, TYPE C, TYPE A, TYPE B)
-#define Oper3Vect(NAME, TYPE) void (*NAME)(__m256i b, TYPE C, TYPE A, TYPE B)
+#define Oper3Vect(NAME, VEC, TYPE) void (*NAME)(VEC b, TYPE C, TYPE A, TYPE B)
 #define Oper3Void(NAME, TYPE) void (*NAME)(TYPE C, TYPE A, TYPE B)
-#define Oper3Vari(NAME, RET, TYPE0, TYPE1, TYPE2) RET (*NAME)(TYPE0 C, TYPE1 A, TYPE2 B)
+#define Oper3Vari(NAME, RET, TYPE0, TYPE1, TYPE2) RET (*NAME)(TYPE0, TYPE1, TYPE2)
 #define Oper4Void(NAME, TYPE) void (*NAME)(TYPE C, TYPE D, TYPE A, TYPE B)
 
 #define STRUCT_MISC(N,TYPE)  \
 typedef struct               \
-  _struct_misc ## N ## w {   \
+  _struct_misc ## N  {   \
     Oper0Retr(alloc, TYPE);  \
     Oper2Void(copy , TYPE);  \
     Oper1Void(free , void*); \
@@ -97,11 +99,12 @@ typedef struct               \
     Oper1ToBy(ser  , TYPE);  \
     Oper1FrBy(unser, TYPE);  \
     Oper1Void(zero , TYPE);  \
-  } Misc_ ## N ## w
+  } Misc_ ## N
 
-STRUCT_MISC(1,argElement_1w);
-STRUCT_MISC(2,argElement_2w);
-STRUCT_MISC(4,argElement_4w);
+STRUCT_MISC(1w,argElement_1w);
+STRUCT_MISC(2w,argElement_2w);
+STRUCT_MISC(4w,argElement_4w);
+STRUCT_MISC(2w_x2,argElement_2w_x2);
 
 typedef struct _struct_1w {
   Oper3Void(add, argElement_1w);
@@ -147,8 +150,8 @@ typedef struct _struct_1w_redradix {
 
 typedef struct _struct_arithex_2w_redradix {
   Oper2Void(addsub,       argElement_2w);
-  Oper3Vari(deinter,void,argElement_1w,argElement_1w,argElement_2w);
-  Oper3Vari(inter  ,void,argElement_2w,argElement_1w,argElement_1w);
+  Oper3Vari(deinter,void,argElement_1w C,argElement_1w A,argElement_2w B);
+  Oper3Vari(inter  ,void,argElement_2w C,argElement_1w A,argElement_1w B);
   Oper3Void(intmul,       argElement_2w);
   Oper1Void(intsqr,       argElement_2w);
   Oper1Void(compress,     argElement_2w);
@@ -158,12 +161,12 @@ typedef struct _struct_arithex_2w_redradix {
 
 typedef struct _struct_2w {
   Oper3Void(add, argElement_2w);
-  Oper2Vect(cmp, argElement_2w);
-  Oper3Vect(cmv, argElement_2w);
+  Oper2Vect(cmp, __m256i, argElement_2w);
+  Oper3Vect(cmv, __m256i, argElement_2w);
   Oper3Void(mul, argElement_2w);
   Oper1Void(neg, argElement_2w);
   Oper2Void(ngz, argElement_2w);
-  Oper1Vect(sgn, argElement_2w);
+  Oper1Vect(sgn, __m256i, argElement_2w);
   Oper1Void(sqr, argElement_2w);
   Oper3Void(sub, argElement_2w);
   const Misc_2w misc;
@@ -173,6 +176,35 @@ typedef struct _struct_2w_redradix {
   const Arith_2w arith;
   const Arith_2w_redradix arithex;
 } Fp_2w_redradix;
+
+typedef struct _struct_arithex_2w_redradix_x2 {
+  Oper2Void(addsub,       argElement_2w_x2);
+  Oper3Vari(deinter,void, argElement_1w C[2], argElement_1w A[2], argElement_2w_x2 B);
+  Oper3Vari(inter  ,void, argElement_2w_x2 C, argElement_1w A[2], argElement_1w B[2]);
+  Oper3Void(intmul,       argElement_2w_x2);
+  Oper1Void(intsqr,       argElement_2w_x2);
+  Oper1Void(compress,     argElement_2w_x2);
+  Oper2Void(compress2,    argElement_2w_x2);
+  Oper1Void(compressfast, argElement_2w_x2);
+} Arith_2w_redradix_x2;
+
+typedef struct _struct_2w_x2 {
+  Oper3Void(add, argElement_2w_x2);
+  Oper2Vect(cmp, __m512i, argElement_2w_x2);
+  Oper3Vect(cmv, __m512i, argElement_2w_x2);
+  Oper3Void(mul, argElement_2w_x2);
+  Oper1Void(neg, argElement_2w_x2);
+  Oper2Void(ngz, argElement_2w_x2);
+  Oper1Vect(sgn, __m512i, argElement_2w_x2);
+  Oper1Void(sqr, argElement_2w_x2);
+  Oper3Void(sub, argElement_2w_x2);
+  const Misc_2w_x2 misc;
+} Arith_2w_x2;
+
+typedef struct _struct_2w_redradix_x2 {
+  const Arith_2w_x2 arith;
+  const Arith_2w_redradix_x2 arithex;
+} Fp_2w_redradix_x2;
 
 typedef struct _struct_arithex_4w_redradix {
   Oper4Void(addsub,       argElement_4w);
@@ -187,7 +219,7 @@ typedef struct _struct_arithex_4w_redradix {
 
 typedef struct _struct_4w {
   Oper3Void(add, argElement_4w);
-  Oper2Vect(cmp, argElement_4w);
+  Oper2Vect(cmp, __m256i, argElement_4w);
   Oper3Void(mul, argElement_4w);
   Oper1Void(neg, argElement_4w);
   Oper2Void(ngz, argElement_4w);
@@ -216,6 +248,7 @@ typedef struct _struct_Fp_Arith {
   Fp_1w_redradix _1w_red;
   Fp_2w_redradix _2w_red;
   Fp_4w_redradix _4w_red;
+  Fp_2w_redradix_x2 _2w_red_x2;
 } PrimeField;
 
 extern const PrimeField Fp25519, Fp448;

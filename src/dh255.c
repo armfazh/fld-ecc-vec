@@ -28,6 +28,16 @@ extern "C" {
 
 #include "ladder255.c"
 
+const X_ECDH_2way X25519_AVX512 = {
+  .keygen = x25519_keygen_avx512,
+  .shared = x25519_shared_avx512,
+  .key_size = ECDH25519_KEY_SIZE_BYTES,
+  .allocKey = allocX25519_Key,
+  .freeKey  = deallocate_bytes,
+  .randKey  = randX25519_Key,
+  .printKey  = printX25519_Key,
+};
+
 const X_ECDH X25519_AVX2 = {
     .keygen = x25519_keygen_avx2,
     .shared = x25519_shared_avx2,
