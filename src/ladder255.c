@@ -463,12 +463,9 @@ static int x25519_shared_avx2(
 }
 
 static int x25519_shared_avx512(
-    argECDHX_Key shared_secret_0,
-    argECDHX_Key shared_secret_1,
-    argECDHX_Key session_key_0,
-    argECDHX_Key session_key_1,
-    argECDHX_Key private_key_0,
-    argECDHX_Key private_key_1)
+  argECDHX_Key_x2 shared_secret,
+  argECDHX_Key_x2 session_key,
+  argECDHX_Key_x2 private_key)
 {
   ALIGN uint8_t session0[ECDH25519_KEY_SIZE_BYTES];
   ALIGN uint8_t session1[ECDH25519_KEY_SIZE_BYTES];
@@ -486,12 +483,12 @@ static int x25519_shared_avx512(
   ZEROUPPER;
 
   /* clampC function */
-  memcpy(secret0, private_key_0, ECDH25519_KEY_SIZE_BYTES);
+  memcpy(secret0, private_key->k0, ECDH25519_KEY_SIZE_BYTES);
   secret0[0] = secret0[0] & (~(uint8_t)0x7);
   secret0[ECDH25519_KEY_SIZE_BYTES - 1] =
       (uint8_t)64 | (secret0[ECDH25519_KEY_SIZE_BYTES - 1] & (uint8_t)0x7F);
 
-  memcpy(secret1, private_key_1, ECDH25519_KEY_SIZE_BYTES);
+  memcpy(secret1, private_key->k1, ECDH25519_KEY_SIZE_BYTES);
   secret1[0] = secret1[0] & (~(uint8_t)0x7);
   secret1[ECDH25519_KEY_SIZE_BYTES - 1] =
       (uint8_t)64 | (secret1[ECDH25519_KEY_SIZE_BYTES - 1] & (uint8_t)0x7F);
@@ -503,11 +500,11 @@ static int x25519_shared_avx512(
    * reserve the sign bit for use in other protocols and to
    * increase resistance to implementation fingerprinting
    **/
-  memcpy(session0, session_key_0, ECDH25519_KEY_SIZE_BYTES);
+  memcpy(session0, session_key->k0, ECDH25519_KEY_SIZE_BYTES);
   session0[ECDH25519_KEY_SIZE_BYTES - 1] &= (1 << (255 % 8)) - 1;
   Fp25519._1w_red.arith.misc.unser(X1[0], session0);
 
-  memcpy(session1, session_key_1, ECDH25519_KEY_SIZE_BYTES);
+  memcpy(session1, session_key->k1, ECDH25519_KEY_SIZE_BYTES);
   session1[ECDH25519_KEY_SIZE_BYTES - 1] &= (1 << (255 % 8)) - 1;
   Fp25519._1w_red.arith.misc.unser(X1[1], session1);
 
@@ -520,7 +517,7 @@ static int x25519_shared_avx512(
   spc_memset(secret0, 0, ECDH25519_KEY_SIZE_BYTES);
 
   /** Converting to full-radix */
-  Fp25519._2w_red_x2.arithex.deinter(XX, X1, QxPx); 
+  Fp25519._2w_red_x2.arithex.deinter(XX, X1, QxPx);
   Fp25519._2w_red_x2.arithex.deinter(ZZ, X1, QzPz);
   Fp25519._1w_red.arith.misc.ser((uint8_t *)(X + 0 * NUM_DIGITS_FP25519_X64), XX[0]);
   Fp25519._1w_red.arith.misc.ser((uint8_t *)(X + 1 * NUM_DIGITS_FP25519_X64), XX[1]);
@@ -531,11 +528,11 @@ static int x25519_shared_avx512(
   /* Converting to affine coordinates */
   Fp25519._1w_full.arith.inv(invZ, Z);
   Fp25519._1w_full.arith.mul(X, X, invZ);
-  Fp25519._1w_full.arith.misc.ser(shared_secret_0, X);
+  Fp25519._1w_full.arith.misc.ser(shared_secret->k0, X);
 
   Fp25519._1w_full.arith.inv(&invZ[NUM_DIGITS_FP25519_X64], &Z[NUM_DIGITS_FP25519_X64]);
   Fp25519._1w_full.arith.mul(&X[NUM_DIGITS_FP25519_X64], &X[NUM_DIGITS_FP25519_X64], &invZ[NUM_DIGITS_FP25519_X64]);
-  Fp25519._1w_full.arith.misc.ser(shared_secret_1, &X[NUM_DIGITS_FP25519_X64]);
+  Fp25519._1w_full.arith.misc.ser(shared_secret->k1, &X[NUM_DIGITS_FP25519_X64]);
   return 0;
 }
 
@@ -601,10 +598,8 @@ static inline int x25519_keygen_avx2(
 }
 
 static inline int x25519_keygen_avx512(
-    argECDHX_Key session_key_0,
-    argECDHX_Key session_key_1,
-    argECDHX_Key private_key_0,
-    argECDHX_Key private_key_1)
+  argECDHX_Key_x2 session_key,
+  argECDHX_Key_x2 private_key)
 {
   PointXYZT_2w_H0H5 kB_0;
   PointXYZT_2w_H0H5 kB_1;
@@ -614,7 +609,7 @@ static inline int x25519_keygen_avx512(
   uint64_t *ptrScalar_1 = (uint64_t *)scalar_1;
 
   /* clampC function */
-  memcpy(scalar_0, private_key_0, ECDH25519_KEY_SIZE_BYTES);
+  memcpy(scalar_0, private_key->k0, ECDH25519_KEY_SIZE_BYTES);
   scalar_0[0] = scalar_0[0] & (~(uint8_t)0x7);
   scalar_0[ECDH25519_KEY_SIZE_BYTES - 1] = (uint8_t)64 | (scalar_0[ECDH25519_KEY_SIZE_BYTES - 1] & (uint8_t)0x7F);
 
@@ -626,10 +621,10 @@ static inline int x25519_keygen_avx512(
   _1way_doubling_2w_H0H5(&kB_0);
   _1way_doubling_2w_H0H5(&kB_0);
 
-  point_Edwards2Montgomery_ed25519(session_key_0, &kB_0);
+  point_Edwards2Montgomery_ed25519(session_key->k0, &kB_0);
 
   /* clampC function */
-  memcpy(scalar_1, private_key_1, ECDH25519_KEY_SIZE_BYTES);
+  memcpy(scalar_1, private_key->k1, ECDH25519_KEY_SIZE_BYTES);
   scalar_1[0] = scalar_1[0] & (~(uint8_t)0x7);
   scalar_1[ECDH25519_KEY_SIZE_BYTES - 1] = (uint8_t)64 | (scalar_1[ECDH25519_KEY_SIZE_BYTES - 1] & (uint8_t)0x7F);
 
@@ -641,7 +636,7 @@ static inline int x25519_keygen_avx512(
   _1way_doubling_2w_H0H5(&kB_1);
   _1way_doubling_2w_H0H5(&kB_1);
 
-  point_Edwards2Montgomery_ed25519(session_key_1, &kB_1);
+  point_Edwards2Montgomery_ed25519(session_key->k1, &kB_1);
   return 0;
 }
 

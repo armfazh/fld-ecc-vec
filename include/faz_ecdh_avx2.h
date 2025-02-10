@@ -91,20 +91,21 @@ typedef ALIGN uint8_t X25519_KEY[ECDH25519_KEY_SIZE_BYTES];
 #define ECDH448_KEY_SIZE_BYTES 56
 typedef ALIGN uint8_t X448_KEY[ECDH448_KEY_SIZE_BYTES];
 
+ALIGN struct X25519_KEY_x2{
+  X25519_KEY k0, k1;
+};
+
+typedef struct X25519_KEY_x2* argECDHX_Key_x2;
+
 typedef int (*XKeyGen_2way)(
-  argECDHX_Key session_key_0,
-  argECDHX_Key session_key_1,
-  argECDHX_Key private_key_0,
-  argECDHX_Key private_key_1
+  argECDHX_Key_x2 session_key,
+  argECDHX_Key_x2 private_key
 );
 
 typedef int (*XSharedSecret_2way)(
-  argECDHX_Key shared_secret_0,
-  argECDHX_Key shared_secret_1,
-  argECDHX_Key session_key_0,
-  argECDHX_Key session_key_1,
-  argECDHX_Key private_key_0,
-  argECDHX_Key private_key_1
+  argECDHX_Key_x2 shared_secret,
+  argECDHX_Key_x2 session_key,
+  argECDHX_Key_x2 private_key
 );
 
 typedef struct _struct_DiffieHellmanXFunction_2way {
