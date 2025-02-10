@@ -99,7 +99,7 @@
 #define CAST256TO128(X)  _mm256_castsi256_si128(X)
 #define CAST128TO256(X)  _mm256_castsi128_si256(X)
 #define CAST256TO512(X)  _mm512_castsi256_si512(X)
-
+#define CAST512TO256(X)  _mm512_castsi512_si256(X)
 /**
  * This construction calls broadcast instruction
  * explicitly specifying a memory location Y, which
@@ -134,5 +134,6 @@
 #define SET164_x2(X)        _mm512_set1_epi64(X)
 #define SET64_x2(W0, X0, Y0, Z0, W1, X1, Y1, Z1) _mm512_set_epi64(W0, X0, Y0, Z0, W1, X1, Y1, Z1)
 #define EXTR_x2(X,Y)        _mm512_extracti64x4_epi64(X,Y)
+#define INSR_x2(X,Y,Z)      _mm512_inserti64x4(X,Y,Z)
 
 #endif /* SIMD_AVX2_H */

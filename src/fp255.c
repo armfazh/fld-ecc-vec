@@ -16,7 +16,7 @@
  * along with faz_ecc_avx2.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(FP255)
+#if defined(FP255) || 1
 
 #include "faz_fp_avx2.h"
 #include "simd_avx2.h"

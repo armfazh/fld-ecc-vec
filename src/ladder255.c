@@ -463,12 +463,12 @@ static int x25519_shared_avx2(
 }
 
 static int x25519_shared_avx512(
-    X25519_KEY shared_secret_0,
-    X25519_KEY shared_secret_1,
-    X25519_KEY session_key_0,
-    X25519_KEY session_key_1,
-    X25519_KEY private_key_0,
-    X25519_KEY private_key_1)
+    argECDHX_Key shared_secret_0,
+    argECDHX_Key shared_secret_1,
+    argECDHX_Key session_key_0,
+    argECDHX_Key session_key_1,
+    argECDHX_Key private_key_0,
+    argECDHX_Key private_key_1)
 {
   ALIGN uint8_t session0[ECDH25519_KEY_SIZE_BYTES];
   ALIGN uint8_t session1[ECDH25519_KEY_SIZE_BYTES];
@@ -520,7 +520,7 @@ static int x25519_shared_avx512(
   spc_memset(secret0, 0, ECDH25519_KEY_SIZE_BYTES);
 
   /** Converting to full-radix */
-  Fp25519._2w_red_x2.arithex.deinter(XX, X1, QxPx);
+  Fp25519._2w_red_x2.arithex.deinter(XX, X1, QxPx); 
   Fp25519._2w_red_x2.arithex.deinter(ZZ, X1, QzPz);
   Fp25519._1w_red.arith.misc.ser((uint8_t *)(X + 0 * NUM_DIGITS_FP25519_X64), XX[0]);
   Fp25519._1w_red.arith.misc.ser((uint8_t *)(X + 1 * NUM_DIGITS_FP25519_X64), XX[1]);
@@ -601,10 +601,10 @@ static inline int x25519_keygen_avx2(
 }
 
 static inline int x25519_keygen_avx512(
-    X25519_KEY session_key_0,
-    X25519_KEY session_key_1,
-    X25519_KEY private_key_0,
-    X25519_KEY private_key_1)
+    argECDHX_Key session_key_0,
+    argECDHX_Key session_key_1,
+    argECDHX_Key private_key_0,
+    argECDHX_Key private_key_1)
 {
   PointXYZT_2w_H0H5 kB_0;
   PointXYZT_2w_H0H5 kB_1;

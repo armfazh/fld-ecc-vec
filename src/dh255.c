@@ -16,7 +16,7 @@
  * along with faz_ecc_avx2.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(DH255)
+#if defined(DH255) || 1
 
 #include "faz_ecdh_avx2.h"
 
