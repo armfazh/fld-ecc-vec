@@ -26,12 +26,16 @@ extern "C" {
 #include <stdint.h>
 #include <stdio.h>
 
+#ifndef ALIGN_BYTES
 #define ALIGN_BYTES 64
+#endif /* ALIGN_BYTES */
+#ifndef ALIGN
 #ifdef __INTEL_COMPILER
 #define ALIGN __declspec(align(ALIGN_BYTES))
 #else
 #define ALIGN __attribute__ ((aligned (ALIGN_BYTES)))
 #endif
+#endif /* ALIGN */
 
 #ifdef __cplusplus
 namespace faz{
@@ -97,28 +101,27 @@ ALIGN struct X25519_KEY_x2{
 
 typedef struct X25519_KEY_x2* argECDHX_Key_x2;
 
-typedef int (*XKeyGen_2way)(
+typedef int (*XKeyGen_x2)(
   argECDHX_Key_x2 session_key,
-  argECDHX_Key_x2 private_key
-);
+  argECDHX_Key_x2 private_key);
 
-typedef int (*XSharedSecret_2way)(
+typedef int (*XSharedSecret_x2)(
   argECDHX_Key_x2 shared_secret,
   argECDHX_Key_x2 session_key,
   argECDHX_Key_x2 private_key
 );
 
-typedef struct _struct_DiffieHellmanXFunction_2way {
-  XKeyGen_2way keygen;
-  XSharedSecret_2way shared;
+typedef struct _struct_DiffieHellmanXFunction_x2 {
+  XKeyGen_x2 keygen;
+  XSharedSecret_x2 shared;
   uint64_t key_size;
   Oper0Retr(allocKey, uint8_t*);
   Oper1Void(freeKey, void*);
   Oper1File(printKey, uint8_t*);
   Oper1Void(randKey, uint8_t*);
-} X_ECDH_2way;
+} X_ECDH_x2;
 
-extern const X_ECDH_2way X25519_AVX512;
+extern const X_ECDH_x2 X25519_AVX512;
 
 #ifdef __cplusplus
 } /* namespace ecdh */
