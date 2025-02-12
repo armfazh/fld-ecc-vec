@@ -22,42 +22,42 @@
 #include <faz_fp_avx2.h>
 
 typedef ALIGN struct point_extended_1way_fp448 {
-  EltFp448_1w_redradix X, Y, Z, T;
+    EltFp448_1w_redradix X, Y, Z, T;
 } PointXYZT_1way_Fp448;
 
 typedef ALIGN struct point_extended_2way_fp448 {
-  EltFp448_2w_redradix X, Y, Z, T;
+    EltFp448_2w_redradix X, Y, Z, T;
 } PointXYZT_2way_Fp448;
 
 typedef ALIGN struct point_precompute_2way_fp448 {
-  EltFp448_2w_redradix addYX, subYX, _2dYX;
+    EltFp448_2w_redradix addYX, subYX, _2dYX;
 } Point_precmp_2way_Fp448;
 
 typedef ALIGN struct point_extended_4way_fp448 {
-  EltFp448_4w_redradix X, Y, Z, T;
+    EltFp448_4w_redradix X, Y, Z, T;
 } PointXYZT_4way_Fp448;
 
 typedef ALIGN struct point_precompute_4way_fp448 {
-  EltFp448_4w_redradix addYX, subYX, _2dYX;
+    EltFp448_4w_redradix addYX, subYX, _2dYX;
 } Point_precmp_4way_Fp448;
 
 
 /** structures for verification */
 #define OMEGA_DYNAMIC 5
 typedef ALIGN struct pointxytz_precompute_2w_h0h8_fp448 {
-  EltFp448_2w_redradix subaddYX, _2dT_2Z;
+    EltFp448_2w_redradix subaddYX, _2dT_2Z;
 } PointXYZT_precompute_2w_H0H8;
 
 typedef ALIGN struct pointxytz_2w_h0h8_fp448 {
-  EltFp448_2w_redradix XY, TZ;
+    EltFp448_2w_redradix XY, TZ;
 } PointXYZT_2w_H0H8;
 
 typedef ALIGN struct pointxytz_4w_h0h8 {
-  EltFp448_4w_redradix XYTZ;
+    EltFp448_4w_redradix XYTZ;
 } PointXYTZ_4w_H0H8;
 
 typedef ALIGN struct pointxytz_precompute_4w_h0h8 {
-  EltFp448_4w_redradix subYX_addYX_2dT_2Z;
+    EltFp448_4w_redradix subYX_addYX_2dT_2Z;
 } PointXYTZ_precompute_4w_H0H8;
 
 #endif /* EDWARDS448_H */

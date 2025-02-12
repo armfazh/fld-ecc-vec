@@ -30,64 +30,64 @@
 #define LOOKUP_TABLE_SIZE LUT_24KB
 
 typedef ALIGN struct point_extended_1way_full {
-  EltFp25519_1w_fullradix X;
-  EltFp25519_1w_fullradix Y;
-  EltFp25519_1w_fullradix Z;
-  EltFp25519_1w_fullradix T;
+    EltFp25519_1w_fullradix X;
+    EltFp25519_1w_fullradix Y;
+    EltFp25519_1w_fullradix Z;
+    EltFp25519_1w_fullradix T;
 } PointXYZT_1way_full;
 
 typedef ALIGN struct point_extended_1way {
-  EltFp25519_1w_redradix X;
-  EltFp25519_1w_redradix Y;
-  EltFp25519_1w_redradix Z;
-  EltFp25519_1w_redradix T;
+    EltFp25519_1w_redradix X;
+    EltFp25519_1w_redradix Y;
+    EltFp25519_1w_redradix Z;
+    EltFp25519_1w_redradix T;
 } PointXYZT_1way;
 
 typedef ALIGN struct point_extended_2way {
-  EltFp25519_2w_redradix X;
-  EltFp25519_2w_redradix Y;
-  EltFp25519_2w_redradix Z;
-  EltFp25519_2w_redradix T;
+    EltFp25519_2w_redradix X;
+    EltFp25519_2w_redradix Y;
+    EltFp25519_2w_redradix Z;
+    EltFp25519_2w_redradix T;
 } PointXYZT_2way;
 
 typedef ALIGN struct point_precompute_2way {
-  EltFp25519_2w_redradix addYX;
-  EltFp25519_2w_redradix subYX;
-  EltFp25519_2w_redradix _2dYX;
+    EltFp25519_2w_redradix addYX;
+    EltFp25519_2w_redradix subYX;
+    EltFp25519_2w_redradix _2dYX;
 } Point_precmp_2way;
 
 typedef ALIGN struct point_extended_4way {
-  EltFp25519_4w_redradix X;
-  EltFp25519_4w_redradix Y;
-  EltFp25519_4w_redradix Z;
-  EltFp25519_4w_redradix T;
+    EltFp25519_4w_redradix X;
+    EltFp25519_4w_redradix Y;
+    EltFp25519_4w_redradix Z;
+    EltFp25519_4w_redradix T;
 } PointXYZT_4way;
 
 typedef ALIGN struct point_precompute_4way {
-  EltFp25519_4w_redradix addYX;
-  EltFp25519_4w_redradix subYX;
-  EltFp25519_4w_redradix _2dYX;
+    EltFp25519_4w_redradix addYX;
+    EltFp25519_4w_redradix subYX;
+    EltFp25519_4w_redradix _2dYX;
 } Point_precmp_4way;
 
 
 /** structures for verification */
 #define OMEGA_DYNAMIC 5
 typedef ALIGN struct pointxytz_precompute_2w_h0h5 {
-  EltFp25519_2w_redradix subaddYX;
-  EltFp25519_2w_redradix _2dT_2Z;
+    EltFp25519_2w_redradix subaddYX;
+    EltFp25519_2w_redradix _2dT_2Z;
 } PointXYZT_precompute_2w_H0H5;
 
 typedef ALIGN struct pointxytz_2w_h0h5 {
-  EltFp25519_2w_redradix XY;
-  EltFp25519_2w_redradix TZ;
+    EltFp25519_2w_redradix XY;
+    EltFp25519_2w_redradix TZ;
 } PointXYZT_2w_H0H5;
 
 typedef ALIGN struct pointxytz_4w_h0h5 {
-  EltFp25519_4w_redradix XYTZ;
+    EltFp25519_4w_redradix XYTZ;
 } PointXYTZ_4w_H0H5;
 
 typedef ALIGN struct pointxytz_precompute_4w_h0h5 {
-  EltFp25519_4w_redradix subYX_addYX_2dT_2Z;
+    EltFp25519_4w_redradix subYX_addYX_2dT_2Z;
 } PointXYTZ_precompute_4w_H0H5;
 
 #endif /* EDWARDS255_H */

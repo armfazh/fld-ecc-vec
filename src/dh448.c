@@ -21,8 +21,10 @@
 #include "faz_ecdh_avx2.h"
 
 #ifdef __cplusplus
-namespace faz{
-  namespace dh448{
+namespace faz
+{
+namespace dh448
+{
 extern "C" {
 #endif /* __cplusplus */
 

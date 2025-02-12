@@ -29,15 +29,19 @@ extern "C" {
 #include <stdio.h>
 
 #ifdef __cplusplus
-namespace faz {
-namespace hash {
+namespace faz
+{
+namespace hash
+{
 #endif /* __cplusplus */
 
 #ifdef __cplusplus
 using namespace faz::fp;
 #endif
 
-typedef ALIGN struct point_affine { EltFp25519_1w_fullradix X, Y; } Point;
+typedef ALIGN struct point_affine {
+    EltFp25519_1w_fullradix X, Y;
+} Point;
 
 void h2c25519_x64(Point *P, uint8_t *msg, size_t mlen);
 void h2c25519_avx2(Point *P, uint8_t *msg, size_t mlen);
@@ -53,9 +57,9 @@ void _1way_fulladd_1w_full(PointXYZT_1way_full *R, PointXYZT_1way_full *Q,
                            PointXYZT_1way_full *P);
 
 void hash_to_field(argElement_1w u, uint8_t prefix, uint8_t *msg,
-size_t mlen);
+                   size_t mlen);
 void hash_to_field_2w(argElement_1w u0, argElement_1w u1,
-               uint8_t *msg, size_t mlen);
+                      uint8_t *msg, size_t mlen);
 
 #ifdef __cplusplus
 } /* namespace fp */

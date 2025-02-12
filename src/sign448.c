@@ -25,8 +25,9 @@
  *
  * @param key
  */
-static inline void randEd448_Key(argEdDSA_PrivateKey key) {
-  random_bytes(key, ED448_KEY_SIZE_BYTES_PARAM);
+static inline void randEd448_Key(argEdDSA_PrivateKey key)
+{
+    random_bytes(key, ED448_KEY_SIZE_BYTES_PARAM);
 }
 
 /**
@@ -34,8 +35,9 @@ static inline void randEd448_Key(argEdDSA_PrivateKey key) {
  * @param file
  * @param key
  */
-static inline void printEd448_Key(FILE *file, argEdDSA_PrivateKey key) {
-  print_hex_bytes(file, key, ED448_KEY_SIZE_BYTES_PARAM);
+static inline void printEd448_Key(FILE *file, argEdDSA_PrivateKey key)
+{
+    print_hex_bytes(file, key, ED448_KEY_SIZE_BYTES_PARAM);
 }
 
 /**
@@ -43,24 +45,27 @@ static inline void printEd448_Key(FILE *file, argEdDSA_PrivateKey key) {
  * @param file
  * @param sig
  */
-static inline void printEd448_Signature(FILE *file, uint8_t *sig) {
-  print_hex_bytes(file, sig, ED448_SIG_SIZE_BYTES_PARAM);
+static inline void printEd448_Signature(FILE *file, uint8_t *sig)
+{
+    print_hex_bytes(file, sig, ED448_SIG_SIZE_BYTES_PARAM);
 }
 
 /**
  *
  * @return
  */
-static inline uint8_t *allocEd448_Key(void) {
-  return (uint8_t *) allocate_bytes(ED448_KEY_SIZE_BYTES_PARAM * sizeof(uint8_t));
+static inline uint8_t *allocEd448_Key(void)
+{
+    return (uint8_t *) allocate_bytes(ED448_KEY_SIZE_BYTES_PARAM * sizeof(uint8_t));
 }
 
 /**
  *
  * @return
  */
-static inline uint8_t *allocEd448_Signature(void) {
-  return (uint8_t *) allocate_bytes(ED448_SIG_SIZE_BYTES_PARAM * sizeof(uint8_t));
+static inline uint8_t *allocEd448_Signature(void)
+{
+    return (uint8_t *) allocate_bytes(ED448_SIG_SIZE_BYTES_PARAM * sizeof(uint8_t));
 }
 
 /**
@@ -69,29 +74,30 @@ static inline uint8_t *allocEd448_Signature(void) {
  *
  * such that size of r, k and a is 56-bytes.
  */
-static inline void calculate_s_ed448(uint8_t *s_mod_l, uint8_t *r, uint8_t *h, uint8_t *a) {
-  int i;
-  ALIGN uint64_t product[16];
-  ALIGN uint64_t aa[7];
-  ALIGN uint64_t hh[7];
+static inline void calculate_s_ed448(uint8_t *s_mod_l, uint8_t *r, uint8_t *h, uint8_t *a)
+{
+    int i;
+    ALIGN uint64_t product[16];
+    ALIGN uint64_t aa[7];
+    ALIGN uint64_t hh[7];
 
-  aa[6] = 0;
-  for (i = 0; i < 56; i++) {
-    ((uint8_t *) product)[i] = r[i];
-    ((uint8_t *) aa)[i] = a[i];
-    ((uint8_t *) hh)[i] = h[i];
-  }
-  for (i = 7; i < 16; i++) {
-    product[i] = 0;
-  }
+    aa[6] = 0;
+    for (i = 0; i < 56; i++) {
+        ((uint8_t *) product)[i] = r[i];
+        ((uint8_t *) aa)[i] = a[i];
+        ((uint8_t *) hh)[i] = h[i];
+    }
+    for (i = 7; i < 16; i++) {
+        product[i] = 0;
+    }
 
-  word64_multiplier(product, hh, 7, aa, 7);
-  modular_reduction_ed448((uint8_t *) product);
+    word64_multiplier(product, hh, 7, aa, 7);
+    modular_reduction_ed448((uint8_t *) product);
 
-  for (i = 0; i < 56; i++) {
-    s_mod_l[i] = ((uint8_t *) product)[i];
-  }
-  s_mod_l[56] = 0;
+    for (i = 0; i < 56; i++) {
+        s_mod_l[i] = ((uint8_t *) product)[i];
+    }
+    s_mod_l[56] = 0;
 }
 
 /**
@@ -103,18 +109,19 @@ static inline void calculate_s_ed448(uint8_t *s_mod_l, uint8_t *r, uint8_t *h, u
 static int ed448_keygen(
     argEdDSA_PublicKey public_key,
     const argEdDSA_PrivateKey private_key
-) {
-  Ed448_Digest h;
-  PointXYZT_2w_H0H8 hB;
-  SHAKE256(private_key, ED448_KEY_SIZE_BYTES_PARAM * 8, h, ED448_HASH_BYTES_PARAM);
+)
+{
+    Ed448_Digest h;
+    PointXYZT_2w_H0H8 hB;
+    SHAKE256(private_key, ED448_KEY_SIZE_BYTES_PARAM * 8, h, ED448_HASH_BYTES_PARAM);
 
-  h[0] &= -((uint8_t) 1 << ED448_C_PARAM);
-  h[ED448_KEY_SIZE_BYTES_PARAM - 2] |= 0x80;
-  h[ED448_KEY_SIZE_BYTES_PARAM - 1] = 0x00;
+    h[0] &= -((uint8_t) 1 << ED448_C_PARAM);
+    h[ED448_KEY_SIZE_BYTES_PARAM - 2] |= 0x80;
+    h[ED448_KEY_SIZE_BYTES_PARAM - 1] = 0x00;
 
-  fixed_point_multiplication_ed448(&hB, h);
-  point_encoding_ed448(public_key, &hB);
-  return EDDSA_KEYGEN_OK;
+    fixed_point_multiplication_ed448(&hB, h);
+    point_encoding_ed448(public_key, &hB);
+    return EDDSA_KEYGEN_OK;
 }
 
 /**
@@ -138,63 +145,64 @@ static int ed448_sign_all(
     const argEdDSA_PublicKey public_key,
     const argEdDSA_PrivateKey private_key,
     const uint8_t phflag
-) {
-  PointXYZT_2w_H0H8 rB;
-  Ed448_Digest H_RAM, r, ah, pre_hash_message;
-  const int size_prefix = 10;
-  hashState hash;
-  unsigned char prefix[10] = "SigEd448";
+)
+{
+    PointXYZT_2w_H0H8 rB;
+    Ed448_Digest H_RAM, r, ah, pre_hash_message;
+    const int size_prefix = 10;
+    hashState hash;
+    unsigned char prefix[10] = "SigEd448";
 
-  if (context_length > 255) {
-    return EDDSA_ERROR_CONTEXT;
-  }
+    if (context_length > 255) {
+        return EDDSA_ERROR_CONTEXT;
+    }
 
-  /* PHFLAG */
-  prefix[8] = phflag;
-  /* size context */
-  prefix[9] = (uint8_t) context_length;
+    /* PHFLAG */
+    prefix[8] = phflag;
+    /* size context */
+    prefix[9] = (uint8_t) context_length;
 
-  SHAKE256(private_key, ED448_KEY_SIZE_BYTES_PARAM * 8, ah, ED448_HASH_BYTES_PARAM);
-  ah[0] &= -((uint8_t) 1 << ED448_C_PARAM);
-  ah[ED448_KEY_SIZE_BYTES_PARAM - 2] |= 0x80;
-  ah[ED448_KEY_SIZE_BYTES_PARAM - 1] = 0x00;
+    SHAKE256(private_key, ED448_KEY_SIZE_BYTES_PARAM * 8, ah, ED448_HASH_BYTES_PARAM);
+    ah[0] &= -((uint8_t) 1 << ED448_C_PARAM);
+    ah[ED448_KEY_SIZE_BYTES_PARAM - 2] |= 0x80;
+    ah[ED448_KEY_SIZE_BYTES_PARAM - 1] = 0x00;
 
-  Init(&hash, 256);
-  Update(&hash, prefix, size_prefix * 8);
-  Update(&hash, context, context_length * 8);
-  Update(&hash, ah + ED448_KEY_SIZE_BYTES_PARAM, ED448_KEY_SIZE_BYTES_PARAM * 8);
-  if (phflag == 1) {
-    SHAKE256(message, message_length * 8, pre_hash_message, 64);
-    Update(&hash, pre_hash_message, 64 * 8);
-  } else if (phflag == 0) {
-    Update(&hash, message, message_length * 8);
-  } else {
-    return EDDSA_ERROR_PHFLAG;
-  }
-  Final2(&hash, r, ED448_HASH_BYTES_PARAM);
-  modular_reduction_ed448(r);
+    Init(&hash, 256);
+    Update(&hash, prefix, size_prefix * 8);
+    Update(&hash, context, context_length * 8);
+    Update(&hash, ah + ED448_KEY_SIZE_BYTES_PARAM, ED448_KEY_SIZE_BYTES_PARAM * 8);
+    if (phflag == 1) {
+        SHAKE256(message, message_length * 8, pre_hash_message, 64);
+        Update(&hash, pre_hash_message, 64 * 8);
+    } else if (phflag == 0) {
+        Update(&hash, message, message_length * 8);
+    } else {
+        return EDDSA_ERROR_PHFLAG;
+    }
+    Final2(&hash, r, ED448_HASH_BYTES_PARAM);
+    modular_reduction_ed448(r);
 
-  fixed_point_multiplication_ed448(&rB, r);
-  point_encoding_ed448(signature, &rB);
+    fixed_point_multiplication_ed448(&rB, r);
+    point_encoding_ed448(signature, &rB);
 
-  Init(&hash, 256);
-  Update(&hash, prefix, size_prefix * 8);
-  Update(&hash, context, context_length * 8);
-  Update(&hash, signature, ED448_KEY_SIZE_BYTES_PARAM * 8);
-  Update(&hash, public_key, ED448_KEY_SIZE_BYTES_PARAM * 8);
-  if (phflag == 1) {
-    Update(&hash, pre_hash_message, 64 * 8);
-  } else if (phflag == 0) {
-    Update(&hash, message, message_length * 8);
-  } else {
-    return EDDSA_ERROR_PHFLAG;
-  }
-  Final2(&hash, H_RAM, ED448_HASH_BYTES_PARAM);
+    Init(&hash, 256);
+    Update(&hash, prefix, size_prefix * 8);
+    Update(&hash, context, context_length * 8);
+    Update(&hash, signature, ED448_KEY_SIZE_BYTES_PARAM * 8);
+    Update(&hash, public_key, ED448_KEY_SIZE_BYTES_PARAM * 8);
+    if (phflag == 1) {
+        Update(&hash, pre_hash_message, 64 * 8);
+    } else if (phflag == 0) {
+        Update(&hash, message, message_length * 8);
+    } else {
+        return EDDSA_ERROR_PHFLAG;
+    }
+    Final2(&hash, H_RAM, ED448_HASH_BYTES_PARAM);
 
-  modular_reduction_ed448(H_RAM);
+    modular_reduction_ed448(H_RAM);
 
-  calculate_s_ed448(signature + ED448_KEY_SIZE_BYTES_PARAM, r, H_RAM, ah);
-  return EDDSA_SIGNATURE_OK;
+    calculate_s_ed448(signature + ED448_KEY_SIZE_BYTES_PARAM, r, H_RAM, ah);
+    return EDDSA_SIGNATURE_OK;
 }
 
 /**
@@ -214,8 +222,9 @@ static int ed448_signctx(
     uint64_t context_length,
     const argEdDSA_PublicKey public_key,
     const argEdDSA_PrivateKey private_key
-) {
-  return ed448_sign_all(signature, message, message_length, context, context_length, public_key, private_key, 0);
+)
+{
+    return ed448_sign_all(signature, message, message_length, context, context_length, public_key, private_key, 0);
 }
 
 /**
@@ -237,8 +246,9 @@ static int ed448ph_signctx(
     uint64_t context_length,
     const argEdDSA_PublicKey public_key,
     const argEdDSA_PrivateKey private_key
-) {
-  return ed448_sign_all(signature, message, message_length, context, context_length, public_key, private_key, 1);
+)
+{
+    return ed448_sign_all(signature, message, message_length, context, context_length, public_key, private_key, 1);
 }
 
 /**
@@ -260,45 +270,46 @@ static int ed448_verify_all(
     const argEdDSA_PublicKey public_key,
     const argEdDSA_Signature signature,
     const uint8_t phflag
-) {
-  const int size_prefix = 10;
-  Ed448_Digest H_RAM, pre_hash_message;
-  PointXYTZ_4w_H0H8 A;
-  Ed448_Signature Q;
-  hashState hash;
-  unsigned char prefix[10] = "SigEd448";
+)
+{
+    const int size_prefix = 10;
+    Ed448_Digest H_RAM, pre_hash_message;
+    PointXYTZ_4w_H0H8 A;
+    Ed448_Signature Q;
+    hashState hash;
+    unsigned char prefix[10] = "SigEd448";
 
-  if (context_length > 255) {
-    return EDDSA_ERROR_CONTEXT;
-  }
+    if (context_length > 255) {
+        return EDDSA_ERROR_CONTEXT;
+    }
 
-  /* PHFLAG */
-  prefix[8] = phflag;
-  /* size context */
-  prefix[9] = (uint8_t) context_length;
+    /* PHFLAG */
+    prefix[8] = phflag;
+    /* size context */
+    prefix[9] = (uint8_t) context_length;
 
-  Init(&hash, 256);
-  Update(&hash, prefix, size_prefix * 8);
-  Update(&hash, context, context_length * 8);
-  Update(&hash, signature, ED448_KEY_SIZE_BYTES_PARAM * 8);
-  Update(&hash, public_key, ED448_KEY_SIZE_BYTES_PARAM * 8);
-  if (phflag == 1) {
-    SHAKE256(message, message_length * 8, pre_hash_message, 64);
-    Update(&hash, pre_hash_message, 64 * 8);
-  } else if (phflag == 0) {
-    Update(&hash, message, message_length * 8);
-  } else {
-    return EDDSA_ERROR_PHFLAG;
-  }
-  Final2(&hash, H_RAM, ED448_HASH_BYTES_PARAM);
-  modular_reduction_ed448(H_RAM);
+    Init(&hash, 256);
+    Update(&hash, prefix, size_prefix * 8);
+    Update(&hash, context, context_length * 8);
+    Update(&hash, signature, ED448_KEY_SIZE_BYTES_PARAM * 8);
+    Update(&hash, public_key, ED448_KEY_SIZE_BYTES_PARAM * 8);
+    if (phflag == 1) {
+        SHAKE256(message, message_length * 8, pre_hash_message, 64);
+        Update(&hash, pre_hash_message, 64 * 8);
+    } else if (phflag == 0) {
+        Update(&hash, message, message_length * 8);
+    } else {
+        return EDDSA_ERROR_PHFLAG;
+    }
+    Final2(&hash, H_RAM, ED448_HASH_BYTES_PARAM);
+    modular_reduction_ed448(H_RAM);
 
-  if (point_decoding_ed448(&A, NULL, (uint8_t *) public_key) != 0) {
-    return EDDSA_ERROR_PUBLICKEY;
-  }
+    if (point_decoding_ed448(&A, NULL, (uint8_t *) public_key) != 0) {
+        return EDDSA_ERROR_PUBLICKEY;
+    }
 
-  double_point_mult_4w_ed448(Q, signature + ED448_KEY_SIZE_BYTES_PARAM, H_RAM, &A);
-  return (memcmp(signature, Q, ED448_KEY_SIZE_BYTES_PARAM) == 0) ? EDDSA_VERIFICATION_OK : EDDSA_INVALID_SIGNATURE;
+    double_point_mult_4w_ed448(Q, signature + ED448_KEY_SIZE_BYTES_PARAM, H_RAM, &A);
+    return (memcmp(signature, Q, ED448_KEY_SIZE_BYTES_PARAM) == 0) ? EDDSA_VERIFICATION_OK : EDDSA_INVALID_SIGNATURE;
 }
 
 /**
@@ -318,8 +329,9 @@ static int ed448_verifyctx(
     uint64_t context_length,
     const argEdDSA_PublicKey public_key,
     const argEdDSA_Signature signature
-) {
-  return ed448_verify_all(message, message_length, context, context_length, public_key, signature, 0);
+)
+{
+    return ed448_verify_all(message, message_length, context, context_length, public_key, signature, 0);
 }
 
 /**
@@ -339,8 +351,9 @@ static int ed448ph_verifyctx(
     uint64_t context_length,
     const argEdDSA_PublicKey public_key,
     const argEdDSA_Signature signature
-) {
-  return ed448_verify_all(message, message_length, context, context_length, public_key, signature, 1);
+)
+{
+    return ed448_verify_all(message, message_length, context, context_length, public_key, signature, 1);
 }
 
 #else

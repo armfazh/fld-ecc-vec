@@ -22,8 +22,10 @@
 #include "simd_avx2.h"
 
 #ifdef __cplusplus
-namespace faz {
-namespace fp448 {
+namespace faz
+{
+namespace fp448
+{
 extern "C" {
 #endif /* __cplusplus */
 
@@ -49,13 +51,13 @@ const PrimeField Fp448={
             .prime = SUFFIX(prime,  1, fullradix),
             .misc = {
                 .alloc = SUFFIX(alloc,  1, fullradix),
-                .copy  = SUFFIX(copy ,  1, fullradix),
+                .copy  = SUFFIX(copy,  1, fullradix),
                 .free  = deallocate_bytes,
                 .print = SUFFIX(print,  1, fullradix),
-                .rand  = SUFFIX(rand ,  1, fullradix),
-                .ser   = SUFFIX(ser  ,  1, fullradix),
+                .rand  = SUFFIX(rand,  1, fullradix),
+                .ser   = SUFFIX(ser,  1, fullradix),
                 .unser = SUFFIX(unser,  1, fullradix),
-                .zero  = SUFFIX(zero ,  1, fullradix),
+                .zero  = SUFFIX(zero,  1, fullradix),
             },
         },
         .arithex = {
@@ -81,13 +83,13 @@ const PrimeField Fp448={
             .prime = SUFFIX(prime,  1, redradix),
             .misc = {
                 .alloc = SUFFIX(alloc,  1, redradix),
-                .copy  = SUFFIX(copy ,  1, redradix),
+                .copy  = SUFFIX(copy,  1, redradix),
                 .free  = deallocate_bytes,
                 .print = SUFFIX(print,  1, redradix),
-                .rand  = SUFFIX(rand ,  1, redradix),
-                .ser   = SUFFIX(ser  ,  1, redradix),
+                .rand  = SUFFIX(rand,  1, redradix),
+                .ser   = SUFFIX(ser,  1, redradix),
                 .unser = SUFFIX(unser,  1, redradix),
-                .zero  = SUFFIX(zero ,  1, redradix),
+                .zero  = SUFFIX(zero,  1, redradix),
             },
         },
         .arithex = {
@@ -107,22 +109,22 @@ const PrimeField Fp448={
             .sub = SUFFIX(sub,2,redradix),
             .misc = {
                 .alloc = SUFFIX(alloc,  2, redradix),
-                .copy  = SUFFIX(copy ,  2, redradix),
+                .copy  = SUFFIX(copy,  2, redradix),
                 .free  = deallocate_bytes,
                 .print = SUFFIX(print,  2, redradix),
-                .rand  = SUFFIX(rand ,  2, redradix),
-                .ser   = SUFFIX(ser  ,  2, redradix),
+                .rand  = SUFFIX(rand,  2, redradix),
+                .ser   = SUFFIX(ser,  2, redradix),
                 .unser = SUFFIX(unser,  2, redradix),
-                .zero  = SUFFIX(zero ,  2, redradix),
+                .zero  = SUFFIX(zero,  2, redradix),
             },
         },
         .arithex = {
-            .addsub    = SUFFIX(addsub   ,2,redradix),
-            .deinter   = SUFFIX(deinter  ,2,redradix),
-            .inter     = SUFFIX(inter    ,2,redradix),
-            .intmul    = SUFFIX(intmul   ,2,redradix),
-            .intsqr    = SUFFIX(intsqr   ,2,redradix),
-            .compress  = SUFFIX(compress ,2,redradix),
+            .addsub    = SUFFIX(addsub,2,redradix),
+            .deinter   = SUFFIX(deinter,2,redradix),
+            .inter     = SUFFIX(inter,2,redradix),
+            .intmul    = SUFFIX(intmul,2,redradix),
+            .intsqr    = SUFFIX(intsqr,2,redradix),
+            .compress  = SUFFIX(compress,2,redradix),
             .compress2 = SUFFIX(compress2,2,redradix),
             .compressfast = SUFFIX(compressfast,2,redradix),
         },

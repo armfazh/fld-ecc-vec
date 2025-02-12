@@ -38,8 +38,10 @@ extern "C" {
 #endif /* ALIGN */
 
 #ifdef __cplusplus
-namespace faz{
-namespace ecdh{
+namespace faz
+{
+namespace ecdh
+{
 #endif /* __cplusplus */
 
 /**
@@ -64,23 +66,23 @@ namespace ecdh{
 typedef uint8_t *argECDHX_Key;
 
 typedef int (*XKeyGen)(
-		argECDHX_Key session_key,
-		argECDHX_Key private_key
+    argECDHX_Key session_key,
+    argECDHX_Key private_key
 );
 typedef int (*XSharedSecret)(
-		argECDHX_Key shared_secret,
-		argECDHX_Key session_key,
-		argECDHX_Key private_key
+    argECDHX_Key shared_secret,
+    argECDHX_Key session_key,
+    argECDHX_Key private_key
 );
 
 typedef struct _struct_DiffieHellmanXFunction {
-  XKeyGen keygen;
-  XSharedSecret shared;
-  uint64_t key_size;
-  Oper0Retr(allocKey, uint8_t*);
-  Oper1Void(freeKey, void*);
-  Oper1File(printKey, uint8_t*);
-  Oper1Void(randKey, uint8_t*);
+    XKeyGen keygen;
+    XSharedSecret shared;
+    uint64_t key_size;
+    Oper0Retr(allocKey, uint8_t*);
+    Oper1Void(freeKey, void*);
+    Oper1File(printKey, uint8_t*);
+    Oper1Void(randKey, uint8_t*);
 } X_ECDH;
 
 extern const X_ECDH X25519_AVX2;
@@ -95,30 +97,30 @@ typedef ALIGN uint8_t X25519_KEY[ECDH25519_KEY_SIZE_BYTES];
 #define ECDH448_KEY_SIZE_BYTES 56
 typedef ALIGN uint8_t X448_KEY[ECDH448_KEY_SIZE_BYTES];
 
-ALIGN struct X25519_KEY_x2{
-  X25519_KEY k0, k1;
+ALIGN struct X25519_KEY_x2 {
+    X25519_KEY k0, k1;
 };
 
 typedef struct X25519_KEY_x2* argECDHX_Key_x2;
 
 typedef int (*XKeyGen_x2)(
-  argECDHX_Key_x2 session_key,
-  argECDHX_Key_x2 private_key);
+    argECDHX_Key_x2 session_key,
+    argECDHX_Key_x2 private_key);
 
 typedef int (*XSharedSecret_x2)(
-  argECDHX_Key_x2 shared_secret,
-  argECDHX_Key_x2 session_key,
-  argECDHX_Key_x2 private_key
+    argECDHX_Key_x2 shared_secret,
+    argECDHX_Key_x2 session_key,
+    argECDHX_Key_x2 private_key
 );
 
 typedef struct _struct_DiffieHellmanXFunction_x2 {
-  XKeyGen_x2 keygen;
-  XSharedSecret_x2 shared;
-  uint64_t key_size;
-  Oper0Retr(allocKey, uint8_t*);
-  Oper1Void(freeKey, void*);
-  Oper1File(printKey, uint8_t*);
-  Oper1Void(randKey, uint8_t*);
+    XKeyGen_x2 keygen;
+    XSharedSecret_x2 shared;
+    uint64_t key_size;
+    Oper0Retr(allocKey, uint8_t*);
+    Oper1Void(freeKey, void*);
+    Oper1File(printKey, uint8_t*);
+    Oper1Void(randKey, uint8_t*);
 } X_ECDH_x2;
 
 extern const X_ECDH_x2 X25519_AVX512;

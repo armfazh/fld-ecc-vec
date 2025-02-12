@@ -35,8 +35,10 @@ extern "C" {
 #endif
 
 #ifdef __cplusplus
-namespace faz{
-  namespace fp{
+namespace faz
+{
+namespace fp
+{
 #endif /* __cplusplus */
 
 #define argElement_1w uint64_t *
@@ -107,131 +109,131 @@ STRUCT_MISC(4w,argElement_4w);
 STRUCT_MISC(2w_x2,argElement_2w_x2);
 
 typedef struct _struct_1w {
-  Oper3Void(add, argElement_1w);
-  Oper2Reti(cmp, argElement_1w);
-  Oper3Scal(cmv, argElement_1w);
-  Oper2Void(inv, argElement_1w);
-  Oper3Void(mul, argElement_1w);
-  Oper1Void(neg, argElement_1w);
-  Oper1Reti(sgn, argElement_1w);
-  Oper1Void(sqr, argElement_1w);
-  Oper2Void(srt, argElement_1w);
-  Oper3Void(sub, argElement_1w);
-  Oper1Void(prime, argElement_1w);
-  const Misc_1w misc;
+    Oper3Void(add, argElement_1w);
+    Oper2Reti(cmp, argElement_1w);
+    Oper3Scal(cmv, argElement_1w);
+    Oper2Void(inv, argElement_1w);
+    Oper3Void(mul, argElement_1w);
+    Oper1Void(neg, argElement_1w);
+    Oper1Reti(sgn, argElement_1w);
+    Oper1Void(sqr, argElement_1w);
+    Oper2Void(srt, argElement_1w);
+    Oper3Void(sub, argElement_1w);
+    Oper1Void(prime, argElement_1w);
+    const Misc_1w misc;
 } Arith_1w;
 
 typedef struct _struct_arithex_1w_fullradix {
-  Oper3Void(intmul,  argElement_1w);
-  Oper3Void(intmul2, argElement_1w);
-  Oper2Void(intsqr,  argElement_1w);
-  Oper2Void(intsqr2, argElement_1w);
-  Oper2Void(mula24,  argElement_1w);
-  Oper2Void(reduce,  argElement_1w);
-  Oper2Void(reduce2, argElement_1w);
+    Oper3Void(intmul,  argElement_1w);
+    Oper3Void(intmul2, argElement_1w);
+    Oper2Void(intsqr,  argElement_1w);
+    Oper2Void(intsqr2, argElement_1w);
+    Oper2Void(mula24,  argElement_1w);
+    Oper2Void(reduce,  argElement_1w);
+    Oper2Void(reduce2, argElement_1w);
 } Arith_1w_fullradix;
 
 typedef struct _struct_1w_fullradix {
-  const Arith_1w arith;
-  const Arith_1w_fullradix arithex;
+    const Arith_1w arith;
+    const Arith_1w_fullradix arithex;
 } Fp_1w_fullradix;
 
 typedef struct _struct_arithex_1w_redradix {
-  Oper2Void(addsub,       argElement_1w);
-  Oper3Void(intmul,       argElement_1w);
-  Oper1Void(compress,     argElement_1w);
-  Oper1Void(compressfast, argElement_1w);
+    Oper2Void(addsub,       argElement_1w);
+    Oper3Void(intmul,       argElement_1w);
+    Oper1Void(compress,     argElement_1w);
+    Oper1Void(compressfast, argElement_1w);
 } Arith_1w_redradix;
 
 typedef struct _struct_1w_redradix {
-  const Arith_1w arith;
-  const Arith_1w_redradix arithex;
+    const Arith_1w arith;
+    const Arith_1w_redradix arithex;
 } Fp_1w_redradix;
 
 typedef struct _struct_arithex_2w_redradix {
-  Oper2Void(addsub,       argElement_2w);
-  Oper3Vari(deinter,void,argElement_1w C,argElement_1w A,argElement_2w B);
-  Oper3Vari(inter  ,void,argElement_2w C,argElement_1w A,argElement_1w B);
-  Oper3Void(intmul,       argElement_2w);
-  Oper1Void(intsqr,       argElement_2w);
-  Oper1Void(compress,     argElement_2w);
-  Oper2Void(compress2,    argElement_2w);
-  Oper1Void(compressfast, argElement_2w);
+    Oper2Void(addsub,       argElement_2w);
+    Oper3Vari(deinter,void,argElement_1w C,argElement_1w A,argElement_2w B);
+    Oper3Vari(inter,void,argElement_2w C,argElement_1w A,argElement_1w B);
+    Oper3Void(intmul,       argElement_2w);
+    Oper1Void(intsqr,       argElement_2w);
+    Oper1Void(compress,     argElement_2w);
+    Oper2Void(compress2,    argElement_2w);
+    Oper1Void(compressfast, argElement_2w);
 } Arith_2w_redradix;
 
 typedef struct _struct_2w {
-  Oper3Void(add, argElement_2w);
-  Oper2Vect(cmp, __m256i, argElement_2w);
-  Oper3Vect(cmv, __m256i, argElement_2w);
-  Oper3Void(mul, argElement_2w);
-  Oper1Void(neg, argElement_2w);
-  Oper2Void(ngz, argElement_2w);
-  Oper1Vect(sgn, __m256i, argElement_2w);
-  Oper1Void(sqr, argElement_2w);
-  Oper3Void(sub, argElement_2w);
-  const Misc_2w misc;
+    Oper3Void(add, argElement_2w);
+    Oper2Vect(cmp, __m256i, argElement_2w);
+    Oper3Vect(cmv, __m256i, argElement_2w);
+    Oper3Void(mul, argElement_2w);
+    Oper1Void(neg, argElement_2w);
+    Oper2Void(ngz, argElement_2w);
+    Oper1Vect(sgn, __m256i, argElement_2w);
+    Oper1Void(sqr, argElement_2w);
+    Oper3Void(sub, argElement_2w);
+    const Misc_2w misc;
 } Arith_2w;
 
 typedef struct _struct_2w_redradix {
-  const Arith_2w arith;
-  const Arith_2w_redradix arithex;
+    const Arith_2w arith;
+    const Arith_2w_redradix arithex;
 } Fp_2w_redradix;
 
 typedef struct _struct_arithex_2w_redradix_x2 {
-  Oper2Void(addsub,       argElement_2w_x2);
-  Oper3Vari(deinter,void, argElement_1w C[2], argElement_1w A[2], argElement_2w_x2 B);
-  Oper3Vari(inter  ,void, argElement_2w_x2 C, argElement_1w A[2], argElement_1w B[2]);
-  Oper3Void(intmul,       argElement_2w_x2);
-  Oper1Void(intsqr,       argElement_2w_x2);
-  Oper1Void(compress,     argElement_2w_x2);
-  Oper2Void(compress2,    argElement_2w_x2);
-  Oper1Void(compressfast, argElement_2w_x2);
+    Oper2Void(addsub,       argElement_2w_x2);
+    Oper3Vari(deinter,void, argElement_1w C[2], argElement_1w A[2], argElement_2w_x2 B);
+    Oper3Vari(inter,void, argElement_2w_x2 C, argElement_1w A[2], argElement_1w B[2]);
+    Oper3Void(intmul,       argElement_2w_x2);
+    Oper1Void(intsqr,       argElement_2w_x2);
+    Oper1Void(compress,     argElement_2w_x2);
+    Oper2Void(compress2,    argElement_2w_x2);
+    Oper1Void(compressfast, argElement_2w_x2);
 } Arith_2w_redradix_x2;
 
 typedef struct _struct_2w_x2 {
-  Oper3Void(add, argElement_2w_x2);
-  Oper2Vect(cmp, __m512i, argElement_2w_x2);
-  Oper3Vect(cmv, __m512i, argElement_2w_x2);
-  Oper3Void(mul, argElement_2w_x2);
-  Oper1Void(neg, argElement_2w_x2);
-  Oper2Void(ngz, argElement_2w_x2);
-  Oper1Vect(sgn, __m512i, argElement_2w_x2);
-  Oper1Void(sqr, argElement_2w_x2);
-  Oper3Void(sub, argElement_2w_x2);
-  const Misc_2w_x2 misc;
+    Oper3Void(add, argElement_2w_x2);
+    Oper2Vect(cmp, __m512i, argElement_2w_x2);
+    Oper3Vect(cmv, __m512i, argElement_2w_x2);
+    Oper3Void(mul, argElement_2w_x2);
+    Oper1Void(neg, argElement_2w_x2);
+    Oper2Void(ngz, argElement_2w_x2);
+    Oper1Vect(sgn, __m512i, argElement_2w_x2);
+    Oper1Void(sqr, argElement_2w_x2);
+    Oper3Void(sub, argElement_2w_x2);
+    const Misc_2w_x2 misc;
 } Arith_2w_x2;
 
 typedef struct _struct_2w_redradix_x2 {
-  const Arith_2w_x2 arith;
-  const Arith_2w_redradix_x2 arithex;
+    const Arith_2w_x2 arith;
+    const Arith_2w_redradix_x2 arithex;
 } Fp_2w_redradix_x2;
 
 typedef struct _struct_arithex_4w_redradix {
-  Oper4Void(addsub,       argElement_4w);
-  Oper2Void(addsublar,    argElement_4w);
-  Oper3Void(intmul,       argElement_4w);
-  Oper1Void(intsqr,       argElement_4w);
-  Oper1Void(compress,     argElement_4w);
-  Oper2Void(compress2,    argElement_4w);
-  Oper1Void(compressfast, argElement_4w);
-  Oper2Void(new_compressfast2, argElement_4w);
+    Oper4Void(addsub,       argElement_4w);
+    Oper2Void(addsublar,    argElement_4w);
+    Oper3Void(intmul,       argElement_4w);
+    Oper1Void(intsqr,       argElement_4w);
+    Oper1Void(compress,     argElement_4w);
+    Oper2Void(compress2,    argElement_4w);
+    Oper1Void(compressfast, argElement_4w);
+    Oper2Void(new_compressfast2, argElement_4w);
 } Arith_4w_redradix;
 
 typedef struct _struct_4w {
-  Oper3Void(add, argElement_4w);
-  Oper2Vect(cmp, __m256i, argElement_4w);
-  Oper3Void(mul, argElement_4w);
-  Oper1Void(neg, argElement_4w);
-  Oper2Void(ngz, argElement_4w);
-  Oper1Void(sqr, argElement_4w);
-  Oper2Void(srt, argElement_4w);
-  Oper3Void(sub, argElement_4w);
-  const Misc_4w misc;
+    Oper3Void(add, argElement_4w);
+    Oper2Vect(cmp, __m256i, argElement_4w);
+    Oper3Void(mul, argElement_4w);
+    Oper1Void(neg, argElement_4w);
+    Oper2Void(ngz, argElement_4w);
+    Oper1Void(sqr, argElement_4w);
+    Oper2Void(srt, argElement_4w);
+    Oper3Void(sub, argElement_4w);
+    const Misc_4w misc;
 } Arith_4w;
 
 typedef struct _struct_4w_redradix {
-  const Arith_4w arith;
-  const Arith_4w_redradix arithex;
+    const Arith_4w arith;
+    const Arith_4w_redradix arithex;
 } Fp_4w_redradix;
 
 #undef Oper0Retr
@@ -244,11 +246,11 @@ typedef struct _struct_4w_redradix {
 #undef Oper3Void
 
 typedef struct _struct_Fp_Arith {
-  Fp_1w_fullradix _1w_full;
-  Fp_1w_redradix _1w_red;
-  Fp_2w_redradix _2w_red;
-  Fp_4w_redradix _4w_red;
-  Fp_2w_redradix_x2 _2w_red_x2;
+    Fp_1w_fullradix _1w_full;
+    Fp_1w_redradix _1w_red;
+    Fp_2w_redradix _2w_red;
+    Fp_4w_redradix _4w_red;
+    Fp_2w_redradix_x2 _2w_red_x2;
 } PrimeField;
 
 extern const PrimeField Fp25519, Fp448;

@@ -18,7 +18,7 @@ This is a mathematical software library for computing the Edwards Digital Signat
     keywords  = {Edwards Digital Signature Algorithm, Ed25519,
                  Diffie-Hellman Protocol, AVX2 Vector Instructions,
                  Elliptic Curve Cryptography, Secure Software},
-}    
+}
 ```
 
 ### Compilation
@@ -53,6 +53,13 @@ The timings reported in the paper were obtained using the Clang compiler version
 For running the tests program use:
 ```bash
     $ ./bin/tests
+```
+
+### Formating Code
+
+For formating code use [astyle](https://astyle.sourceforge.net/):
+```bash
+    $ astyle --style=linux ./src/*c ./include/*.h
 ```
 
 ### LICENSE

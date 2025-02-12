@@ -21,8 +21,10 @@
 #include "faz_eddsa_avx2.h"
 
 #ifdef __cplusplus
-namespace faz{
-  namespace ed255{
+namespace faz
+{
+namespace ed255
+{
 extern "C" {
 #endif /* __cplusplus */
 

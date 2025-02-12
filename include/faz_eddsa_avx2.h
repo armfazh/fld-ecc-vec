@@ -34,8 +34,10 @@ extern "C" {
 #endif
 
 #ifdef __cplusplus
-namespace faz{
-  namespace eddsa{
+namespace faz
+{
+namespace eddsa
+{
 #endif /* __cplusplus */
 
 #define ZeroOperandReturnKey(X) uint8_t * (*X)(void)
@@ -83,44 +85,44 @@ typedef int (*VerifyCtx)(
 );
 
 typedef struct _struct_SignatureSchemePure {
-  SignKeyGen keygen;
-  Sign sign;
-  Verify verify;
-  uint64_t key_size;
-  uint64_t signature_size;
-  ZeroOperandReturnKey(allocKey);
-  ZeroOperandReturnKey(allocSignature);
-  Oper1Void(randKey, uint8_t *);
-  Oper1File(printKey, uint8_t *);
-  Oper1File(printSignature, uint8_t *);
-  Oper1Void(freeKey, void *);
-  Oper1Void(freeSignature, void*);
+    SignKeyGen keygen;
+    Sign sign;
+    Verify verify;
+    uint64_t key_size;
+    uint64_t signature_size;
+    ZeroOperandReturnKey(allocKey);
+    ZeroOperandReturnKey(allocSignature);
+    Oper1Void(randKey, uint8_t *);
+    Oper1File(printKey, uint8_t *);
+    Oper1File(printSignature, uint8_t *);
+    Oper1Void(freeKey, void *);
+    Oper1Void(freeSignature, void*);
 } SignatureSchemePure;
 
 typedef struct _struct_SignatureSchemeCtx {
-  SignKeyGen keygen;
-  SignCtx sign;
-  VerifyCtx verify;
-  uint64_t key_size;
-  uint64_t signature_size;
-  ZeroOperandReturnKey(allocKey);
-  ZeroOperandReturnKey(allocSignature);
-  Oper1Void(randKey, uint8_t *);
-  Oper1File(printKey, uint8_t *);
-  Oper1File(printSignature, uint8_t *);
-  Oper1Void(freeKey, void *);
-  Oper1Void(freeSignature, void*);
+    SignKeyGen keygen;
+    SignCtx sign;
+    VerifyCtx verify;
+    uint64_t key_size;
+    uint64_t signature_size;
+    ZeroOperandReturnKey(allocKey);
+    ZeroOperandReturnKey(allocSignature);
+    Oper1Void(randKey, uint8_t *);
+    Oper1File(printKey, uint8_t *);
+    Oper1File(printSignature, uint8_t *);
+    Oper1Void(freeKey, void *);
+    Oper1Void(freeSignature, void*);
 } SignatureSchemeCtx;
 
 struct _struct_Ed255 {
-  SignatureSchemePure Pure;
-  SignatureSchemeCtx PreHash;
-  SignatureSchemeCtx Context;
+    SignatureSchemePure Pure;
+    SignatureSchemeCtx PreHash;
+    SignatureSchemeCtx Context;
 };
 
 struct _struct_Ed448 {
-  SignatureSchemeCtx PureContext;
-  SignatureSchemeCtx PreHash;
+    SignatureSchemeCtx PureContext;
+    SignatureSchemeCtx PreHash;
 };
 
 /**
@@ -172,13 +174,13 @@ typedef ALIGN uint8_t Ed448_Digest[ED448_HASH_BYTES_PARAM];
  * Error codes
  **/
 enum EDDSA_FLAGS {
-  EDDSA_KEYGEN_OK,          /*!< Keygen generation was accomplished without errors */
-  EDDSA_SIGNATURE_OK,
-  EDDSA_VERIFICATION_OK,
-  EDDSA_INVALID_SIGNATURE,
-  EDDSA_ERROR_PUBLICKEY,
-  EDDSA_ERROR_CONTEXT,
-  EDDSA_ERROR_PHFLAG,
+    EDDSA_KEYGEN_OK,          /*!< Keygen generation was accomplished without errors */
+    EDDSA_SIGNATURE_OK,
+    EDDSA_VERIFICATION_OK,
+    EDDSA_INVALID_SIGNATURE,
+    EDDSA_ERROR_PUBLICKEY,
+    EDDSA_ERROR_CONTEXT,
+    EDDSA_ERROR_PHFLAG,
 };
 
 #ifdef __cplusplus
