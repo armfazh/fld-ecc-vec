@@ -51,7 +51,7 @@ const X_ECDH X25519_AVX2 = {
 };
 
 const X_ECDH X25519_x64 = {
-    .keygen = x25519_keygen_avx2,
+    .keygen = x25519_keygen_x64,
     .shared = x25519_shared_x64,
     .key_size = ECDH25519_KEY_SIZE_BYTES,
     .freeKey  = deallocate_bytes,

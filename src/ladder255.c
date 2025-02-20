@@ -734,6 +734,15 @@ static int x25519_shared_x64(
     return 0;
 }
 
+static int x25519_keygen_x64(
+    argECDHX_Key session_key,
+    argECDHX_Key secret_key)
+{
+    ALIGN uint8_t gen[ECDH25519_KEY_SIZE_BYTES] = {0};
+    gen[0] = 9;
+    return x25519_shared_x64(session_key, gen, secret_key);
+}
+
 #else
 extern int version;
 #endif /* DH255 */
