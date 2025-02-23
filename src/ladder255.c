@@ -127,12 +127,12 @@ static const ALIGN uint64_t CONST_2P_2P_Element_2w_Fp25519[2 * NUM_DIGITS_FP2551
     0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe
 };
 
-static const ALIGN uint64_t CONST_2P_2P_Element_2w_Fp25519_x2[2 * 2 * NUM_DIGITS_FP25519] = {
-    0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe,
-    0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
-    0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe,
-    0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
-    0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe
+static const ALIGN uint64_t CONST_2P_2P_Element_2w_Fp25519_x2[4 * NUM_DIGITS_FP25519] = {
+    0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe,
+    0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
+    0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe,
+    0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
+    0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe
 };
 
 static inline void step_ladder_x25519(
@@ -270,7 +270,7 @@ static inline void step_ladder_x25519_x2(
     const uint64_t param_a24 = 121665;
     const __m512i a24 = SET164_x2(param_a24);
 
-    ALIGN __m512i buffer[2 * 4 * (NUM_DIGITS_FP25519 / 2)];
+    ALIGN __m512i buffer[4 * (NUM_DIGITS_FP25519 / 2)];
     argElement_2w_x2 X1 = buffer + 0 * (NUM_DIGITS_FP25519 / 2);
     argElement_2w_x2 t0 = buffer + 1 * (NUM_DIGITS_FP25519 / 2);
     argElement_2w_x2 t1 = buffer + 2 * (NUM_DIGITS_FP25519 / 2);
@@ -279,7 +279,7 @@ static inline void step_ladder_x25519_x2(
 
     Fp25519._2w_red_x2.arith.misc.copy(X1, X2X3);
 
-    uint16_t masku16_F0 = 0xF0;
+    uint16_t masku16_F0 = 0xF0F0;
     const __mmask16 maskFO = _load_mask16(&masku16_F0);
 
     j = 62;
@@ -310,7 +310,7 @@ static inline void step_ladder_x25519_x2(
             /* Constant time swap               */
 #if SWAP_METHOD == PERMUTATION
             /* Using vector permutation instructions  */
-            __m512i perm = _mm512_set_epi32(7, 6, 5, 4, 3, 2, 1, 0, 7, 6, 5, 4, 3, 2, 1, 0);
+            __m512i perm = _mm512_set_epi32(15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
             __m512i mask = _mm512_set_epi32(
                                (uint32_t)swap_1 << 2, (uint32_t)swap_1 << 2, (uint32_t)swap_1 << 2, (uint32_t)swap_1 << 2,
                                (uint32_t)swap_1 << 2, (uint32_t)swap_1 << 2, (uint32_t)swap_1 << 2, (uint32_t)swap_1 << 2,
@@ -449,7 +449,7 @@ static int x25519_shared_avx2(
 static int x25519_shared_avx512(
     argECDHX_Key_x2 shared_secret,
     argECDHX_Key_x2 session_key,
-    argECDHX_Key_x2 private_key)
+    argECDHX_Key_x2 secret_key)
 {
     ALIGN uint8_t session0[ECDH25519_KEY_SIZE_BYTES];
     ALIGN uint8_t session1[ECDH25519_KEY_SIZE_BYTES];
@@ -457,7 +457,8 @@ static int x25519_shared_avx512(
     ALIGN uint8_t secret1[ECDH25519_KEY_SIZE_BYTES];
     EltFp25519_2w_redradix_x2 QxPx = {ZERO_x2};
     EltFp25519_2w_redradix_x2 QzPz = {ZERO_x2};
-    ALIGN uint64_t Z[2 * NUM_DIGITS_FP25519_X64], X[2 * NUM_DIGITS_FP25519_X64], invZ[2 * NUM_DIGITS_FP25519_X64];
+    EltFp25519_1w_fullradix Z_0, X_0, invZ_0;
+    EltFp25519_1w_fullradix Z_1, X_1, invZ_1;
     EltFp25519_1w_redradix ZZ_0, XX_0, X1_0;
     EltFp25519_1w_redradix ZZ_1, XX_1, X1_1;
     argElement_1w ZZ[2] = {ZZ_0, ZZ_1};
@@ -467,12 +468,12 @@ static int x25519_shared_avx512(
     ZEROUPPER;
 
     /* clampC function */
-    memcpy(secret0, private_key->k0, ECDH25519_KEY_SIZE_BYTES);
+    memcpy(secret0, secret_key->k0, ECDH25519_KEY_SIZE_BYTES);
     secret0[0] = secret0[0] & (~(uint8_t)0x7);
     secret0[ECDH25519_KEY_SIZE_BYTES - 1] =
         (uint8_t)64 | (secret0[ECDH25519_KEY_SIZE_BYTES - 1] & (uint8_t)0x7F);
 
-    memcpy(secret1, private_key->k1, ECDH25519_KEY_SIZE_BYTES);
+    memcpy(secret1, secret_key->k1, ECDH25519_KEY_SIZE_BYTES);
     secret1[0] = secret1[0] & (~(uint8_t)0x7);
     secret1[ECDH25519_KEY_SIZE_BYTES - 1] =
         (uint8_t)64 | (secret1[ECDH25519_KEY_SIZE_BYTES - 1] & (uint8_t)0x7F);
@@ -504,20 +505,20 @@ static int x25519_shared_avx512(
     /** Converting to full-radix */
     Fp25519._2w_red_x2.arithex.deinter(XX, X1, QxPx);
     Fp25519._2w_red_x2.arithex.deinter(ZZ, X1, QzPz);
-    Fp25519._1w_red.arith.misc.ser((uint8_t *)(X + 0 * NUM_DIGITS_FP25519_X64), XX[0]);
-    Fp25519._1w_red.arith.misc.ser((uint8_t *)(X + 1 * NUM_DIGITS_FP25519_X64), XX[1]);
-    Fp25519._1w_red.arith.misc.ser((uint8_t *)(Z + 0 * NUM_DIGITS_FP25519_X64), ZZ[0]);
-    Fp25519._1w_red.arith.misc.ser((uint8_t *)(Z + 1 * NUM_DIGITS_FP25519_X64), ZZ[1]);
+    Fp25519._1w_red.arith.misc.ser((uint8_t *)X_0, XX[0]);
+    Fp25519._1w_red.arith.misc.ser((uint8_t *)X_1, XX[1]);
+    Fp25519._1w_red.arith.misc.ser((uint8_t *)Z_0, ZZ[0]);
+    Fp25519._1w_red.arith.misc.ser((uint8_t *)Z_1, ZZ[1]);
     ZEROUPPER;
 
     /* Converting to affine coordinates */
-    Fp25519._1w_full.arith.inv(invZ, Z);
-    Fp25519._1w_full.arith.mul(X, X, invZ);
-    Fp25519._1w_full.arith.misc.ser(shared_secret->k0, X);
+    Fp25519._1w_full.arith.inv(invZ_0, Z_0);
+    Fp25519._1w_full.arith.mul(X_0, X_0, invZ_0);
+    Fp25519._1w_full.arith.misc.ser(shared_secret->k0, X_0);
 
-    Fp25519._1w_full.arith.inv(&invZ[NUM_DIGITS_FP25519_X64], &Z[NUM_DIGITS_FP25519_X64]);
-    Fp25519._1w_full.arith.mul(&X[NUM_DIGITS_FP25519_X64], &X[NUM_DIGITS_FP25519_X64], &invZ[NUM_DIGITS_FP25519_X64]);
-    Fp25519._1w_full.arith.misc.ser(shared_secret->k1, &X[NUM_DIGITS_FP25519_X64]);
+    Fp25519._1w_full.arith.inv(invZ_1, Z_1);
+    Fp25519._1w_full.arith.mul(X_1, X_1, invZ_1);
+    Fp25519._1w_full.arith.misc.ser(shared_secret->k1, X_1);
     return 0;
 }
 

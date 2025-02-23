@@ -1,7 +1,7 @@
+#include "tests.h"
 #include <faz_ecdh_avx2.h>
 #include <stdio.h>
 #include <string.h>
-#include "tests.h"
 
 static void test0_rfc7748_x25519(const X_ECDH *x25519)
 {
@@ -331,6 +331,8 @@ static void test_dh(const X_ECDH *ecdh)
         ecdh->shared(bob_shared_key, alice_session_key, bob_private_key);
         test = memcmp(alice_shared_key, bob_shared_key, ecdh->key_size) == 0;
         if (!test) {
+            ecdh->printKey(stdout, alice_private_key);
+            ecdh->printKey(stdout, bob_private_key);
             break;
         }
         cnt += test;
@@ -347,51 +349,35 @@ static void test_dh(const X_ECDH *ecdh)
 
 static void test_dh_x2(const X_ECDH_x2 *ecdh)
 {
-    int64_t i = 0, TIMES = 10;
+    int64_t i = 0, TIMES = TEST_TIMES;
     int64_t cnt = 0, test = 0;
 
     printf("Testing DH x2:");
     cnt = 0;
     test = 0;
-    struct X25519_KEY_x2 alice_private_key,
-               alice_session_key,
-               alice_shared_key,
-               bob_private_key,
-               bob_session_key,
-               bob_shared_key;
+    struct X25519_KEY_x2 alice_private_key, alice_session_key, alice_shared_key,
+               bob_private_key, bob_session_key, bob_shared_key;
 
-    printf("\n");
     for (i = 0; i < TIMES; i++) {
         ecdh->randKey(alice_private_key.k0);
-        // ecdh->randKey(alice_private_key.k1);
-        memcpy(alice_private_key.k1,alice_private_key.k0,ecdh->key_size);
-        ecdh->keygen(&alice_session_key,& alice_private_key);
-
-        printf("pkA0: ");
-        ecdh->printKey(stdout, alice_session_key.k0);
-        printf("pkA1: ");
-        ecdh->printKey(stdout, alice_session_key.k1);
+        ecdh->randKey(alice_private_key.k1);
+        ecdh->keygen(&alice_session_key, &alice_private_key);
 
         ecdh->randKey(bob_private_key.k0);
-        // ecdh->randKey(bob_private_key.k1);
-        memcpy(bob_private_key.k1,bob_private_key.k0,ecdh->key_size);
+        ecdh->randKey(bob_private_key.k1);
         ecdh->keygen(&bob_session_key, &bob_private_key);
-        printf("pkB0: ");
-        ecdh->printKey(stdout, bob_session_key.k0);
-        printf("pkB1: ");
-        ecdh->printKey(stdout, bob_session_key.k1);
 
         ecdh->shared(&alice_shared_key, &bob_session_key, &alice_private_key);
         ecdh->shared(&bob_shared_key, &alice_session_key, &bob_private_key);
 
-        ecdh->printKey(stdout, alice_shared_key.k0);
-        ecdh->printKey(stdout, bob_shared_key.k0);
-        ecdh->printKey(stdout, alice_shared_key.k1);
-        ecdh->printKey(stdout, bob_shared_key.k1);
-
-        test = memcmp(alice_shared_key.k0, bob_shared_key.k0, ecdh->key_size) == 0
-               && memcmp(alice_shared_key.k1, bob_shared_key.k1, ecdh->key_size) == 0;
+        test =
+            memcmp(alice_shared_key.k0, bob_shared_key.k0, ecdh->key_size) == 0 &&
+            memcmp(alice_shared_key.k1, bob_shared_key.k1, ecdh->key_size) == 0;
         if (!test) {
+            ecdh->printKey(stdout, alice_private_key.k0);
+            ecdh->printKey(stdout, alice_private_key.k1);
+            ecdh->printKey(stdout, bob_private_key.k0);
+            ecdh->printKey(stdout, bob_private_key.k1);
             break;
         }
         cnt += test;

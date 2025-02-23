@@ -127,8 +127,7 @@
 #define SHLV_x2(X, Y)       _mm512_sllv_epi64(X,Y)
 #define SHRV_x2(X, Y)       _mm512_srlv_epi64(X,Y)
 #define PERM64_x2(X, Y)     _mm512_permutex_epi64(X,Y)
-#define PERM128_x2(X, Y, Z) _mm512_permutex_epi64(X,Z) // must fix
-#define PERMV128_x2(X, Y)   _mm512_permutexvar_epi32(X,Y)
+#define PERMV128_x2(X, M)   _mm512_permutexvar_epi32(M,X)
 #define BLEND32_x2(X, Y, Z) _mm512_mask_blend_epi32(Z,X,Y)
 #define SHUF32_x2(X, Y)     _mm512_shuffle_epi32(X,Y)
 #define SET164_x2(X)        _mm512_set1_epi64(X)
