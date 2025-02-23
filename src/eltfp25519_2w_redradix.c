@@ -837,8 +837,8 @@ DECL(__m256i, cmp)(argElement_2w a, argElement_2w b)
     EltFp25519_1w_redradix a0, a1, b0, b1;
     FN(deinter)(a0, a1, a);
     FN(deinter)(b0, b1, b);
-    c0 = cmp_Fp255_1w_redradix(a0, b0);
-    c1 = cmp_Fp255_1w_redradix(a1, b1);
+    c0 = cmp_Fp255_1w_redradix(a0, b0)!=0;
+    c1 = cmp_Fp255_1w_redradix(a1, b1)!=0;
     return SET64(0, c1, 0, c0);
 }
 

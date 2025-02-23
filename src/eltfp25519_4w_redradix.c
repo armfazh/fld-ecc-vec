@@ -1044,10 +1044,10 @@ DECL(__m256i, cmp)(argElement_4w a, argElement_4w b)
     EltFp25519_1w_redradix b0,b1,b2,b3;
     FN(unzip)(a0,a1,a2,a3,a);
     FN(unzip)(b0,b1,b2,b3,b);
-    c0 = cmp_Fp255_1w_redradix(a0,b0);
-    c1 = cmp_Fp255_1w_redradix(a1,b1);
-    c2 = cmp_Fp255_1w_redradix(a2,b2);
-    c3 = cmp_Fp255_1w_redradix(a3,b3);
+    c0 = cmp_Fp255_1w_redradix(a0,b0)!=0;
+    c1 = cmp_Fp255_1w_redradix(a1,b1)!=0;
+    c2 = cmp_Fp255_1w_redradix(a2,b2)!=0;
+    c3 = cmp_Fp255_1w_redradix(a3,b3)!=0;
     return SET64(c3, c2, c1, c0);
 }
 

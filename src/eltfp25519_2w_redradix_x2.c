@@ -138,20 +138,20 @@ DECL(void, add)(argElement_2w_x2 c, argElement_2w_x2 a, argElement_2w_x2 b)
     }
 }
 
-static const ALIGN uint64_t CONST_2P_2P_H0H5_x2[2 * NUM_DIGITS_FP25519] = {
-    0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe,
-    0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
-    0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe,
-    0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
-    0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe
+static const ALIGN uint64_t CONST_2P_2P_H0H5_x2[4 * NUM_DIGITS_FP25519] = {
+    0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe,
+    0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
+    0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe,
+    0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
+    0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe
 };
 
-static const ALIGN uint64_t CONST_2P_00_H0H5_x2[2 * NUM_DIGITS_FP25519] = {
-    0x7ffffda, 0x3fffffe, 0x0000000, 0x0000000,
-    0x3fffffe, 0x7fffffe, 0x0000000, 0x0000000,
-    0x7fffffe, 0x3fffffe, 0x0000000, 0x0000000,
-    0x3fffffe, 0x7fffffe, 0x0000000, 0x0000000,
-    0x7fffffe, 0x3fffffe, 0x0000000, 0x0000000
+static const ALIGN uint64_t CONST_2P_00_H0H5_x2[4 * NUM_DIGITS_FP25519] = {
+    0x7ffffda, 0x3fffffe, 0x0000000, 0x0000000, 0x7ffffda, 0x3fffffe, 0x0000000, 0x0000000,
+    0x3fffffe, 0x7fffffe, 0x0000000, 0x0000000, 0x3fffffe, 0x7fffffe, 0x0000000, 0x0000000,
+    0x7fffffe, 0x3fffffe, 0x0000000, 0x0000000, 0x7fffffe, 0x3fffffe, 0x0000000, 0x0000000,
+    0x3fffffe, 0x7fffffe, 0x0000000, 0x0000000, 0x3fffffe, 0x7fffffe, 0x0000000, 0x0000000,
+    0x7fffffe, 0x3fffffe, 0x0000000, 0x0000000, 0x7fffffe, 0x3fffffe, 0x0000000, 0x0000000
 };
 
 /**
@@ -162,7 +162,7 @@ static const ALIGN uint64_t CONST_2P_00_H0H5_x2[2 * NUM_DIGITS_FP25519] = {
  */
 DECL(void, sub)(argElement_2w_x2 c, argElement_2w_x2 a, argElement_2w_x2 b)
 {
-    argElement_2w_x2 _2P = (argElement_2w_x2)CONST_2P_2P_H0H5;
+    argElement_2w_x2 _2P = (argElement_2w_x2)CONST_2P_2P_H0H5_x2;
     int i = 0;
     for (i = 0; i < (NUM_DIGITS_FP25519 / 2); i++) {
         c[i] = ADD_x2(a[i], SUB_x2(_2P[i], b[i]));
@@ -880,7 +880,7 @@ DECL(__m512i, sgn)(argElement_2w_x2 a)
     s0_1 = sgn_Fp255_1w_redradix(a0_1);
     s1_0 = sgn_Fp255_1w_redradix(a1_0);
     s1_1 = sgn_Fp255_1w_redradix(a1_1);
-    return SET64_x2(0, s1_1, 0, s0_1, 0, s1_0, 0, s0_0);
+    return SET64_x2(0, s1_1, 0, s1_0, 0, s0_1, 0, s0_0);
 }
 
 DECL(__m512i, cmp)(argElement_2w_x2 a, argElement_2w_x2 b)
@@ -894,11 +894,11 @@ DECL(__m512i, cmp)(argElement_2w_x2 a, argElement_2w_x2 b)
     argElement_1w b0[2] = {b0_0, b0_1};
     argElement_1w b1[2] = {b1_0, b1_1};
     FN(deinter)(b0, b1, b);
-    c0_0 = cmp_Fp255_1w_redradix(a0_0, b0_0);
-    c0_1 = cmp_Fp255_1w_redradix(a0_1, b0_1);
-    c1_0 = cmp_Fp255_1w_redradix(a1_0, b1_0);
-    c1_1 = cmp_Fp255_1w_redradix(a1_1, b1_1);
-    return SET64_x2(0, c1_1, 0, c0_1, 0, c1_0, 0, c0_0);
+    c0_0 = cmp_Fp255_1w_redradix(a0_0, b0_0)!=0;
+    c0_1 = cmp_Fp255_1w_redradix(a0_1, b0_1)!=0;
+    c1_0 = cmp_Fp255_1w_redradix(a1_0, b1_0)!=0;
+    c1_1 = cmp_Fp255_1w_redradix(a1_1, b1_1)!=0;
+    return SET64_x2(0, c1_1, 0, c1_0, 0, c0_1, 0, c0_0);
 }
 
 DECL(argElement_2w_x2, alloc)(void)

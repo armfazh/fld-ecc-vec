@@ -499,6 +499,7 @@ static int x25519_shared_avx512(
     /* main-loop */
     step_ladder_x25519_x2((uint64_t *)secret0, (uint64_t *)secret1, QxPx, QzPz);
     spc_memset(secret0, 0, ECDH25519_KEY_SIZE_BYTES);
+    spc_memset(secret1, 0, ECDH25519_KEY_SIZE_BYTES);
 
     /** Converting to full-radix */
     Fp25519._2w_red_x2.arithex.deinter(XX, X1, QxPx);

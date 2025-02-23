@@ -132,7 +132,7 @@
 #define BLEND32_x2(X, Y, Z) _mm512_mask_blend_epi32(Z,X,Y)
 #define SHUF32_x2(X, Y)     _mm512_shuffle_epi32(X,Y)
 #define SET164_x2(X)        _mm512_set1_epi64(X)
-#define SET64_x2(W0, X0, Y0, Z0, W1, X1, Y1, Z1) _mm512_set_epi64(W0, X0, Y0, Z0, W1, X1, Y1, Z1)
+#define SET64_x2(X7,X6,X5,X4,X3,X2,X1,X0) _mm512_set_epi64(X7,X6,X5,X4,X3,X2,X1,X0)
 #define EXTR_x2(X,Y)        _mm512_extracti64x4_epi64(X,Y)
 #define INSR_x2(X,Y,Z)      _mm512_inserti64x4(X,Y,Z)
 

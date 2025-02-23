@@ -35,7 +35,7 @@ extern "C" {
 #include "eltfp25519_1w_redradix.c"
 #include "eltfp25519_2w_redradix.c"
 #include "eltfp25519_4w_redradix.c"
-#include "eltfp25519_2w_redradix_2way.c"
+#include "eltfp25519_2w_redradix_x2.c"
 
 const PrimeField Fp25519 = {
     ._1w_full = {

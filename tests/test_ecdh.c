@@ -313,8 +313,65 @@ static void test_dh(const X_ECDH *ecdh) {
   ecdh->freeKey(bob_shared_key);
 }
 
+static void test_dh_x2(const X_ECDH_x2 *ecdh)
+{
+    int64_t i = 0, TIMES = 10;
+    int64_t cnt = 0, test = 0;
+
+    printf("Testing DH x2:");
+    cnt = 0;
+    test = 0;
+    struct X25519_KEY_x2 alice_private_key,
+               alice_session_key,
+               alice_shared_key,
+               bob_private_key,
+               bob_session_key,
+               bob_shared_key;
+
+    printf("\n");
+    for (i = 0; i < TIMES; i++) {
+        ecdh->randKey(alice_private_key.k0);
+        // ecdh->randKey(alice_private_key.k1);
+        memcpy(alice_private_key.k1,alice_private_key.k0,ecdh->key_size);
+        ecdh->keygen(&alice_session_key,& alice_private_key);
+
+        printf("pkA0: ");
+        ecdh->printKey(stdout, alice_session_key.k0);
+        printf("pkA1: ");
+        ecdh->printKey(stdout, alice_session_key.k1);
+
+        ecdh->randKey(bob_private_key.k0);
+        // ecdh->randKey(bob_private_key.k1);
+        memcpy(bob_private_key.k1,bob_private_key.k0,ecdh->key_size);
+        ecdh->keygen(&bob_session_key, &bob_private_key);
+        printf("pkB0: ");
+        ecdh->printKey(stdout, bob_session_key.k0);
+        printf("pkB1: ");
+        ecdh->printKey(stdout, bob_session_key.k1);
+
+        ecdh->shared(&alice_shared_key, &bob_session_key, &alice_private_key);
+        ecdh->shared(&bob_shared_key, &alice_session_key, &bob_private_key);
+
+        ecdh->printKey(stdout, alice_shared_key.k0);
+        ecdh->printKey(stdout, bob_shared_key.k0);
+        ecdh->printKey(stdout, alice_shared_key.k1);
+        ecdh->printKey(stdout, bob_shared_key.k1);
+
+        test = memcmp(alice_shared_key.k0, bob_shared_key.k0, ecdh->key_size) == 0
+               && memcmp(alice_shared_key.k1, bob_shared_key.k1, ecdh->key_size) == 0;
+        if (!test) {
+            break;
+        }
+        cnt += test;
+    }
+    printf(" %ld %s\n", cnt, cnt == TIMES ? "OK" : "error");
+}
+
 void test_x25519() {
   printf("=== Testing X25519 ===\n");
+
+    printf("===== X25519 AVX512 ==\n");
+    test_dh_x2(&X25519_AVX512);
 
   printf("===== X25519 AVX2 ====\n");
   test_dh(&X25519_AVX2);
