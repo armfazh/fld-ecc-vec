@@ -347,6 +347,7 @@ static void test_dh(const X_ECDH *ecdh)
     ecdh->freeKey(bob_shared_key);
 }
 
+#if defined(ENABLED_AVX512)
 static void test_dh_x2(const X_ECDH_x2 *ecdh)
 {
     int64_t i = 0, TIMES = TEST_TIMES;
@@ -384,13 +385,16 @@ static void test_dh_x2(const X_ECDH_x2 *ecdh)
     }
     printf(" %ld %s\n", cnt, cnt == TIMES ? "OK" : "error");
 }
+#endif /* defined(ENABLED_AVX512) */
 
 void test_x25519()
 {
     printf("=== Testing X25519 ===\n");
 
+#if defined(ENABLED_AVX512)
     printf("===== X25519 AVX512 ==\n");
     test_dh_x2(&X25519_AVX512);
+#endif /* defined(ENABLED_AVX512) */
 
     printf("===== X25519 AVX2 ====\n");
     test_dh(&X25519_AVX2);

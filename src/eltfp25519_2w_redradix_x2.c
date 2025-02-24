@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Armando Faz Hernández
+ * Copyright 2025 Armando Faz Hernández
  * This file is part of faz_ecc_avx2.
  *
  * faz_ecc_avx2 is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with faz_ecc_avx2.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(FP255) || 1
+#if defined(FP255) && defined(ENABLED_AVX512)
 
 #define FN(NAME) SUFFIX(NAME, 2, redradix_x2)
 #define DECL(RETURN, NAME) SCOPE RETURN FN(NAME)

@@ -6,6 +6,11 @@ enable_language(CXX)
 add_definitions(-mavx2)
 set(CMAKE_CXX_STANDARD 14)
 
+if(ENABLE_AVX512)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx512f -mavx512bw")
+    add_compile_definitions(ENABLED_AVX512)
+endif(ENABLE_AVX512)
+
 # Some Tests
 add_executable(test_mine EXCLUDE_FROM_ALL
         tests.h

@@ -17,7 +17,9 @@ enum Capabilities {
   AVX2 = bit_AVX2,
   BMI = bit_BMI,
   BMI2 = bit_BMI2,
-  ADX = bit_ADX
+  ADX = bit_ADX,
+  AVX512F = bit_AVX512F,
+  AVX512BW = bit_AVX512BW,
 };
 
 #define my_cpuid(ra, rb, rc, rd)               \
@@ -92,6 +94,8 @@ void machine_info(void) {
   test_capability(ebx, bit_BMI);
   test_capability(ebx, bit_BMI2);
   test_capability(ebx, bit_ADX);
+  test_capability(ebx, bit_AVX512F);
+  test_capability(ebx, bit_AVX512BW);
 
   printf("Machine supports our library: %s\n",
          (run == 11 || run == 12) ? "Yes" : "No");

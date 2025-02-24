@@ -97,7 +97,8 @@ typedef ALIGN uint8_t X25519_KEY[ECDH25519_KEY_SIZE_BYTES];
 #define ECDH448_KEY_SIZE_BYTES 56
 typedef ALIGN uint8_t X448_KEY[ECDH448_KEY_SIZE_BYTES];
 
-ALIGN struct X25519_KEY_x2 {
+#if defined(ENABLED_AVX512)
+struct ALIGN X25519_KEY_x2 {
     X25519_KEY k0, k1;
 };
 
@@ -124,6 +125,7 @@ typedef struct _struct_DiffieHellmanXFunction_x2 {
 } X_ECDH_x2;
 
 extern const X_ECDH_x2 X25519_AVX512;
+#endif /* defined(ENABLED_AVX512) */
 
 #ifdef __cplusplus
 } /* namespace ecdh */

@@ -16,7 +16,7 @@
  * along with faz_ecc_avx2.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(FP255) || 1
+#if defined(FP255)
 
 #include "faz_fp_avx2.h"
 #include "simd_avx2.h"
@@ -35,7 +35,9 @@ extern "C" {
 #include "eltfp25519_1w_redradix.c"
 #include "eltfp25519_2w_redradix.c"
 #include "eltfp25519_4w_redradix.c"
+#if defined(ENABLED_AVX512)
 #include "eltfp25519_2w_redradix_x2.c"
+#endif /* defined(ENABLED_AVX512) */
 
 const PrimeField Fp25519 = {
     ._1w_full = {
@@ -136,6 +138,7 @@ const PrimeField Fp25519 = {
             .compressfast = SUFFIX(compressfast,2,redradix),
         },
     },
+#if defined(ENABLED_AVX512)
     ._2w_red_x2 = {
         .arith = {
             .add = SUFFIX(add,2,redradix_x2),
@@ -169,6 +172,7 @@ const PrimeField Fp25519 = {
             .compressfast = SUFFIX(compressfast,2,redradix_x2),
         },
     },
+#endif /* defined(ENABLED_AVX512) */
     ._4w_red = {
         .arith = {
             .add = SUFFIX(add,4,redradix),

@@ -15,24 +15,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with faz_ecc_avx2.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/**
- * Copyright 2017 Armando Faz Hernández
- * This file is part of faz_ecc_avx2.
- *
- * faz_ecc_avx2 is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * faz_ecc_avx2 is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with faz_ecc_avx2.  If not, see <http://www.gnu.org/licenses/>.
- */
 #ifndef SIMD_AVX2_H
 #define SIMD_AVX2_H
 
@@ -112,6 +94,7 @@
       : /* in   */ "r"(Y)      \
       : /* regs */);
 
+#if defined(ENABLED_AVX512)
 #define ZERO_x2             _mm512_setzero_si512()
 #define LOAD_x2(X)          _mm512_load_si512((__m512i*) X)
 #define STORE_x2(X, Y)      _mm512_store_si512((__m512i*) X, Y)
@@ -134,5 +117,6 @@
 #define SET64_x2(X7,X6,X5,X4,X3,X2,X1,X0) _mm512_set_epi64(X7,X6,X5,X4,X3,X2,X1,X0)
 #define EXTR_x2(X,Y)        _mm512_extracti64x4_epi64(X,Y)
 #define INSR_x2(X,Y,Z)      _mm512_inserti64x4(X,Y,Z)
+#endif /* defined(ENABLED_AVX512) */
 
 #endif /* SIMD_AVX2_H */

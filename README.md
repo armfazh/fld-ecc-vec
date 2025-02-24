@@ -1,6 +1,6 @@
-# FLD ECC AVX2
+# FLD ECC AVX2/AVX512
 
-This is a mathematical software library for computing the Edwards Digital Signature Algorithm (EdDSA) and the Diffie-Hellman functions X25519 and X448. The library is optimized with the Intel Advanced Vector eXtensions version 2 (AVX2) and is derived from a research project.
+This is a mathematical software library for computing the Edwards Digital Signature Algorithm (EdDSA) and the Diffie-Hellman functions X25519 and X448. The library is optimized with the Intel Advanced Vector eXtensions AVX2 and AVX512 product of this research project.
 
 ```bibtex
 @article{fld_ecc_avx2,
@@ -28,6 +28,14 @@ To compile use:
     $ cd fld_ecc_avx2
     $ mkdir build; cd build
     $ cmake ..
+    $ make all
+```
+
+#### Enabling AVX512
+
+Use AVX512 extensions to perform two X25519 operations simultaneously.
+```bash
+    $ cmake .. -DENABLE_AVX512=ON
     $ make all
 ```
 

@@ -181,6 +181,7 @@ static void test_4w(const Arith_4w *fp)
     fp->misc.free(e);
 }
 
+#if defined(ENABLED_AVX512)
 static void test_2w_x2(const Arith_2w_x2 *fp)
 {
     const __m256i ONES = _mm256_set1_epi8(-1);
@@ -234,6 +235,7 @@ static void test_2w_x2(const Arith_2w_x2 *fp)
     fp->misc.free(d);
     fp->misc.free(e);
 }
+#endif /* defined(ENABLED_AVX512) */
 
 void test_fp25519()
 {
@@ -247,8 +249,10 @@ void test_fp25519()
     test_2w(&Fp25519._2w_red.arith);
     printf("=== 4-way (red)   ====\n");
     test_4w(&Fp25519._4w_red.arith);
+#if defined(ENABLED_AVX512)
     printf("=== 2-way x2 (red)   ====\n");
     test_2w_x2(&Fp25519._2w_red_x2.arith);
+#endif /* defined(ENABLED_AVX512) */
 }
 
 void test_fp448()

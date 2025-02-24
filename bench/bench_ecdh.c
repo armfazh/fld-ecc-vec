@@ -20,6 +20,7 @@ static void bench_ecdh(const X_ECDH* ecdh)
     ecdh->freeKey(shared_secret);
 }
 
+#if defined(ENABLED_AVX512)
 static void bench_x25519_avx512()
 {
     struct X25519_KEY_x2 ss, sk, pk;
@@ -37,6 +38,7 @@ static void bench_x25519_avx512()
         X25519_AVX512.randKey(pk.k1);
         , shared, X25519_AVX512.shared(&ss, &sk, &pk));
 }
+#endif /* defined(ENABLED_AVX512) */
 
 void bench_x25519(void)
 {
@@ -45,8 +47,10 @@ void bench_x25519(void)
     bench_ecdh(&X25519_x64);
     printf("======  X25519 AVX2 ======\n");
     bench_ecdh(&X25519_AVX2);
+#if defined(ENABLED_AVX512)
     printf("====== X25519 AVX512 ====\n");
     bench_x25519_avx512();
+#endif /* defined(ENABLED_AVX512) */
 }
 
 void bench_x448(void)

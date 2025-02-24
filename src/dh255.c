@@ -16,7 +16,7 @@
  * along with faz_ecc_avx2.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(DH255) || 1
+#if defined(DH255)
 
 #include "faz_ecdh_avx2.h"
 
@@ -30,6 +30,7 @@ extern "C" {
 
 #include "ladder255.c"
 
+#if defined(ENABLED_AVX512)
 const X_ECDH_x2 X25519_AVX512 = {
     .keygen = x25519_keygen_avx512,
     .shared = x25519_shared_avx512,
@@ -39,6 +40,7 @@ const X_ECDH_x2 X25519_AVX512 = {
     .randKey  = randX25519_Key,
     .printKey  = printX25519_Key,
 };
+#endif /* defined(ENABLED_AVX512) */
 
 const X_ECDH X25519_AVX2 = {
     .keygen = x25519_keygen_avx2,

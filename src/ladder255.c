@@ -16,7 +16,7 @@
  * along with faz_ecc_avx2.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(DH255) || 1
+#if defined(DH255)
 
 #include "simd_avx2.h"
 #include "faz_fp_avx2.h"
@@ -125,14 +125,6 @@ static const ALIGN uint64_t CONST_2P_2P_Element_2w_Fp25519[2 * NUM_DIGITS_FP2551
     0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe,
     0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
     0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe
-};
-
-static const ALIGN uint64_t CONST_2P_2P_Element_2w_Fp25519_x2[4 * NUM_DIGITS_FP25519] = {
-    0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe,
-    0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
-    0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe,
-    0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
-    0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe
 };
 
 static inline void step_ladder_x25519(
@@ -257,6 +249,249 @@ static inline void step_ladder_x25519(
         j = 63;
     }
 }
+
+static int x25519_shared_avx2(
+    argECDHX_Key shared_secret,
+    argECDHX_Key session_key,
+    argECDHX_Key secret_key)
+{
+    ALIGN uint8_t session[ECDH25519_KEY_SIZE_BYTES];
+    ALIGN uint8_t secret[ECDH25519_KEY_SIZE_BYTES];
+    EltFp25519_2w_redradix QxPx = {ZERO};
+    EltFp25519_2w_redradix QzPz = {ZERO};
+    EltFp25519_1w_fullradix Z, X, invZ;
+    EltFp25519_1w_redradix ZZ, XX, X1;
+
+    ZEROUPPER;
+
+    /* clampC function */
+    memcpy(secret, secret_key, ECDH25519_KEY_SIZE_BYTES);
+    secret[0] = secret[0] & (~(uint8_t)0x7);
+    secret[ECDH25519_KEY_SIZE_BYTES - 1] =
+        (uint8_t)64 | (secret[ECDH25519_KEY_SIZE_BYTES - 1] & (uint8_t)0x7F);
+    /**
+     * As in the draft:
+     * When receiving such an array, implementations of curve25519
+     * MUST mask the most-significant bit in the final byte. This
+     * is done to preserve compatibility with point formats which
+     * reserve the sign bit for use in other protocols and to
+     * increase resistance to implementation fingerprinting
+     **/
+    memcpy(session, session_key, ECDH25519_KEY_SIZE_BYTES);
+    session[ECDH25519_KEY_SIZE_BYTES - 1] &= (1 << (255 % 8)) - 1;
+    Fp25519._1w_red.arith.misc.unser(X1, session);
+
+    /* start with (kP,0P) */
+    QzPz[0] = SET64(0, 1, 0, 0);
+    Fp25519._2w_red.arithex.inter(QxPx, X1, X1);
+
+    /* main-loop */
+    step_ladder_x25519((uint64_t *)secret, QxPx, QzPz);
+    spc_memset(secret, 0, ECDH25519_KEY_SIZE_BYTES);
+
+    /** Converting to full-radix */
+    Fp25519._2w_red.arithex.deinter(XX, X1, QxPx);
+    Fp25519._2w_red.arithex.deinter(ZZ, X1, QzPz);
+    Fp25519._1w_red.arith.misc.ser((uint8_t *)X, XX);
+    Fp25519._1w_red.arith.misc.ser((uint8_t *)Z, ZZ);
+    ZEROUPPER;
+
+    /* Converting to affine coordinates */
+    Fp25519._1w_full.arith.inv(invZ, Z);
+    Fp25519._1w_full.arith.mul(X, X, invZ);
+    Fp25519._1w_full.arith.misc.ser(shared_secret, X);
+    return 0;
+}
+
+static inline void point_Edwards2Montgomery_ed25519(uint8_t *enc, PointXYZT_2w_H0H5 *P)
+{
+    /**
+     * Using the birational map between
+     * edwards25519-> curve25519
+     */
+    EltFp25519_1w_fullradix add, sub, inv_sub;
+    EltFp25519_1w_redradix t0, t1, t2;
+    EltFp25519_2w_redradix addZY, subZY;
+
+    Fp25519._2w_red.arith.add(addZY, P->TZ, P->XY);
+    Fp25519._2w_red.arith.sub(subZY, P->TZ, P->XY);
+    Fp25519._2w_red.arithex.compress(addZY);
+    Fp25519._2w_red.arithex.compress(subZY);
+
+    Fp25519._2w_red.arithex.deinter(t2, t0, addZY);
+    Fp25519._2w_red.arithex.deinter(t2, t1, subZY);
+
+    Fp25519._1w_red.arith.misc.ser((uint8_t *)add, t0);
+    Fp25519._1w_red.arith.misc.ser((uint8_t *)sub, t1);
+    Fp25519._1w_full.arith.inv(inv_sub, sub);
+    Fp25519._1w_full.arith.mul(add, add, inv_sub);
+    Fp25519._1w_full.arith.misc.ser(enc, add);
+}
+
+#define div_8_256(r)            \
+  {                             \
+    uint64_t bit3 = r[3] << 61; \
+    uint64_t bit2 = r[2] << 61; \
+    uint64_t bit1 = r[1] << 61; \
+    r[3] = (r[3] >> 3);         \
+    r[2] = (r[2] >> 3) | bit3;  \
+    r[1] = (r[1] >> 3) | bit2;  \
+    r[0] = (r[0] >> 3) | bit1;  \
+  }
+
+static inline int x25519_keygen_avx2(
+    argECDHX_Key session_key,
+    argECDHX_Key secret_key)
+{
+    PointXYZT_2w_H0H5 kB;
+    X25519_KEY scalar;
+    uint64_t *ptrScalar = (uint64_t *)scalar;
+
+    /* clampC function */
+    memcpy(scalar, secret_key, ECDH25519_KEY_SIZE_BYTES);
+    scalar[0] = scalar[0] & (~(uint8_t)0x7);
+    scalar[ECDH25519_KEY_SIZE_BYTES - 1] = (uint8_t)64 | (scalar[ECDH25519_KEY_SIZE_BYTES - 1] & (uint8_t)0x7F);
+
+    div_8_256(ptrScalar);
+    point_multiplication_ed25519(&kB, scalar);
+    spc_memset(scalar, 0, ECDH25519_KEY_SIZE_BYTES);
+
+    _1way_doubling_2w_H0H5(&kB);
+    _1way_doubling_2w_H0H5(&kB);
+    _1way_doubling_2w_H0H5(&kB);
+
+    point_Edwards2Montgomery_ed25519(session_key, &kB);
+    return 0;
+}
+
+static int x25519_shared_x64(
+    argECDHX_Key shared_secret,
+    argECDHX_Key session_key,
+    argECDHX_Key secret_key)
+{
+    ALIGN uint8_t session[ECDH25519_KEY_SIZE_BYTES];
+    ALIGN uint8_t secret[ECDH25519_KEY_SIZE_BYTES];
+    ALIGN uint64_t buffer[4 * NUM_DIGITS_FP25519];
+    ALIGN uint64_t coordinates[4 * NUM_DIGITS_FP25519];
+    ALIGN uint64_t workspace[6 * NUM_DIGITS_FP25519];
+    EltFp25519_1w_fullradix X1;
+
+    int i = 0, j = 0;
+    uint64_t prev = 0;
+    uint64_t *const key = (uint64_t *)secret;
+    uint64_t *const Px = coordinates + 0;
+    uint64_t *const Pz = coordinates + 4;
+    uint64_t *const Qx = coordinates + 8;
+    uint64_t *const Qz = coordinates + 12;
+    uint64_t *const X2 = Qx;
+    uint64_t *const Z2 = Qz;
+    uint64_t *const X3 = Px;
+    uint64_t *const Z3 = Pz;
+    uint64_t *const X2Z2 = Qx;
+    uint64_t *const X3Z3 = Px;
+
+    uint64_t *const A = workspace + 0;
+    uint64_t *const B = workspace + 4;
+    uint64_t *const D = workspace + 8;
+    uint64_t *const C = workspace + 12;
+    uint64_t *const DA = workspace + 16;
+    uint64_t *const CB = workspace + 20;
+    uint64_t *const AB = A;
+    uint64_t *const DC = D;
+    uint64_t *const DACB = DA;
+    uint64_t *const buffer_2w = buffer;
+
+    /* clampC function */
+    memcpy(secret, secret_key, ECDH25519_KEY_SIZE_BYTES);
+    secret[0] = secret[0] & (~(uint8_t)0x7);
+    secret[ECDH25519_KEY_SIZE_BYTES - 1] =
+        (uint8_t)64 | (secret[ECDH25519_KEY_SIZE_BYTES - 1] & (uint8_t)0x7F);
+
+    /**
+     * As in the draft:
+     * When receiving such an array, implementations of curve25519
+     * MUST mask the most-significant bit in the final byte. This
+     * is done to preserve compatibility with point formats which
+     * reserve the sign bit for use in other protocols and to
+     * increase resistance to implementation fingerprinting
+     **/
+    memcpy(session, session_key, ECDH25519_KEY_SIZE_BYTES);
+    session[ECDH25519_KEY_SIZE_BYTES - 1] &= (1 << (255 % 8)) - 1;
+
+    Fp25519._1w_full.arith.misc.copy(X1, (argElement_1w)session);
+    Fp25519._1w_full.arith.misc.copy(Px, (argElement_1w)session);
+    Fp25519._1w_full.arith.misc.zero(Pz);
+    Fp25519._1w_full.arith.misc.zero(Qx);
+    Fp25519._1w_full.arith.misc.zero(Qz);
+
+    Pz[0] = 1;
+    Qx[0] = 1;
+
+    /* main-loop */
+    j = 62;
+    for (i = 3; i >= 0; i--) {
+        while (j >= 0) {
+            uint64_t bit = (key[i] >> j) & 0x1;
+            uint64_t swap = bit ^ prev;
+            prev = bit;
+
+            Fp25519._1w_full.arith.add(A, X2, Z2); /* A = (X2+Z2)                   */
+            Fp25519._1w_full.arith.sub(B, X2, Z2); /* B = (X2-Z2)                   */
+            Fp25519._1w_full.arith.add(C, X3, Z3); /* C = (X3+Z3)                   */
+            Fp25519._1w_full.arith.sub(D, X3, Z3); /* D = (X3-Z3)                   */
+
+            Fp25519._1w_full.arithex.intmul2(buffer_2w, AB, DC); /* [DA|CB] = [A|B]*[D|C]         */
+            Fp25519._1w_full.arithex.reduce2(DACB, buffer_2w);
+
+            select_cmov_x64(swap, A, C);
+            select_cmov_x64(swap, B, D);
+            Fp25519._1w_full.arithex.intsqr2(buffer_2w, AB); /* [AA|BB] = [A^2|B^2]           */
+            Fp25519._1w_full.arithex.reduce2(AB, buffer_2w);
+
+            Fp25519._1w_full.arith.add(X3, DA, CB);            /* X3 = (DA+CB)                  */
+            Fp25519._1w_full.arith.sub(Z3, DA, CB);            /* Z3 = (DA-CB)                  */
+            Fp25519._1w_full.arithex.intsqr2(buffer_2w, X3Z3); /* [X3|Z3] = [(DA+CB)|(DA+CB)]^2 */
+            Fp25519._1w_full.arithex.reduce2(X3Z3, buffer_2w);
+
+            Fp25519._1w_full.arith.misc.copy(X2, B);               /* X2 = B^2                      */
+            Fp25519._1w_full.arith.sub(Z2, A, B);                  /* Z2 = E = AA-BB                */
+            Fp25519._1w_full.arithex.mula24(B, Z2);                /*  B = a24*E                    */
+            Fp25519._1w_full.arith.add(B, B, X2);                  /* B = a24*E+B                   */
+            Fp25519._1w_full.arithex.intmul2(buffer_2w, X2Z2, AB); /* [X2|Z2] = [B|E]*[A|a24*E+B]   */
+            Fp25519._1w_full.arithex.reduce2(X2Z2, buffer_2w);
+
+            Fp25519._1w_full.arith.mul(Z3, Z3, X1); /* Z3 = Z3*X1                    */
+            j--;
+        }
+        j = 63;
+    }
+    spc_memset(secret, 0, ECDH25519_KEY_SIZE_BYTES);
+
+    /* Converting to affine coordinates */
+    Fp25519._1w_full.arith.inv(A, Qz);
+    Fp25519._1w_full.arith.mul(Qx, Qx, A);
+    Fp25519._1w_full.arith.misc.ser(shared_secret, Qx);
+    return 0;
+}
+
+static int x25519_keygen_x64(
+    argECDHX_Key session_key,
+    argECDHX_Key secret_key)
+{
+    ALIGN uint8_t gen[ECDH25519_KEY_SIZE_BYTES] = {0};
+    gen[0] = 9;
+    return x25519_shared_x64(session_key, gen, secret_key);
+}
+
+#if defined(ENABLED_AVX512)
+/* The AVX512 implementation */
+static const ALIGN uint64_t CONST_2P_2P_Element_2w_Fp25519_x2[4 * NUM_DIGITS_FP25519] = {
+    0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe, 0x7ffffda, 0x3fffffe,
+    0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
+    0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe,
+    0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe,
+    0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe, 0x7fffffe, 0x3fffffe
+};
 
 static inline void step_ladder_x25519_x2(
     uint64_t *key_0,
@@ -393,59 +628,6 @@ static inline void step_ladder_x25519_x2(
     }
 }
 
-static int x25519_shared_avx2(
-    argECDHX_Key shared_secret,
-    argECDHX_Key session_key,
-    argECDHX_Key secret_key)
-{
-    ALIGN uint8_t session[ECDH25519_KEY_SIZE_BYTES];
-    ALIGN uint8_t secret[ECDH25519_KEY_SIZE_BYTES];
-    EltFp25519_2w_redradix QxPx = {ZERO};
-    EltFp25519_2w_redradix QzPz = {ZERO};
-    EltFp25519_1w_fullradix Z, X, invZ;
-    EltFp25519_1w_redradix ZZ, XX, X1;
-
-    ZEROUPPER;
-
-    /* clampC function */
-    memcpy(secret, secret_key, ECDH25519_KEY_SIZE_BYTES);
-    secret[0] = secret[0] & (~(uint8_t)0x7);
-    secret[ECDH25519_KEY_SIZE_BYTES - 1] =
-        (uint8_t)64 | (secret[ECDH25519_KEY_SIZE_BYTES - 1] & (uint8_t)0x7F);
-    /**
-     * As in the draft:
-     * When receiving such an array, implementations of curve25519
-     * MUST mask the most-significant bit in the final byte. This
-     * is done to preserve compatibility with point formats which
-     * reserve the sign bit for use in other protocols and to
-     * increase resistance to implementation fingerprinting
-     **/
-    memcpy(session, session_key, ECDH25519_KEY_SIZE_BYTES);
-    session[ECDH25519_KEY_SIZE_BYTES - 1] &= (1 << (255 % 8)) - 1;
-    Fp25519._1w_red.arith.misc.unser(X1, session);
-
-    /* start with (kP,0P) */
-    QzPz[0] = SET64(0, 1, 0, 0);
-    Fp25519._2w_red.arithex.inter(QxPx, X1, X1);
-
-    /* main-loop */
-    step_ladder_x25519((uint64_t *)secret, QxPx, QzPz);
-    spc_memset(secret, 0, ECDH25519_KEY_SIZE_BYTES);
-
-    /** Converting to full-radix */
-    Fp25519._2w_red.arithex.deinter(XX, X1, QxPx);
-    Fp25519._2w_red.arithex.deinter(ZZ, X1, QzPz);
-    Fp25519._1w_red.arith.misc.ser((uint8_t *)X, XX);
-    Fp25519._1w_red.arith.misc.ser((uint8_t *)Z, ZZ);
-    ZEROUPPER;
-
-    /* Converting to affine coordinates */
-    Fp25519._1w_full.arith.inv(invZ, Z);
-    Fp25519._1w_full.arith.mul(X, X, invZ);
-    Fp25519._1w_full.arith.misc.ser(shared_secret, X);
-    return 0;
-}
-
 static int x25519_shared_avx512(
     argECDHX_Key_x2 shared_secret,
     argECDHX_Key_x2 session_key,
@@ -522,67 +704,6 @@ static int x25519_shared_avx512(
     return 0;
 }
 
-static inline void point_Edwards2Montgomery_ed25519(uint8_t *enc, PointXYZT_2w_H0H5 *P)
-{
-    /**
-     * Using the birational map between
-     * edwards25519-> curve25519
-     */
-    EltFp25519_1w_fullradix add, sub, inv_sub;
-    EltFp25519_1w_redradix t0, t1, t2;
-    EltFp25519_2w_redradix addZY, subZY;
-
-    Fp25519._2w_red.arith.add(addZY, P->TZ, P->XY);
-    Fp25519._2w_red.arith.sub(subZY, P->TZ, P->XY);
-    Fp25519._2w_red.arithex.compress(addZY);
-    Fp25519._2w_red.arithex.compress(subZY);
-
-    Fp25519._2w_red.arithex.deinter(t2, t0, addZY);
-    Fp25519._2w_red.arithex.deinter(t2, t1, subZY);
-
-    Fp25519._1w_red.arith.misc.ser((uint8_t *)add, t0);
-    Fp25519._1w_red.arith.misc.ser((uint8_t *)sub, t1);
-    Fp25519._1w_full.arith.inv(inv_sub, sub);
-    Fp25519._1w_full.arith.mul(add, add, inv_sub);
-    Fp25519._1w_full.arith.misc.ser(enc, add);
-}
-
-#define div_8_256(r)            \
-  {                             \
-    uint64_t bit3 = r[3] << 61; \
-    uint64_t bit2 = r[2] << 61; \
-    uint64_t bit1 = r[1] << 61; \
-    r[3] = (r[3] >> 3);         \
-    r[2] = (r[2] >> 3) | bit3;  \
-    r[1] = (r[1] >> 3) | bit2;  \
-    r[0] = (r[0] >> 3) | bit1;  \
-  }
-
-static inline int x25519_keygen_avx2(
-    argECDHX_Key session_key,
-    argECDHX_Key secret_key)
-{
-    PointXYZT_2w_H0H5 kB;
-    X25519_KEY scalar;
-    uint64_t *ptrScalar = (uint64_t *)scalar;
-
-    /* clampC function */
-    memcpy(scalar, secret_key, ECDH25519_KEY_SIZE_BYTES);
-    scalar[0] = scalar[0] & (~(uint8_t)0x7);
-    scalar[ECDH25519_KEY_SIZE_BYTES - 1] = (uint8_t)64 | (scalar[ECDH25519_KEY_SIZE_BYTES - 1] & (uint8_t)0x7F);
-
-    div_8_256(ptrScalar);
-    point_multiplication_ed25519(&kB, scalar);
-    spc_memset(scalar, 0, ECDH25519_KEY_SIZE_BYTES);
-
-    _1way_doubling_2w_H0H5(&kB);
-    _1way_doubling_2w_H0H5(&kB);
-    _1way_doubling_2w_H0H5(&kB);
-
-    point_Edwards2Montgomery_ed25519(session_key, &kB);
-    return 0;
-}
-
 static inline int x25519_keygen_avx512(
     argECDHX_Key_x2 session_key,
     argECDHX_Key_x2 private_key)
@@ -625,125 +746,7 @@ static inline int x25519_keygen_avx512(
     point_Edwards2Montgomery_ed25519(session_key->k1, &kB_1);
     return 0;
 }
-
-static int x25519_shared_x64(
-    argECDHX_Key shared_secret,
-    argECDHX_Key session_key,
-    argECDHX_Key secret_key)
-{
-    ALIGN uint8_t session[ECDH25519_KEY_SIZE_BYTES];
-    ALIGN uint8_t secret[ECDH25519_KEY_SIZE_BYTES];
-    ALIGN uint64_t buffer[4 * NUM_DIGITS_FP25519];
-    ALIGN uint64_t coordinates[4 * NUM_DIGITS_FP25519];
-    ALIGN uint64_t workspace[6 * NUM_DIGITS_FP25519];
-    EltFp25519_1w_fullradix X1;
-
-    int i = 0, j = 0;
-    uint64_t prev = 0;
-    uint64_t *const key = (uint64_t *)secret;
-    uint64_t *const Px = coordinates + 0;
-    uint64_t *const Pz = coordinates + 4;
-    uint64_t *const Qx = coordinates + 8;
-    uint64_t *const Qz = coordinates + 12;
-    uint64_t *const X2 = Qx;
-    uint64_t *const Z2 = Qz;
-    uint64_t *const X3 = Px;
-    uint64_t *const Z3 = Pz;
-    uint64_t *const X2Z2 = Qx;
-    uint64_t *const X3Z3 = Px;
-
-    uint64_t *const A = workspace + 0;
-    uint64_t *const B = workspace + 4;
-    uint64_t *const D = workspace + 8;
-    uint64_t *const C = workspace + 12;
-    uint64_t *const DA = workspace + 16;
-    uint64_t *const CB = workspace + 20;
-    uint64_t *const AB = A;
-    uint64_t *const DC = D;
-    uint64_t *const DACB = DA;
-    uint64_t *const buffer_2w = buffer;
-
-    /* clampC function */
-    memcpy(secret, secret_key, ECDH25519_KEY_SIZE_BYTES);
-    secret[0] = secret[0] & (~(uint8_t)0x7);
-    secret[ECDH25519_KEY_SIZE_BYTES - 1] =
-        (uint8_t)64 | (secret[ECDH25519_KEY_SIZE_BYTES - 1] & (uint8_t)0x7F);
-
-    /**
-     * As in the draft:
-     * When receiving such an array, implementations of curve25519
-     * MUST mask the most-significant bit in the final byte. This
-     * is done to preserve compatibility with point formats which
-     * reserve the sign bit for use in other protocols and to
-     * increase resistance to implementation fingerprinting
-     **/
-    memcpy(session, session_key, ECDH25519_KEY_SIZE_BYTES);
-    session[ECDH25519_KEY_SIZE_BYTES - 1] &= (1 << (255 % 8)) - 1;
-
-    Fp25519._1w_full.arith.misc.copy(X1, (argElement_1w)session);
-    Fp25519._1w_full.arith.misc.copy(Px, (argElement_1w)session);
-    Fp25519._1w_full.arith.misc.zero(Pz);
-    Fp25519._1w_full.arith.misc.zero(Qx);
-    Fp25519._1w_full.arith.misc.zero(Qz);
-
-    Pz[0] = 1;
-    Qx[0] = 1;
-
-    /* main-loop */
-    j = 62;
-    for (i = 3; i >= 0; i--) {
-        while (j >= 0) {
-            uint64_t bit = (key[i] >> j) & 0x1;
-            uint64_t swap = bit ^ prev;
-            prev = bit;
-
-            Fp25519._1w_full.arith.add(A, X2, Z2); /* A = (X2+Z2)                   */
-            Fp25519._1w_full.arith.sub(B, X2, Z2); /* B = (X2-Z2)                   */
-            Fp25519._1w_full.arith.add(C, X3, Z3); /* C = (X3+Z3)                   */
-            Fp25519._1w_full.arith.sub(D, X3, Z3); /* D = (X3-Z3)                   */
-
-            Fp25519._1w_full.arithex.intmul2(buffer_2w, AB, DC); /* [DA|CB] = [A|B]*[D|C]         */
-            Fp25519._1w_full.arithex.reduce2(DACB, buffer_2w);
-
-            select_cmov_x64(swap, A, C);
-            select_cmov_x64(swap, B, D);
-            Fp25519._1w_full.arithex.intsqr2(buffer_2w, AB); /* [AA|BB] = [A^2|B^2]           */
-            Fp25519._1w_full.arithex.reduce2(AB, buffer_2w);
-
-            Fp25519._1w_full.arith.add(X3, DA, CB);            /* X3 = (DA+CB)                  */
-            Fp25519._1w_full.arith.sub(Z3, DA, CB);            /* Z3 = (DA-CB)                  */
-            Fp25519._1w_full.arithex.intsqr2(buffer_2w, X3Z3); /* [X3|Z3] = [(DA+CB)|(DA+CB)]^2 */
-            Fp25519._1w_full.arithex.reduce2(X3Z3, buffer_2w);
-
-            Fp25519._1w_full.arith.misc.copy(X2, B);               /* X2 = B^2                      */
-            Fp25519._1w_full.arith.sub(Z2, A, B);                  /* Z2 = E = AA-BB                */
-            Fp25519._1w_full.arithex.mula24(B, Z2);                /*  B = a24*E                    */
-            Fp25519._1w_full.arith.add(B, B, X2);                  /* B = a24*E+B                   */
-            Fp25519._1w_full.arithex.intmul2(buffer_2w, X2Z2, AB); /* [X2|Z2] = [B|E]*[A|a24*E+B]   */
-            Fp25519._1w_full.arithex.reduce2(X2Z2, buffer_2w);
-
-            Fp25519._1w_full.arith.mul(Z3, Z3, X1); /* Z3 = Z3*X1                    */
-            j--;
-        }
-        j = 63;
-    }
-    spc_memset(secret, 0, ECDH25519_KEY_SIZE_BYTES);
-
-    /* Converting to affine coordinates */
-    Fp25519._1w_full.arith.inv(A, Qz);
-    Fp25519._1w_full.arith.mul(Qx, Qx, A);
-    Fp25519._1w_full.arith.misc.ser(shared_secret, Qx);
-    return 0;
-}
-
-static int x25519_keygen_x64(
-    argECDHX_Key session_key,
-    argECDHX_Key secret_key)
-{
-    ALIGN uint8_t gen[ECDH25519_KEY_SIZE_BYTES] = {0};
-    gen[0] = 9;
-    return x25519_shared_x64(session_key, gen, secret_key);
-}
+#endif /* defined(ENABLED_AVX512) */
 
 #else
 extern int version;
