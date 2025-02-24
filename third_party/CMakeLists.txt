@@ -1,4 +1,3 @@
-enable_language(C)
 include_directories(.)
 
 add_library(prng OBJECT prng.c prng.h)

@@ -1,9 +1,4 @@
-include_directories(../include)
-include_directories(../third_party)
-
-# Other Tests using GTest suite.
 enable_language(CXX)
-add_definitions(-mavx2)
 set(CMAKE_CXX_STANDARD 14)
 
 if(ENABLE_AVX512)
@@ -47,7 +42,6 @@ link_directories(${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 find_package(GMP QUIET)
 
-include_directories(${GTEST_INCLUDE_DIRS})
 add_executable(tests EXCLUDE_FROM_ALL
     runTests.cpp
     test_fp25519_x64.cpp
