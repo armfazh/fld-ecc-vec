@@ -1,5 +1,3 @@
-include_directories(../include)
-
 add_executable(example_field field.c)
 add_dependencies(example_field ${TARGET}_static)
 target_link_libraries(example_field ${TARGET}_static)
