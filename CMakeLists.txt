@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.13)
 set(TARGET faz_ecc_avx2)
 project(${TARGET} C)
 
@@ -14,7 +14,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -O3 -pedantic -std=c99
 option(ENABLE_AVX512 "Enables AVX512 code" OFF)
 if(ENABLE_AVX512)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx512f -mavx512bw")
-    add_compile_definitions(ENABLED_AVX512)
 endif(ENABLE_AVX512)
 
 add_subdirectory(third_party)
@@ -35,6 +34,11 @@ add_library(${TARGET}_static STATIC
 )
 
 add_dependencies(${TARGET}_static prng hash)
+
+if(ENABLE_AVX512)
+    set_target_properties(${TARGET}_shared PROPERTIES COMPILE_DEFINITIONS "ENABLED_AVX512=1")
+    set_target_properties(${TARGET}_static PROPERTIES COMPILE_DEFINITIONS "ENABLED_AVX512=1")
+endif(ENABLE_AVX512)
 
 target_include_directories(${TARGET}_static INTERFACE ./include)
 target_include_directories(${TARGET}_shared INTERFACE ./include)
