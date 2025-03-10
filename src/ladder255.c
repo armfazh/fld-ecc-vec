@@ -639,8 +639,8 @@ static int x25519_shared_avx512(
     ALIGN uint8_t secret1[ECDH25519_KEY_SIZE_BYTES];
     EltFp25519_2w_redradix_x2 QxPx = {ZERO_x2};
     EltFp25519_2w_redradix_x2 QzPz = {ZERO_x2};
-    EltFp25519_1w_fullradix Z_0, X_0, invZ_0;
-    EltFp25519_1w_fullradix Z_1, X_1, invZ_1;
+    EltFp25519_1w_fullradix Z_0, X_0, invZ;
+    EltFp25519_1w_fullradix Z_1, X_1;
     EltFp25519_1w_redradix ZZ_0, XX_0, X1_0;
     EltFp25519_1w_redradix ZZ_1, XX_1, X1_1;
     argElement_1w ZZ[2] = {ZZ_0, ZZ_1};
@@ -694,12 +694,14 @@ static int x25519_shared_avx512(
     ZEROUPPER;
 
     /* Converting to affine coordinates */
-    Fp25519._1w_full.arith.inv(invZ_0, Z_0);
-    Fp25519._1w_full.arith.mul(X_0, X_0, invZ_0);
+    Fp25519._1w_full.arith.mul(invZ, Z_0, Z_1);
+    Fp25519._1w_full.arith.inv(invZ, invZ);
+    Fp25519._1w_full.arith.mul(X_0, X_0, invZ);
+    Fp25519._1w_full.arith.mul(X_0, X_0, Z_0);
     Fp25519._1w_full.arith.misc.ser(shared_secret->k0, X_0);
 
-    Fp25519._1w_full.arith.inv(invZ_1, Z_1);
-    Fp25519._1w_full.arith.mul(X_1, X_1, invZ_1);
+    Fp25519._1w_full.arith.mul(X_1, X_1, invZ);
+    Fp25519._1w_full.arith.mul(X_1, X_1, Z_1);
     Fp25519._1w_full.arith.misc.ser(shared_secret->k1, X_1);
     return 0;
 }
