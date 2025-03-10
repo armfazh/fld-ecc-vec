@@ -5,8 +5,8 @@ project(${TARGET} C)
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_C_STANDARD 99)
 
-set(EXECUTABLE_OUTPUT_PATH ../bin)
-set(LIBRARY_OUTPUT_PATH ../lib)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -O3 -pedantic -std=c99 -m64 -mavx2 -mbmi2 -march=native -mtune=native")
