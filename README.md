@@ -60,7 +60,9 @@ The timings reported in the paper were obtained using the Clang compiler version
 
 For running the tests program use:
 ```bash
-    $ ./bin/tests
+    $ make test_mine unit_tests
+    $ ./bin/test_mine
+    $ ./bin/unit_tests
 ```
 
 ### Formating Code

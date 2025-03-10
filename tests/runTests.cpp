@@ -1,9 +1,12 @@
 #include <cpu_caps.h>
 #include <gtest/gtest.h>
 
-int main(int argc, char **argv)
+class MyEnv : public ::testing::Environment
 {
-    machine_info();
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+    void SetUp() override
+    {
+        machine_info();
+    }
+};
+
+testing::Environment* const myEnv = testing::AddGlobalTestEnvironment(new MyEnv);
