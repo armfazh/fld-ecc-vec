@@ -27,12 +27,12 @@
  * This function performs a modular reduction
  * (mod \ell) where:
  * 		order = 2^446 - ell
- * 		      = 2^246 - 0x8335dc163bb124b65129c96fde933d8d723a70aadc873d6d54a7bb0d
+ * 		      = 2^446 - 0x8335dc163bb124b65129c96fde933d8d723a70aadc873d6d54a7bb0d
  * 		ell = 0x8335dc163bb124b65129c96fde933d8d723a70aadc873d6d54a7bb0d
  * this is a prime number which denotes the
  * size of the main subgroup of the elliptic curve.
  *
- * @param a
+ * @param a is an array of 114 bytes.
  */
 static inline void modular_reduction_ed448(uint8_t *a)
 {

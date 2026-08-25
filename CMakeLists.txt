@@ -25,16 +25,18 @@ include_directories(./third_party)
 add_library(${TARGET}_shared SHARED
     ./src/target.c
     $<TARGET_OBJECTS:prng>
-    $<TARGET_OBJECTS:hash>
+    $<TARGET_OBJECTS:sha512>
+    $<TARGET_OBJECTS:fips202-opt64>
 )
 
 add_library(${TARGET}_static STATIC
     ./src/target.c
     $<TARGET_OBJECTS:prng>
-    $<TARGET_OBJECTS:hash>
+    $<TARGET_OBJECTS:sha512>
+    $<TARGET_OBJECTS:fips202-opt64>
 )
 
-add_dependencies(${TARGET}_static prng hash)
+add_dependencies(${TARGET}_static prng sha512 fips202-opt64)
 
 target_include_directories(${TARGET}_static INTERFACE ./include)
 target_include_directories(${TARGET}_shared INTERFACE ./include)

@@ -1,6 +1,6 @@
 #include <multi_hash.h>
 #include <prng.h>
-#include <sha3.h>
+#include <xkcp/SimpleFIPS202.h>
 #include <sha512.h>
 #include <stdio.h>
 
@@ -53,5 +53,5 @@ void bench_third_party(void) {
 
   bench_sha512_2w();
   printf("====== SHAKE256 ==========\n");
-  CLOCKS(sha3, SHAKE256(message, message_length, digest_sha3, 128));
+  CLOCKS(shake256, SHAKE256(digest_sha3, 128, message, message_length));
 }

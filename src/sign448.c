@@ -18,7 +18,8 @@
 
 #if defined(ED448)
 
-#include "sha3.h"
+#include "xkcp/KeccakHash.h"
+#include "xkcp/SimpleFIPS202.h"
 #include <string.h>
 
 /**
@@ -70,9 +71,9 @@ static inline uint8_t *allocEd448_Signature(void)
 
 /**
  * Calculates:
- *     s = r+k*a  (mod 2^246-\ell)
+ *     s = r+h*a  (mod 2^446-\ell)
  *
- * such that size of r, k and a is 56-bytes.
+ * such that size of r, h and a is 56-bytes.
  */
 static inline void calculate_s_ed448(uint8_t *s_mod_l, uint8_t *r, uint8_t *h, uint8_t *a)
 {
@@ -113,7 +114,7 @@ static int ed448_keygen(
 {
     Ed448_Digest h;
     PointXYZT_2w_H0H8 hB;
-    SHAKE256(private_key, ED448_KEY_SIZE_BYTES_PARAM * 8, h, ED448_HASH_BYTES_PARAM);
+    SHAKE256(h, ED448_HASH_BYTES_PARAM, private_key, ED448_KEY_SIZE_BYTES_PARAM);
 
     h[0] &= -((uint8_t) 1 << ED448_C_PARAM);
     h[ED448_KEY_SIZE_BYTES_PARAM - 2] |= 0x80;
@@ -150,7 +151,7 @@ static int ed448_sign_all(
     PointXYZT_2w_H0H8 rB;
     Ed448_Digest H_RAM, r, ah, pre_hash_message;
     const int size_prefix = 10;
-    hashState hash;
+    Keccak_HashInstance H;
     unsigned char prefix[10] = "SigEd448";
 
     if (context_length > 255) {
@@ -162,42 +163,44 @@ static int ed448_sign_all(
     /* size context */
     prefix[9] = (uint8_t) context_length;
 
-    SHAKE256(private_key, ED448_KEY_SIZE_BYTES_PARAM * 8, ah, ED448_HASH_BYTES_PARAM);
+    SHAKE256(ah, ED448_HASH_BYTES_PARAM, private_key, ED448_KEY_SIZE_BYTES_PARAM);
     ah[0] &= -((uint8_t) 1 << ED448_C_PARAM);
     ah[ED448_KEY_SIZE_BYTES_PARAM - 2] |= 0x80;
     ah[ED448_KEY_SIZE_BYTES_PARAM - 1] = 0x00;
 
-    Init(&hash, 256);
-    Update(&hash, prefix, size_prefix * 8);
-    Update(&hash, context, context_length * 8);
-    Update(&hash, ah + ED448_KEY_SIZE_BYTES_PARAM, ED448_KEY_SIZE_BYTES_PARAM * 8);
+    Keccak_HashInitialize_SHAKE256(&H);
+    Keccak_HashUpdate(&H, prefix, size_prefix * 8);
+    Keccak_HashUpdate(&H, context, context_length * 8);
+    Keccak_HashUpdate(&H, ah + ED448_KEY_SIZE_BYTES_PARAM, ED448_KEY_SIZE_BYTES_PARAM * 8);
     if (phflag == 1) {
-        SHAKE256(message, message_length * 8, pre_hash_message, 64);
-        Update(&hash, pre_hash_message, 64 * 8);
+        SHAKE256(pre_hash_message, 64, message, message_length);
+        Keccak_HashUpdate(&H, pre_hash_message, 64 * 8);
     } else if (phflag == 0) {
-        Update(&hash, message, message_length * 8);
+        Keccak_HashUpdate(&H, message, message_length * 8);
     } else {
         return EDDSA_ERROR_PHFLAG;
     }
-    Final2(&hash, r, ED448_HASH_BYTES_PARAM);
+    Keccak_HashFinal(&H, NULL);
+    Keccak_HashSqueeze(&H, r, ED448_HASH_BYTES_PARAM * 8);
     modular_reduction_ed448(r);
 
     fixed_point_multiplication_ed448(&rB, r);
     point_encoding_ed448(signature, &rB);
 
-    Init(&hash, 256);
-    Update(&hash, prefix, size_prefix * 8);
-    Update(&hash, context, context_length * 8);
-    Update(&hash, signature, ED448_KEY_SIZE_BYTES_PARAM * 8);
-    Update(&hash, public_key, ED448_KEY_SIZE_BYTES_PARAM * 8);
+    Keccak_HashInitialize_SHAKE256(&H);
+    Keccak_HashUpdate(&H, prefix, size_prefix * 8);
+    Keccak_HashUpdate(&H, context, context_length * 8);
+    Keccak_HashUpdate(&H, signature, ED448_KEY_SIZE_BYTES_PARAM * 8);
+    Keccak_HashUpdate(&H, public_key, ED448_KEY_SIZE_BYTES_PARAM * 8);
     if (phflag == 1) {
-        Update(&hash, pre_hash_message, 64 * 8);
+        Keccak_HashUpdate(&H, pre_hash_message, 64 * 8);
     } else if (phflag == 0) {
-        Update(&hash, message, message_length * 8);
+        Keccak_HashUpdate(&H, message, message_length * 8);
     } else {
         return EDDSA_ERROR_PHFLAG;
     }
-    Final2(&hash, H_RAM, ED448_HASH_BYTES_PARAM);
+    Keccak_HashFinal(&H, NULL);
+    Keccak_HashSqueeze(&H, H_RAM, ED448_HASH_BYTES_PARAM * 8);
 
     modular_reduction_ed448(H_RAM);
 
@@ -276,7 +279,7 @@ static int ed448_verify_all(
     Ed448_Digest H_RAM, pre_hash_message;
     PointXYTZ_4w_H0H8 A;
     Ed448_Signature Q;
-    hashState hash;
+    Keccak_HashInstance H;
     unsigned char prefix[10] = "SigEd448";
 
     if (context_length > 255) {
@@ -288,20 +291,21 @@ static int ed448_verify_all(
     /* size context */
     prefix[9] = (uint8_t) context_length;
 
-    Init(&hash, 256);
-    Update(&hash, prefix, size_prefix * 8);
-    Update(&hash, context, context_length * 8);
-    Update(&hash, signature, ED448_KEY_SIZE_BYTES_PARAM * 8);
-    Update(&hash, public_key, ED448_KEY_SIZE_BYTES_PARAM * 8);
+    Keccak_HashInitialize_SHAKE256(&H);
+    Keccak_HashUpdate(&H, prefix, size_prefix * 8);
+    Keccak_HashUpdate(&H, context, context_length * 8);
+    Keccak_HashUpdate(&H, signature, ED448_KEY_SIZE_BYTES_PARAM * 8);
+    Keccak_HashUpdate(&H, public_key, ED448_KEY_SIZE_BYTES_PARAM * 8);
     if (phflag == 1) {
-        SHAKE256(message, message_length * 8, pre_hash_message, 64);
-        Update(&hash, pre_hash_message, 64 * 8);
+        SHAKE256(pre_hash_message, 64, message, message_length);
+        Keccak_HashUpdate(&H, pre_hash_message, 64 * 8);
     } else if (phflag == 0) {
-        Update(&hash, message, message_length * 8);
+        Keccak_HashUpdate(&H, message, message_length * 8);
     } else {
         return EDDSA_ERROR_PHFLAG;
     }
-    Final2(&hash, H_RAM, ED448_HASH_BYTES_PARAM);
+    Keccak_HashFinal(&H, NULL);
+    Keccak_HashSqueeze(&H, H_RAM, ED448_HASH_BYTES_PARAM * 8);
     modular_reduction_ed448(H_RAM);
 
     if (point_decoding_ed448(&A, NULL, (uint8_t *) public_key) != 0) {
