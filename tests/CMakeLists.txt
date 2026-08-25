@@ -24,12 +24,12 @@ target_link_libraries(test_mine
 )
 
 # Building GoogleTest
-set(GOOGLETEST_VERSION 1.16.0)
+set(GOOGLETEST_VERSION 1.18.0)
 include(FetchContent)
 FetchContent_Declare(googletest-${GOOGLETEST_VERSION}
     EXCLUDE_FROM_ALL true
     URL https://github.com/google/googletest/releases/download/v${GOOGLETEST_VERSION}/googletest-${GOOGLETEST_VERSION}.tar.gz
-    URL_HASH SHA256=78c676fc63881529bf97bf9d45948d905a66833fbfa5318ea2cd7478cb98f399
+    URL_HASH SHA256=6e3191c1455468b3fc35a417fb565c1c5071aee1b7e7f85e30cf48a98d37d8b5
     DOWNLOAD_EXTRACT_TIMESTAMP true
 )
 FetchContent_MakeAvailable(googletest-${GOOGLETEST_VERSION})
