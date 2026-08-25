@@ -69,7 +69,7 @@ For running the tests program use:
 
 For formating code use [astyle](https://astyle.sourceforge.net/):
 ```bash
-    $ astyle --style=linux ./src/*c ./include/*.h
+    $ astyle --style=linux ./src/*c ./include/*.h ./bench/*.c ./examples/*.c
 ```
 
 ### LICENSE
