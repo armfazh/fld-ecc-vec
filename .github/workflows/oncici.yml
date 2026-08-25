@@ -1,3 +1,4 @@
+---
 name: OnCICI
 
 on:
@@ -11,38 +12,39 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        compiler: [ [gcc,g++], [clang,clang++] ]
+        compiler: [[gcc, g++], [clang, clang++]]
     steps:
-    - uses: actions/checkout@v4
-    - name: Building
-      env:
-        CC: ${{ matrix.compiler[0] }}
-        CXX: ${{ matrix.compiler[1] }}
-      run: |
-        mkdir build
-        cd build
-        cmake ..
-        make bench
-    - name: Benchmarking
-      run: |
-        cd build
-        bin/bench | tee timings_${{ matrix.compiler[0] }}.txt
-    - uses: actions/upload-artifact@v4
-      with:
-        name: Timings_${{ matrix.compiler[0] }}
-        path: build/timings_${{ matrix.compiler[0] }}.txt
+      - uses: actions/checkout@v7
+      - name: Building
+        env:
+          CC: ${{ matrix.compiler[0] }}
+          CXX: ${{ matrix.compiler[1] }}
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make bench
+      - name: Benchmarking
+        run: |
+          cd build
+          bin/bench | tee timings_${{ matrix.compiler[0] }}.txt
+      - uses: actions/upload-artifact@v7
+        with:
+          name: Timings_${{ matrix.compiler[0] }}
+          path: build/timings_${{ matrix.compiler[0] }}.txt
   test:
     name: Testing
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Building
-      run: |
-        mkdir build
-        cd build
-        cmake ..
-        make tests
-    - name: Testing
-      run: |
-        cd build
-        bin/tests
+      - uses: actions/checkout@v7
+      - name: Building
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make test_mine unit_tests
+      - name: Testing
+        run: |
+          cd build
+          bin/test_mine
+          bin/unit_tests

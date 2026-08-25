@@ -1,4 +1,4 @@
-# FLD ECC AVX2/AVX512
+# FLD ECC VEC
 
 This is a mathematical software library for computing the Edwards Digital Signature Algorithm (EdDSA) and the Diffie-Hellman functions X25519 and X448. The library is optimized with the Intel Advanced Vector eXtensions AVX2 and AVX512 product of this research project.
 
@@ -25,7 +25,7 @@ This is a mathematical software library for computing the Edwards Digital Signat
 
 To compile use:
 ```bash
-    $ cd fld_ecc_avx2
+    $ cd fld_ecc_vec
     $ mkdir build; cd build
     $ cmake ..
     $ make all
@@ -50,7 +50,7 @@ For running the benchmark program use:
 The timings reported in the paper were obtained using the Clang compiler version 5.
 
 ```bash
-    $ cd fld_ecc_avx2
+    $ cd fld_ecc_vec
     $ mkdir build; cd build
     $ CC=/path/to/clang cmake ..
     $ make
